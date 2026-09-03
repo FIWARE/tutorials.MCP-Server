@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ngsi-ld-tutorials/generated/SoilSensor/schema.json",
+  "title": "SoilSensor",
+  "description": "Sensor device measuring soil humidity/moisture in a parcel (Device-shaped, category=sensor). Baseline generated from 6 live entities on tenant 'openiot' plus the /types attribute list.",
+  "modelTags": "generated",
+  "x-derivedFrom": {
+    "method": "entity-introspection + /types",
+    "broker": "http://localhost:1026/ngsi-ld/v1",
+    "tenant": "openiot",
+    "sampleCount": 6,
+    "declaredAttributes": [
+      "batteryLevel",
+      "category",
+      "controlledAsset",
+      "controlledProperty",
+      "description",
+      "deviceModel",
+      "deviceState",
+      "humidity",
+      "supportedProtocol"
+    ],
+    "typeUri": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#SoilSensor",
+    "generatedAt": "2026-09-03T07:36:28.729478Z"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uri"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "SoilSensor"
+      ]
+    },
+    "batteryLevel": {
+      "type": "number",
+      "x-ngsi-type": "Property",
+      "x-unitCode": "C68",
+      "x-sample": 0.7
+    },
+    "category": {
+      "type": "string",
+      "x-ngsi-type": "VocabProperty",
+      "description": "Controlled-vocabulary term.",
+      "x-sample": "sensor"
+    },
+    "controlledAsset": {
+      "type": "string",
+      "format": "uri",
+      "x-ngsi-type": "Relationship",
+      "description": "Relationship (target entity URN).",
+      "x-sample": "urn:ngsi-ld:AgriParcel:001"
+    },
+    "controlledProperty": {
+      "type": "string",
+      "x-ngsi-type": "Property",
+      "x-sample": "humidity"
+    },
+    "description": {
+      "type": "string",
+      "x-ngsi-type": "Property",
+      "x-sample": "Wheatfield Soil Sensor"
+    },
+    "deviceModel": {
+      "type": "string",
+      "format": "uri",
+      "x-ngsi-type": "Relationship",
+      "description": "Relationship (target entity URN).",
+      "x-sample": "urn:ngsi-ld:DeviceModel:SoilSensor"
+    },
+    "deviceState": {
+      "type": "string",
+      "x-ngsi-type": "Property",
+      "x-sample": "OK"
+    },
+    "humidity": {
+      "type": "number",
+      "x-ngsi-type": "Property",
+      "x-unitCode": "P1",
+      "x-sample": 0.5
+    },
+    "supportedProtocol": {
+      "type": "string",
+      "x-ngsi-type": "Property",
+      "x-sample": "json"
+    }
+  },
+  "required": [
+    "batteryLevel",
+    "category",
+    "controlledAsset",
+    "controlledProperty",
+    "description",
+    "deviceModel",
+    "deviceState",
+    "humidity",
+    "id",
+    "supportedProtocol",
+    "type"
+  ]
+}

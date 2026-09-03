@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ngsi-ld-tutorials/generated/Person/schema.json",
+  "title": "Person",
+  "description": "A person (alive, dead, undead, or fictional). Mapped to schema:Person in the user context.",
+  "modelTags": "generated",
+  "x-derivedFrom": {
+    "method": "entity-introspection",
+    "broker": "http://localhost:1026/ngsi-ld/v1",
+    "sampleCount": 4,
+    "generatedAt": "2026-09-03T07:28:38.638921Z",
+    "typeUri": "https://schema.org/Person"
+  },
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uri"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "Person"
+      ]
+    },
+    "gender": {
+      "description": "Gender of something, typically a [[Person]], but possibly also fictional characters, animals, etc. While https://schema.org/Male and https://schema.org/Female may be used, text strings are also acceptable for people who are not a binary gender. The [[gender]] property can also be used in an extended sense to cover e.g. the gender of sports teams. As with the gender of individuals, we do not try to enumerate all possibilities. A mixed-gender [[SportsTeam]] can be indicated with a text value of \"Mixed\".",
+      "type": "string",
+      "x-ngsi-type": "Property"
+    },
+    "givenName": {
+      "description": "Given name. In the U.S., the first name of a Person.",
+      "type": "string",
+      "x-ngsi-type": "Property",
+      "x-sample": "Napoleon"
+    },
+    "jobTitle": {
+      "description": "The job title of the person (for example, Financial Manager).",
+      "type": "object",
+      "x-ngsi-type": "Property"
+    },
+    "name": {
+      "description": "The name of the item.",
+      "type": "string",
+      "x-ngsi-type": "Property",
+      "x-sample": "Old MacDonald"
+    },
+    "owns": {
+      "description": "Things owned by the organization or person.",
+      "type": "string",
+      "format": "uri",
+      "x-ngsi-type": "Relationship",
+      "x-sample": "urn:ngsi-ld:AgriFarm:farm001"
+    },
+    "weight": {
+      "description": "The weight of the product or person.",
+      "type": "number",
+      "x-ngsi-type": "Property",
+      "x-sample": 270
+    }
+  },
+  "required": [
+    "id",
+    "jobTitle",
+    "name",
+    "type"
+  ]
+}

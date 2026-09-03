@@ -1,0 +1,239 @@
+# WARNING: Do not deploy this tutorial configuration directly to a production environment
+#
+# The tutorial docker-compose files have not been written for production deployment and will not 
+# scale. A proper architecture has been sacrificed to keep the narrative focused on the learning 
+# goals, they are just used to deploy everything onto a single Docker machine. All FIWARE components 
+# are running at full debug and extra ports have been exposed to allow for direct calls to services. 
+# They also contain various obvious security flaws - passwords in plain text, no load balancing,
+# no use of HTTPS and so on. 
+# 
+# This is all to avoid the need of multiple machines, generating certificates, encrypting secrets
+# and so on, purely so that a single docker-compose file can be read as an example to build on, 
+# not use directly. 
+# 
+# When deploying to a production environment, please refer to the Helm Repository
+# for FIWARE Components in order to scale up to a proper architecture:
+# 
+# see: https://github.com/FIWARE/helm-charts/
+#
+services:
+  # @context file is served from here
+  ld-context:
+    labels:
+      org.fiware: 'tutorial'
+    image: httpd:alpine
+    hostname: context
+    container_name: fiware-ld-context
+    ports:
+        - "3004:80"
+    volumes:
+        - data-models:/usr/local/apache2/htdocs/
+        - type: bind
+          source: ${PWD}/conf/mime.types
+          target: /usr/local/apache2/conf/mime.types
+          read_only: true
+    healthcheck:
+      test: (wget --server-response --spider --quiet  http://context/user-context.jsonld 2>&1 | awk 'NR==1{print $$2}'|  grep -q -e "200") || exit 1
+
+  # Cache foe Sensor Data Readings
+  redis-sensors:
+    labels:
+      org.fiware: 'tutorial'
+    image: redis:8.2.0-alpine
+    container_name: redis
+    hostname: redis-for-sensors
+    ports:
+      - "6378:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli","ping"]
+      interval: 10s
+
+  # Databases
+  mongo-db:
+    labels:
+      org.fiware: 'tutorial'
+    image: mongo:${MONGO_DB_VERSION}
+    hostname: mongo-db
+    container_name: db-mongo
+    expose:
+      - "${MONGO_DB_PORT}"
+    ports:
+      - "${MONGO_DB_PORT}:${MONGO_DB_PORT}" # localhost:27017
+    networks:
+      - default
+    volumes:
+      - mongo-db:/data/db
+      - mongo-config:/data/configdb
+    healthcheck:
+      test: ["CMD","mongosh", "localhost:27017/test", "--quiet"]
+      interval: 5s
+
+  # IoT-Agent is configured for the UltraLight Protocol
+  iot-agent:
+    labels:
+      org.fiware: 'tutorial'
+    image: quay.io/fiware/iotagent-json:${JSON_VERSION}
+    hostname: iot-agent
+    container_name: fiware-iot-agent
+    depends_on:
+      - mongo-db
+      - ld-context
+    networks:
+      - default
+    ports:
+      - "${IOTA_NORTH_PORT}:${IOTA_NORTH_PORT}" # localhost:4041
+      - "${IOTA_SOUTH_PORT}:${IOTA_SOUTH_PORT}" # localhost:7896
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+          cpus: '2.0'
+        reservations:
+          memory: 512M
+          cpus: '1.0'
+    environment:
+      - IOTA_NORTH_PORT=${IOTA_NORTH_PORT}
+      - IOTA_REGISTRY_TYPE=mongodb #Whether to hold IoT device info in memory or in a database
+      - IOTA_LOG_LEVEL=INFO # The log level of the IoT Agent
+      - IOTA_TIMESTAMP=true # Supply timestamp information with each measurement
+      - IOTA_AUTOCAST=true # Ensure Ultralight number values are read as numbers not strings
+      - IOTA_MONGO_URI=mongodb://mongo-db:${MONGO_DB_PORT}/iotagentjson
+      - IOTA_HTTP_PORT=${IOTA_SOUTH_PORT}
+      - IOTA_DEFAULT_RESOURCE=/iot/json # The port used for device traffic over HTTP
+      - IOTA_PROVIDER_URL=http://iot-agent:${IOTA_NORTH_PORT}
+      - IOTA_CB_NGSI_VERSION=ld # use NGSI-LD when sending updates for active attributes
+      - IOTA_JSON_LD_CONTEXT=http://context/user-context.jsonld
+      - IOTA_FALLBACK_TENANT=openiot
+      - IOTA_MULTI_CORE=true
+      - IOTA_AMQP_DISABLED=true
+      - IOTA_MQTT_DISABLED=true
+    healthcheck:
+      interval: 30s
+
+  farmer:
+    labels:
+      org.fiware: 'tutorial'
+    image: quay.io/fiware/tutorials.forwarder
+    hostname: 'farmer'
+    container_name: cb-farmer
+    ports:
+      - 1027:80
+    environment:
+      - TENANT=farmer
+      - DEBUG=broker:*
+
+  devices:
+    labels:
+      org.fiware: 'tutorial'
+    image: quay.io/fiware/tutorials.forwarder
+    hostname: 'openiot'
+    container_name: cb-devices
+    ports:
+      - 1028:80
+    environment:
+      - TENANT=openiot
+      - DEBUG=broker:*
+
+  # A series of dummy IoT Sensors over HTTP
+  iot-sensors:
+    labels:
+      org.fiware: 'tutorial'
+    image: quay.io/fiware/tutorials.iot-devices
+    hostname: iot-sensors
+    container_name: fiware-iot-devices
+    depends_on:
+      - redis-sensors
+    networks:
+      - default
+    expose:
+      - "${TUTORIAL_DUMMY_DEVICE_PORT}"
+    ports:
+      - "${TUTORIAL_DUMMY_DEVICE_PORT}:${TUTORIAL_DUMMY_DEVICE_PORT}" # localhost:3001
+    environment:
+      - DEBUG=devices:*
+      - WEB_APP_HOST=tutorial
+      - WEB_APP_PORT=${TUTORIAL_APP_PORT} # Port used by the content provider proxy and web-app for viewing data
+      - IOTA_HTTP_HOST=iot-agent
+      - IOTA_HTTP_PORT=${IOTA_SOUTH_PORT}
+      - IOTA_DEFAULT_RESOURCE=/iot/json
+      - PIG_COUNT=${PIG_COUNT}
+      - COW_COUNT=${COW_COUNT}
+      - REDIS_HOST=redis-for-sensors
+      - DUMMY_DEVICES_PAYLOAD=JSON
+  
+  # Tutorial acts as a Farm Management Information System  
+  tutorial:
+    labels:
+      org.fiware: 'tutorial'
+    image: quay.io/fiware/tutorials.ngsi-ld
+    hostname: tutorial
+    container_name: fiware-tutorial
+    depends_on:
+      - mongo-db
+    networks:
+      - default
+    expose:
+      - "${TUTORIAL_APP_PORT}"
+    ports:
+      - "${TUTORIAL_APP_PORT}:${TUTORIAL_APP_PORT}" # localhost:3000
+    environment:
+      - DEBUG=tutorial:*
+      - WEB_APP_PORT=${TUTORIAL_APP_PORT} # Port used by the content provider proxy and web-app for viewing data
+      - IOTA_HTTP_HOST=iot-agent
+      - IOTA_HTTP_PORT=${IOTA_SOUTH_PORT}
+      - IOTA_DEFAULT_RESOURCE=/iot/json
+      - DUMMY_DEVICES=http://iot-sensors:3001
+      - MONGO_URL=mongodb://mongo-db:27017
+      - IOTA_JSON_LD_CONTEXT=http://context/user-context.jsonld
+      - DUMMY_DEVICES_PAYLOAD=JSON
+
+  # MCP Server exposes the Context Broker to LLM agents as tools and resources
+  mcp-server:
+    labels:
+      org.fiware: 'tutorial'
+    image: quay.io/fiware/tutorials.mcp-server
+    hostname: mcp-server
+    container_name: fiware-mcp-server
+    depends_on:
+      - ld-context
+    networks:
+      - default
+    expose:
+      - "${MCP_SERVER_PORT}"
+    ports:
+      - "${MCP_SERVER_PORT}:${MCP_SERVER_PORT}" # localhost:3003
+    environment:
+      - DEBUG=mcp:*
+      - MCP_TRANSPORT=http
+      - MCP_PORT=${MCP_SERVER_PORT}
+      - SCHEMA_DIR=/schemas
+      - NGSI_LD_CONTEXT=http://context/user-context.jsonld
+    volumes:
+      - type: bind
+        source: ${PWD}/schemas
+        target: /schemas
+        read_only: true
+
+networks:
+  default:
+    labels:
+      org.fiware: 'tutorial'
+    ipam:
+      config:
+        - subnet: 172.18.1.0/24
+
+volumes:
+  crate-db: ~
+  redis-db: ~
+  grafana: ~
+  mongo-db: ~
+  mongo-config: ~
+  redis-data: ~
+  data-models:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ${PWD}/data-models

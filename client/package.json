@@ -1,0 +1,9 @@
+{
+  "name": "ngsi-ld-mcp-client",
+  "private": true,
+  "type": "module",
+  "bin": { "mcp-client": "./index.mjs" },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.12.3"
+  }
+}
