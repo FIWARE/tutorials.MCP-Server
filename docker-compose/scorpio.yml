@@ -82,6 +82,6 @@ services:
     environment:
       - CONTEXT_BROKER=http://scorpio:${SCORPIO_PORT}/ngsi-ld/v1
       - TEMPORAL_BROKER=http://scorpio:${SCORPIO_PORT}/ngsi-ld/v1
-
+      - TEMPORAL_TENANT=openiot
 volumes:
   postgres-db: ~

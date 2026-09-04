@@ -180,5 +180,7 @@ services:
       - api-gateway
     environment:
       - CONTEXT_BROKER=http://stellio:${STELLIO_PORT}/ngsi-ld/v1
+      - TEMPORAL_BROKER=http://stellio:${STELLIO_PORT}/ngsi-ld/v1
+      - TEMPORAL_TENANT=openiot
 volumes:
   postgres-db: ~
