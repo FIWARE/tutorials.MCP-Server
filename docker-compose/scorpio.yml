@@ -81,6 +81,7 @@ services:
       - scorpio
     environment:
       - CONTEXT_BROKER=http://scorpio:${SCORPIO_PORT}/ngsi-ld/v1
+      - TEMPORAL_BROKER=http://scorpio:${SCORPIO_PORT}/ngsi-ld/v1
 
 volumes:
   postgres-db: ~
