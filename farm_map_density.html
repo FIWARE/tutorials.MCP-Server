@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Farm pastures — density vs. good husbandry</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css" />
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --concern: #d97a1f; --concern-soft: #fbecdc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --concern: #e8a35e; --concern-soft: #3a2f1f;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --concern: #e8a35e; --concern-soft: #3a2f1f; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --concern: #d97a1f; --concern-soft: #fbecdc; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.5rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.25rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.05rem; margin: 0 0 0.35rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .map-el { width: 100%; height: 560px; border-radius: 10px; margin-bottom: 0.75rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.85rem; color: var(--ink-soft); padding: 0.5rem 0.25rem 0.5rem; align-items: center; }
+  .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 0.4rem; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.45rem 0.65rem; text-align: left; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.ok { color: var(--accent); font-weight: 600; }
+  td.bad { color: var(--concern); font-weight: 600; }
+  td.mid { color: #5b8a3a; font-weight: 600; }
+  td.near { color: #b8860b; font-weight: 600; }
+  @media (prefers-color-scheme: dark) {
+    td.mid { color: #a3c98a; }
+    td.near { color: #e0b84a; }
+  }
+  :root[data-theme="dark"] td.mid { color: #a3c98a; }
+  :root[data-theme="dark"] td.near { color: #e0b84a; }
+  .maplibregl-popup-content { font-size: 0.85rem; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🗺️ Farm pastures — density vs. good husbandry</h1>
+<p class="sub">Three ways of drawing each area's territory from its centroid, from most generous to tightest, each checked against good-husbandry stocking guidelines (2.47/ha for cattle, 40/ha for outdoor pigs).</p>
+
+<div class="legend">
+  <span><span class="sw" style="background:#4a7c3f;"></span>South Pasture</span>
+  <span><span class="sw" style="background:#6a9c56;"></span>East Pasture</span>
+  <span><span class="sw" style="background:#8bb877;"></span>Water Meadow</span>
+  <span><span class="sw" style="background:#3a6431;"></span>The Paddock</span>
+  <span><span class="sw" style="background:#d97a1f;"></span>Piggery (sows + piglets)</span>
+  <span><span class="sw" style="background:#a8562e;"></span>Boar Pen</span>
+</div>
+
+<div class="panel">
+  <h2>1. Voronoi partition (maximum)</h2>
+  <p class="desc">Each centroid extended to the perpendicular bisector with its nearest neighbor, clipped to the farm's bounding rectangle. The most generous reading — every area gets everything not closer to someone else.</p>
+  <div id="map1" class="map-el"></div>
+  <table>
+    <thead><tr><th>Area</th><th>Animals</th><th>Area</th><th>Density</th><th>Guideline</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>South Pasture</td><td>9 cattle</td><td>13.65 ha</td><td>0.66/ha</td><td>2.47/ha</td><td class="ok">Spacious (27%)</td></tr>
+      <tr><td>East Pasture</td><td>10 cattle</td><td>16.95 ha</td><td>0.59/ha</td><td>2.47/ha</td><td class="ok">Spacious (24%)</td></tr>
+      <tr><td>Water Meadow</td><td>13 cattle</td><td>15.42 ha</td><td>0.84/ha</td><td>2.47/ha</td><td class="ok">Spacious (34%)</td></tr>
+      <tr><td>The Paddock</td><td>9 cattle</td><td>11.44 ha</td><td>0.79/ha</td><td>2.47/ha</td><td class="ok">Spacious (32%)</td></tr>
+      <tr><td>Piggery — sows only</td><td>27 sows</td><td>13.40 ha</td><td>2.01/ha</td><td>40/ha</td><td class="ok">Spacious (5%)</td></tr>
+      <tr><td>Piggery — sows + piglets (low)</td><td>297</td><td>13.40 ha</td><td>22.16/ha</td><td>40/ha</td><td class="mid">Comfortable (55%)</td></tr>
+      <tr><td>Piggery — sows + piglets (high)</td><td>351</td><td>13.40 ha</td><td>26.19/ha</td><td>40/ha</td><td class="mid">Comfortable (66%)</td></tr>
+      <tr><td>Boar Pen</td><td>3 boars</td><td>3.63 ha</td><td>0.83/ha</td><td>40/ha</td><td class="ok">Spacious (2%)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>2. Nearest-neighbor circles (non-overlapping)</h2>
+  <p class="desc">Radius = half the distance from each centroid to its single nearest neighbor. Guaranteed not to overlap anyone, but tighter than the Voronoi max.</p>
+  <div id="map2" class="map-el"></div>
+  <table>
+    <thead><tr><th>Area</th><th>Nearest neighbor</th><th>Radius</th><th>Area</th><th>Animals</th><th>Density</th><th>Guideline</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>South Pasture</td><td>East Pasture, 358m</td><td>179m</td><td>10.05 ha</td><td>9 cattle</td><td>0.90/ha</td><td>2.47/ha</td><td class="ok">Spacious (36%)</td></tr>
+      <tr><td>East Pasture</td><td>Water Meadow, 270m</td><td>135m</td><td>5.71 ha</td><td>10 cattle</td><td>1.75/ha</td><td>2.47/ha</td><td class="mid">Comfortable (71%)</td></tr>
+      <tr><td>Water Meadow</td><td>East Pasture, 270m</td><td>135m</td><td>5.71 ha</td><td>13 cattle</td><td>2.28/ha</td><td>2.47/ha</td><td class="near">Near guideline (92%)</td></tr>
+      <tr><td>The Paddock</td><td>Piggery, 163m</td><td>81m</td><td>2.08 ha</td><td>9 cattle</td><td>4.33/ha</td><td>2.47/ha</td><td class="bad">Overcrowded (175%)</td></tr>
+      <tr><td>Piggery — sows only</td><td>The Paddock, 163m</td><td>81m</td><td>2.08 ha</td><td>27 sows</td><td>13.00/ha</td><td>40/ha</td><td class="ok">Spacious (33%)</td></tr>
+      <tr><td>Piggery — sows + piglets (low)</td><td>The Paddock, 163m</td><td>81m</td><td>2.08 ha</td><td>297</td><td>142.79/ha</td><td>40/ha</td><td class="bad">Overcrowded (357%)</td></tr>
+      <tr><td>Piggery — sows + piglets (high)</td><td>The Paddock, 163m</td><td>81m</td><td>2.08 ha</td><td>351</td><td>168.75/ha</td><td>40/ha</td><td class="bad">Overcrowded (422%)</td></tr>
+      <tr><td>Boar Pen</td><td>The Paddock, 253m</td><td>126m</td><td>5.01 ha</td><td>3 boars</td><td>0.60/ha</td><td>40/ha</td><td class="ok">Spacious (2%)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>3. Cluster footprint (centroid to farthest member)</h2>
+  <p class="desc">Radius = distance from each area's own centroid to its own farthest animal — ignoring every neighbor entirely. The tightest, most physically grounded reading.</p>
+  <div id="map3" class="map-el"></div>
+  <table>
+    <thead><tr><th>Area</th><th>Radius</th><th>Area</th><th>Animals</th><th>Density</th><th>Guideline</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td>South Pasture</td><td>69m</td><td>1.51 ha</td><td>9 cattle</td><td>5.95/ha</td><td>2.47/ha</td><td class="bad">Overcrowded (241%)</td></tr>
+      <tr><td>East Pasture</td><td>324m</td><td>32.91 ha</td><td>10 cattle</td><td>0.30/ha</td><td>2.47/ha</td><td class="ok">Spacious (12%)</td></tr>
+      <tr><td>Water Meadow</td><td>71m</td><td>1.60 ha</td><td>13 cattle</td><td>8.12/ha</td><td>2.47/ha</td><td class="bad">Overcrowded (329%)</td></tr>
+      <tr><td>The Paddock</td><td>97m</td><td>2.93 ha</td><td>9 cattle</td><td>3.07/ha</td><td>2.47/ha</td><td class="bad">Overcrowded (124%)</td></tr>
+      <tr><td>Piggery — sows only</td><td>60m</td><td>1.12 ha</td><td>27 sows</td><td>24.18/ha</td><td>40/ha</td><td class="mid">Comfortable (60%)</td></tr>
+      <tr><td>Piggery — sows + piglets (low)</td><td>60m</td><td>1.12 ha</td><td>297</td><td>266.13/ha</td><td>40/ha</td><td class="bad">Overcrowded (665%)</td></tr>
+      <tr><td>Piggery — sows + piglets (high)</td><td>60m</td><td>1.12 ha</td><td>351</td><td>314.52/ha</td><td>40/ha</td><td class="bad">Overcrowded (786%)</td></tr>
+      <tr><td>Boar Pen</td><td>16m</td><td>0.08 ha</td><td>3 boars</td><td>39.74/ha</td><td>40/ha</td><td class="near">Near guideline (99%)</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · density comparisons · basemap © MapTiler © OpenStreetMap contributors</footer>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6.0.4/dist/d3-delaunay.min.js"></script>
+<script>
+  var pastures = {
+    'South Pasture': {
+      color: '#4a7c3f',
+      cows: [
+        ["Tulip", 13.34856, 52.51121, "315kg"], ["Trotter", 13.34806, 52.51186, "373kg"],
+        ["Marble", 13.34942, 52.5118, "390kg"], ["Silver", 13.34984, 52.51133, "376kg"],
+        ["Ferdinand (bull)", 13.34956, 52.51178, "757kg"], ["Clover", 13.34957, 52.51114, "332kg"],
+        ["Star", 13.34816, 52.51118, "367kg"], ["Citrus", 13.34898, 52.51147, "411kg"],
+        ["Bumble (calf)", 13.34806, 52.51186, "118kg"]
+      ]
+    },
+    'East Pasture': {
+      color: '#6a9c56',
+      cows: [
+        ["Beany (bull)", 13.34973, 52.51139, "752kg"], ["River", 13.35458, 52.51367, "357kg"],
+        ["Rice", 13.35293, 52.5135, "399kg"], ["Rain", 13.35273, 52.51365, "393kg"],
+        ["Eenie", 13.3542, 52.51364, "392kg"], ["Stamps", 13.35249, 52.51334, "457kg"],
+        ["Happy", 13.35342, 52.51328, "246kg"], ["Jersey", 13.35399, 52.51391, "404kg"],
+        ["Pepsi", 13.35336, 52.51383, "380kg"], ["Blossom (calf)", 13.35458, 52.51367, "103kg"]
+      ]
+    },
+    'Water Meadow': {
+      color: '#8bb877',
+      cows: [
+        ["Petal", 13.35509, 52.5152, "404kg"], ["Diamond", 13.35599, 52.51567, "480kg"],
+        ["Sun", 13.35569, 52.51515, "425kg"], ["Lacey", 13.35446, 52.51585, "485kg"],
+        ["Fisher", 13.35538, 52.51587, "243kg"], ["Fluffy", 13.35414, 52.51585, "258kg"],
+        ["Opal", 13.35453, 52.51597, "429kg"], ["Bug", 13.35575, 52.51506, "360kg"],
+        ["Fresian", 13.35582, 52.51524, "295kg"], ["Grape", 13.3552, 52.51593, "445kg"],
+        ["Flower", 13.35438, 52.51541, "383kg"], ["Sugar", 13.35476, 52.51563, "453kg"],
+        ["Cloud", 13.35436, 52.51513, "247kg"]
+      ]
+    },
+    'The Paddock': {
+      color: '#3a6431',
+      cows: [
+        ["Pollen", 13.34824, 52.51844, "431kg"], ["Juicey", 13.34896, 52.51713, "411kg"],
+        ["Button", 13.34823, 52.51711, "352kg"], ["Oats", 13.34898, 52.5175, "490kg"],
+        ["Feather", 13.34833, 52.51691, "360kg"], ["Chalky", 13.34893, 52.51841, "260kg"],
+        ["Cream", 13.34872, 52.51852, "401kg"], ["Hero", 13.34895, 52.51799, "389kg"],
+        ["Spots", 13.34832, 52.51688, "349kg"]
+      ]
+    }
+  };
+
+  var sows = [
+    ["Bubblegum", 13.35073, 52.51839], ["Fuchshia", 13.35006, 52.51886], ["Flamingo", 13.35009, 52.5182],
+    ["Salmon", 13.35058, 52.51867], ["Rouge", 13.35069, 52.51815], ["Peach", 13.35049, 52.51841],
+    ["Coral", 13.35099, 52.51867], ["Magenta", 13.35024, 52.51844], ["Cherry", 13.35096, 52.51813],
+    ["Carnation", 13.35056, 52.51821], ["Strawberry", 13.35098, 52.5185], ["Blush", 13.35073, 52.51865],
+    ["Mauve", 13.35084, 52.51833], ["Orchid", 13.35049, 52.51834], ["Cotton", 13.35023, 52.51811],
+    ["Tango", 13.35046, 52.51885], ["Lavender", 13.35038, 52.51887], ["Grape", 13.35093, 52.5185],
+    ["Raspberry", 13.3502, 52.51864], ["Watermelon", 13.35056, 52.51878], ["Lemonade", 13.35042, 52.51828],
+    ["Goliath", 13.35098, 52.51847], ["Hulk", 13.35095, 52.51899], ["Thor", 13.35036, 52.51813],
+    ["Bruce", 13.35072, 52.51852], ["Clifford", 13.35076, 52.51863], ["Reptar", 13.35032, 52.51888]
+  ];
+  var boarPen = [
+    ["Mammoth (boar)", 13.3473, 52.5197],
+    ["Giant (boar)", 13.34695, 52.51965],
+    ["Colossus (boar)", 13.34715, 52.51985]
+  ];
+
+  var R = 111320;
+
+  function centroid(points) {
+    var sx = 0, sy = 0;
+    points.forEach(function (p) { sx += p[0]; sy += p[1]; });
+    return [sx / points.length, sy / points.length];
+  }
+  function circlePolygon(center, radiusMeters, steps) {
+    steps = steps || 64;
+    var coords = [];
+    var mPerDegLon = R * Math.cos(center[1] * Math.PI / 180);
+    for (var i = 0; i <= steps; i++) {
+      var theta = (i / steps) * 2 * Math.PI;
+      var dLat = (radiusMeters * Math.cos(theta)) / R;
+      var dLon = (radiusMeters * Math.sin(theta)) / mPerDegLon;
+      coords.push([center[0] + dLon, center[1] + dLat]);
+    }
+    return coords;
+  }
+
+  var allCows = [];
+  Object.keys(pastures).forEach(function (name) {
+    pastures[name].cows.forEach(function (c) { allCows.push({ name: c[0], lon: c[1], lat: c[2], weight: c[3], group: name }); });
+  });
+  var allSows = sows.map(function (p) { return { name: p[0], lon: p[1], lat: p[2], group: 'Piggery (sows + piglets)' }; });
+  var allBoars = boarPen.map(function (p) { return { name: p[0], lon: p[1], lat: p[2], group: 'Boar Pen' }; });
+  var allAnimals = allCows.concat(allSows).concat(allBoars);
+
+  var groupDefs = {
+    'South Pasture': { color: '#4a7c3f', pts: pastures['South Pasture'].cows.map(function (c) { return [c[1], c[2]]; }) },
+    'East Pasture': { color: '#6a9c56', pts: pastures['East Pasture'].cows.map(function (c) { return [c[1], c[2]]; }) },
+    'Water Meadow': { color: '#8bb877', pts: pastures['Water Meadow'].cows.map(function (c) { return [c[1], c[2]]; }) },
+    'The Paddock': { color: '#3a6431', pts: pastures['The Paddock'].cows.map(function (c) { return [c[1], c[2]]; }) },
+    'Piggery (sows + piglets)': { color: '#d97a1f', pts: sows.map(function (p) { return [p[1], p[2]]; }) },
+    'Boar Pen': { color: '#a8562e', pts: boarPen.map(function (p) { return [p[1], p[2]]; }) }
+  };
+  Object.keys(groupDefs).forEach(function (name) { groupDefs[name].center = centroid(groupDefs[name].pts); });
+
+  function fitBoundsFromPolys(polys) {
+    var pts = [].concat.apply([], polys);
+    var lons = pts.map(function (p) { return p[0]; });
+    var lats = pts.map(function (p) { return p[1]; });
+    return [[Math.min.apply(null, lons), Math.min.apply(null, lats)],
+            [Math.max.apply(null, lons), Math.max.apply(null, lats)]];
+  }
+
+  function addAnimalLayer(map, strokeByGroup) {
+    var features = allAnimals.map(function (a) {
+      return { type: 'Feature', geometry: { type: 'Point', coordinates: [a.lon, a.lat] }, properties: { name: a.name, group: a.group } };
+    });
+    map.addSource('animals', { type: 'geojson', data: { type: 'FeatureCollection', features: features } });
+    map.addLayer({ id: 'animal-points', type: 'circle', source: 'animals',
+      paint: { 'circle-radius': 4, 'circle-color': '#ffffff', 'circle-stroke-width': 1.5, 'circle-stroke-color': '#2b2b23' } });
+  }
+
+  function addSiteLabels(map, centers) {
+    var features = Object.keys(centers).map(function (name) {
+      return { type: 'Feature', geometry: { type: 'Point', coordinates: centers[name] }, properties: { name: name } };
+    });
+    map.addSource('sites', { type: 'geojson', data: { type: 'FeatureCollection', features: features } });
+    map.addLayer({ id: 'site-points', type: 'circle', source: 'sites',
+      paint: { 'circle-radius': 8, 'circle-color': '#2b2b23', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' } });
+    map.addLayer({ id: 'site-labels', type: 'symbol', source: 'sites',
+      layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-offset': [0, 1.3], 'text-anchor': 'top' },
+      paint: { 'text-color': '#2b2b23', 'text-halo-color': '#ffffff', 'text-halo-width': 1.4 } });
+  }
+
+  var STYLE_URL = 'https://api.maptiler.com/maps/streets-v2/style.json?key=foqzh86Jk2Ia9CL7w8ks';
+
+  // ---- Map 1: Voronoi ----
+  (function () {
+    var sites = Object.keys(groupDefs).map(function (name) { return groupDefs[name].center; });
+    var siteNames = Object.keys(groupDefs);
+    var allPts = [].concat.apply([], Object.keys(groupDefs).map(function (n) { return groupDefs[n].pts; }));
+    var lons = allPts.map(function (p) { return p[0]; }), lats = allPts.map(function (p) { return p[1]; });
+    var minLon = Math.min.apply(null, lons), maxLon = Math.max.apply(null, lons);
+    var minLat = Math.min.apply(null, lats), maxLat = Math.max.apply(null, lats);
+    var padX = (maxLon - minLon) * 0.06, padY = (maxLat - minLat) * 0.06;
+    var clipBounds = [minLon - padX, minLat - padY, maxLon + padX, maxLat + padY];
+
+    var map1 = new maplibregl.Map({ container: 'map1', style: STYLE_URL, attributionControl: { compact: true } });
+    map1.addControl(new maplibregl.NavigationControl());
+    map1.fitBounds([[minLon, minLat], [maxLon, maxLat]], { padding: 60, duration: 0 });
+
+    map1.on('load', function () {
+      var delaunay = d3.Delaunay.from(sites);
+      var voronoi = delaunay.voronoi(clipBounds);
+      siteNames.forEach(function (name, i) {
+        var cellRing = voronoi.cellPolygon(i);
+        if (!cellRing) return;
+        var srcId = 'v-cell-' + i;
+        map1.addSource(srcId, { type: 'geojson', data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [cellRing] }, properties: { name: name } } });
+        map1.addLayer({ id: srcId + '-fill', type: 'fill', source: srcId, paint: { 'fill-color': groupDefs[name].color, 'fill-opacity': 0.22 } });
+        map1.addLayer({ id: srcId + '-line', type: 'line', source: srcId, paint: { 'line-color': groupDefs[name].color, 'line-width': 2 } });
+      });
+      var centers = {}; siteNames.forEach(function (n) { centers[n] = groupDefs[n].center; });
+      addSiteLabels(map1, centers);
+      addAnimalLayer(map1);
+    });
+  })();
+
+  // ---- Map 2: nearest-neighbor circles ----
+  (function () {
+    var radii = { 'South Pasture': 179, 'East Pasture': 135, 'Water Meadow': 135, 'The Paddock': 81, 'Piggery (sows + piglets)': 81, 'Boar Pen': 126 };
+    var polys = {};
+    Object.keys(groupDefs).forEach(function (name) { polys[name] = circlePolygon(groupDefs[name].center, radii[name]); });
+    var map2 = new maplibregl.Map({ container: 'map2', style: STYLE_URL, attributionControl: { compact: true } });
+    map2.addControl(new maplibregl.NavigationControl());
+    map2.fitBounds(fitBoundsFromPolys(Object.values(polys)), { padding: 60, duration: 0 });
+    map2.on('load', function () {
+      Object.keys(polys).forEach(function (name, i) {
+        var srcId = 'nn-circle-' + i;
+        map2.addSource(srcId, { type: 'geojson', data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [polys[name]] }, properties: { name: name } } });
+        map2.addLayer({ id: srcId + '-fill', type: 'fill', source: srcId, paint: { 'fill-color': groupDefs[name].color, 'fill-opacity': 0.22 } });
+        map2.addLayer({ id: srcId + '-line', type: 'line', source: srcId, paint: { 'line-color': groupDefs[name].color, 'line-width': 2 } });
+      });
+      var centers = {}; Object.keys(groupDefs).forEach(function (n) { centers[n] = groupDefs[n].center; });
+      addSiteLabels(map2, centers);
+      addAnimalLayer(map2);
+    });
+  })();
+
+  // ---- Map 3: cluster-footprint circles ----
+  (function () {
+    var radii = { 'South Pasture': 69, 'East Pasture': 324, 'Water Meadow': 71, 'The Paddock': 97, 'Piggery (sows + piglets)': 60, 'Boar Pen': 16 };
+    var polys = {};
+    Object.keys(groupDefs).forEach(function (name) { polys[name] = circlePolygon(groupDefs[name].center, radii[name]); });
+    var map3 = new maplibregl.Map({ container: 'map3', style: STYLE_URL, attributionControl: { compact: true } });
+    map3.addControl(new maplibregl.NavigationControl());
+    map3.fitBounds(fitBoundsFromPolys(Object.values(polys)), { padding: 60, duration: 0 });
+    map3.on('load', function () {
+      Object.keys(polys).forEach(function (name, i) {
+        var srcId = 'cf-circle-' + i;
+        map3.addSource(srcId, { type: 'geojson', data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [polys[name]] }, properties: { name: name } } });
+        map3.addLayer({ id: srcId + '-fill', type: 'fill', source: srcId, paint: { 'fill-color': groupDefs[name].color, 'fill-opacity': 0.22 } });
+        map3.addLayer({ id: srcId + '-line', type: 'line', source: srcId, paint: { 'line-color': groupDefs[name].color, 'line-width': 2 } });
+      });
+      var centers = {}; Object.keys(groupDefs).forEach(function (n) { centers[n] = groupDefs[n].center; });
+      addSiteLabels(map3, centers);
+      addAnimalLayer(map3);
+    });
+  })();
+</script>
+</body>
+</html>
