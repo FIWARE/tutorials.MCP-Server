@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Herd growth vs. expected weight-for-age</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --concern: #b3401e; --concern-soft: #fbe4dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --concern: #e88a5e; --concern-soft: #3a271f;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --concern: #e88a5e; --concern-soft: #3a271f; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --concern: #b3401e; --concern-soft: #fbe4dc; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.75rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 0.75rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.6rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .panel .footnote strong { color: var(--concern); font-style: normal; }
+  svg { width: 100%; height: auto; display: block; }
+  .axis-line { stroke: var(--border); stroke-width: 1.5; }
+  .gridline { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.6; }
+  .tick { font-size: 12px; fill: var(--ink-soft); }
+  .band { fill: var(--accent); opacity: 0.13; }
+  .expected-line { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; fill: none; opacity: 0.85; }
+  .normal-line { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+  .concern-line { stroke: var(--concern); stroke-width: 2.75; fill: none; }
+  .dot-normal { fill: var(--accent); }
+  .dot-concern { fill: var(--concern); }
+  .name-label { font-size: 12px; font-weight: 600; }
+  .name-label.normal { fill: var(--accent); }
+  .name-label.concern { fill: var(--concern); }
+  .annot { font-size: 11px; fill: var(--concern); font-style: italic; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.82rem; color: var(--ink-soft); padding: 0.5rem 0 1rem; align-items: center; }
+  .legend .swatch { display: inline-block; width: 22px; height: 3px; border-radius: 2px; margin-right: 0.4rem; vertical-align: middle; }
+  .legend .band-swatch { display: inline-block; width: 18px; height: 12px; border-radius: 3px; background: var(--accent); opacity: 0.18; margin-right: 0.4rem; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-top: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.4rem 0.65rem; text-align: left; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.dev-neg { color: var(--concern); font-weight: 600; }
+  td.dev-pos-high { color: var(--concern); font-weight: 600; }
+  td.dev-ok { color: var(--accent); }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🌾 Herd growth vs. expected weight-for-age</h1>
+<p class="sub">Expected weight corridor (±10%) for this herd's own baseline, with normal cows tracking inside it and four flagged animals shown against it — 2026-09-05</p>
+
+<div class="legend">
+  <span><span class="band-swatch"></span>expected corridor (±10%)</span>
+  <span><span class="swatch" style="background:var(--accent); opacity:0.85; border-top:2px dashed var(--accent); height:0;"></span>expected mean</span>
+  <span><span class="swatch" style="background:var(--accent);"></span>control</span>
+  <span><span class="swatch" style="background:var(--concern);"></span>anomaly</span>
+</div>
+
+<div class="panel">
+  <h2>Fresian vs. same-age control: 16–28 months</h2>
+  <p class="desc">Feather, Chalky, and River (controls) track the expected corridor normally. Fresian sits below it throughout this window, ~9-11% under expected.</p>
+  <svg viewBox="0 0 900 400" role="img" aria-label="Line chart: cattle weight in kilograms by age in months, 16 to 28 months, with an expected weight corridor band shown as a separate upper and lower bound, three control cow trajectories and one anomaly, Fresian">
+    <polygon class="band" points="60,221.5 193.3,187.3 326.7,150.9 460.0,114.3 593.3,77.9 726.7,66.4 860,54.7 860,144.7 726.7,154.1 593.3,163.5 460.0,193.3 326.7,223.2 193.3,253.0 60,281.0" />
+    <polyline class="expected-line" points="60,251.1 193.3,220.2 326.7,187.1 460.0,153.8 593.3,120.7 726.7,110.3 860,99.7" />
+    <line class="axis-line" x1="60" y1="360" x2="860" y2="360" />
+    <line class="axis-line" x1="60" y1="20" x2="60" y2="360" />
+    <line class="gridline" x1="60" y1="297.0" x2="860" y2="297.0" />
+    <line class="gridline" x1="60" y1="171.1" x2="860" y2="171.1" />
+    <line class="gridline" x1="60" y1="45.2" x2="860" y2="45.2" />
+    <text class="tick" x="55" y="364" text-anchor="end">150</text>
+    <text class="tick" x="55" y="301.0" text-anchor="end">200</text>
+    <text class="tick" x="55" y="175.1" text-anchor="end">300</text>
+    <text class="tick" x="55" y="49.2" text-anchor="end">400</text>
+    <text class="tick" x="60" y="380" text-anchor="middle">16mo</text>
+    <text class="tick" x="326.7" y="380" text-anchor="middle">20mo</text>
+    <text class="tick" x="593.3" y="380" text-anchor="middle">24mo</text>
+    <text class="tick" x="860" y="380" text-anchor="middle">28mo</text>
+
+    <polyline class="normal-line" points="80.0,178.5 146.7,162.1 213.3,145.8 280.0,132.0 346.7,118.2 413.3,108.1 480.0,99.3 546.7,95.5" />
+    <circle class="dot-normal" cx="546.7" cy="95.5" r="4" />
+    <text class="name-label normal" x="553" y="91">Feather 360kg</text>
+
+    <polyline class="normal-line" points="66.7,245.4 133.3,232.9 200.0,225.3 266.7,221.5" />
+    <circle class="dot-normal" cx="266.7" cy="221.5" r="4" />
+    <text class="name-label normal" x="266.7" y="240" text-anchor="middle">Chalky 260kg</text>
+
+    <polyline class="normal-line" points="60,269.3 126.7,253.0 193.3,236.6 260.0,220.2 326.7,205.1 393.3,188.7 460.0,172.4 526.7,157.3 593.3,141.0 660.0,137.2 726.7,133.4 793.3,128.3 860.0,124.5" />
+    <circle class="dot-normal" cx="860.0" cy="124.5" r="4" />
+    <text class="name-label normal" x="770" y="112">River 357kg</text>
+
+    <polyline class="concern-line" points="120.0,242.9 186.7,230.3 253.3,216.4 320.0,202.6 386.7,191.2 453.3,181.2 520.0,177.4" />
+    <circle class="dot-concern" cx="520.0" cy="177.4" r="4" />
+    <text class="name-label concern" x="520.0" y="196" text-anchor="middle">Fresian 295kg</text>
+  </svg>
+  <p class="footnote">Suspected cause: the gap has been consistent since early in life rather than a recent onset, which points more toward a chronic issue — <strong>internal parasites (worm burden)</strong> or persistent competition for feed within the herd — rather than a sudden illness. Not confirmed; worth a faecal egg count and a look at her position in the feeding order.</p>
+</div>
+
+<div class="panel">
+  <h2>Tulip vs. same-age control: 16–28 months</h2>
+  <p class="desc">Feather, Chalky, and River (controls) track the expected corridor normally. Tulip is currently 315kg at 27.1 months, ~11% below expected — a genuine concern worth a vet/condition check.</p>
+  <svg viewBox="0 0 900 400" role="img" aria-label="Line chart: cattle weight in kilograms by age in months, 16 to 28 months, with an expected weight corridor band shown as a separate upper and lower bound, three control cow trajectories and one anomaly, Tulip">
+    <polygon class="band" points="60,221.5 193.3,187.3 326.7,150.9 460.0,114.3 593.3,77.9 726.7,66.4 860,54.7 860,144.7 726.7,154.1 593.3,163.5 460.0,193.3 326.7,223.2 193.3,253.0 60,281.0" />
+    <polyline class="expected-line" points="60,251.1 193.3,220.2 326.7,187.1 460.0,153.8 593.3,120.7 726.7,110.3 860,99.7" />
+    <line class="axis-line" x1="60" y1="360" x2="860" y2="360" />
+    <line class="axis-line" x1="60" y1="20" x2="60" y2="360" />
+    <line class="gridline" x1="60" y1="297.0" x2="860" y2="297.0" />
+    <line class="gridline" x1="60" y1="171.1" x2="860" y2="171.1" />
+    <line class="gridline" x1="60" y1="45.2" x2="860" y2="45.2" />
+    <text class="tick" x="55" y="364" text-anchor="end">150</text>
+    <text class="tick" x="55" y="301.0" text-anchor="end">200</text>
+    <text class="tick" x="55" y="175.1" text-anchor="end">300</text>
+    <text class="tick" x="55" y="49.2" text-anchor="end">400</text>
+    <text class="tick" x="60" y="380" text-anchor="middle">16mo</text>
+    <text class="tick" x="326.7" y="380" text-anchor="middle">20mo</text>
+    <text class="tick" x="593.3" y="380" text-anchor="middle">24mo</text>
+    <text class="tick" x="860" y="380" text-anchor="middle">28mo</text>
+
+    <polyline class="normal-line" points="80.0,178.5 146.7,162.1 213.3,145.8 280.0,132.0 346.7,118.2 413.3,108.1 480.0,99.3 546.7,95.5" />
+    <circle class="dot-normal" cx="546.7" cy="95.5" r="4" />
+    <text class="name-label normal" x="553" y="91">Feather 360kg</text>
+
+    <polyline class="normal-line" points="66.7,245.4 133.3,232.9 200.0,225.3 266.7,221.5" />
+    <circle class="dot-normal" cx="266.7" cy="221.5" r="4" />
+    <text class="name-label normal" x="266.7" y="240" text-anchor="middle">Chalky 260kg</text>
+
+    <polyline class="normal-line" points="60,269.3 126.7,253.0 193.3,236.6 260.0,220.2 326.7,205.1 393.3,188.7 460.0,172.4 526.7,157.3 593.3,141.0 660.0,137.2 726.7,133.4 793.3,128.3 860.0,124.5" />
+    <circle class="dot-normal" cx="860.0" cy="124.5" r="4" />
+    <text class="name-label normal" x="770" y="112">River 357kg</text>
+
+    <polyline class="concern-line" points="66.7,229.0 133.3,210.1 200.0,192.5 266.7,173.6 333.3,156.0 400.0,138.4 466.7,119.5 533.3,101.8 600.0,118.2 666.7,135.8 733.3,152.2 800.0,152.2" />
+    <circle class="dot-concern" cx="800.0" cy="152.2" r="4" />
+    <text class="name-label concern" x="807" y="156">Tulip 315kg</text>
+  </svg>
+  <p class="footnote">Suspected cause: unlike Fresian, Tulip's shortfall follows a peak and decline rather than a lifelong gap — pointing more toward something that started recently, at around two years old. <strong>Dental discomfort during permanent-tooth eruption</strong> (common at this age) or a developing parasite burden are the likelier explanations over a chronic issue. Not confirmed; worth a mouth check alongside a worm count.</p>
+</div>
+
+<div class="panel">
+  <h2>Spots vs. a same-age control: 7–19 months</h2>
+  <p class="desc">Chalky (19.1 months) tracks the expected corridor normally at 260kg. Spots (18.7 months, nearly the same age) tracked only modestly above Chalky through month 17 (286kg), then jumped +63kg in a single month to 349kg — far outside her own decelerating growth pattern. Reads as a sensor or recording error more than a real growth spurt.</p>
+  <svg viewBox="0 0 900 350" role="img" aria-label="Line chart: two cows of nearly identical age, 7 to 19 months, Chalky tracking normally and Spots showing an anomalous final-month jump, against the expected weight corridor">
+    <polygon class="band" points="60,263.7 192.2,237.4 324.5,211.1 456.7,182.5 588.9,151.0 721.2,119.5 853.4,87.4 853.4,150.6 721.2,177.1 588.9,202.8 456.7,228.4 324.5,251.9 192.2,273.4 60,294.9" />
+    <polyline class="expected-line" points="60,279.3 192.2,255.4 324.5,231.5 456.7,205.5 588.9,176.9 721.2,148.4 853.4,119.0" />
+    <line class="axis-line" x1="60" y1="320" x2="860" y2="320" />
+    <line class="axis-line" x1="60" y1="20" x2="60" y2="320" />
+    <line class="gridline" x1="60" y1="204.6" x2="860" y2="204.6" />
+    <line class="gridline" x1="60" y1="89.2" x2="860" y2="89.2" />
+    <text class="tick" x="55" y="324" text-anchor="end">100</text>
+    <text class="tick" x="55" y="208.6" text-anchor="end">200</text>
+    <text class="tick" x="55" y="93.2" text-anchor="end">300</text>
+    <text class="tick" x="60" y="340" text-anchor="middle">7mo</text>
+    <text class="tick" x="258.3" y="340" text-anchor="middle">10mo</text>
+    <text class="tick" x="456.7" y="340" text-anchor="middle">13mo</text>
+    <text class="tick" x="655.0" y="340" text-anchor="middle">16mo</text>
+    <text class="tick" x="853.4" y="340" text-anchor="middle">19mo</text>
+
+    <polyline class="normal-line" points="66.6,285.4 198.8,253.0 331.1,223.1 463.3,191.9 595.5,166.5 727.8,145.7 860.0,135.4" />
+    <circle class="dot-normal" cx="860.0" cy="135.4" r="4" />
+    <text class="name-label normal" x="720" y="122">Chalky 260kg</text>
+
+    <polyline class="concern-line" points="106.3,256.5 172.4,236.9 304.6,203.5 436.9,171.2 569.1,142.3 701.3,118.1 767.4,105.4 833.6,32.7" />
+    <circle class="dot-concern" cx="833.6" cy="32.7" r="4" />
+    <text class="name-label concern" x="640" y="24">Spots 349kg</text>
+  </svg>
+  <p class="footnote">Suspected data-entry error: extrapolating Spots' own decelerating trend puts her true current weight closer to <strong>~304.9kg</strong> — plausibly mis-keyed as 349kg (a dropped tens-place digit). Treat 349kg as unconfirmed until re-weighed.</p>
+</div>
+
+<div class="panel">
+  <h2>Mature herd: 70–105 months</h2>
+  <p class="desc">Twilight sits comfortably inside the mature plateau (~415kg ±10%). Bug held steady there too until peaking at 413kg in Aug 2025, then declined 53kg to 360kg — well below the corridor floor.</p>
+  <svg viewBox="0 0 900 300" role="img" aria-label="Line chart: cattle weight in kilograms by age in months, 70 to 105 months, with an expected mature-weight corridor band and two individual cow trajectories, one normal one flagged">
+    <rect class="band" x="60" y="51.3" width="800" height="110.7" />
+    <line class="expected-line" x1="60" y1="106.7" x2="860" y2="106.7" />
+    <line class="axis-line" x1="60" y1="260" x2="860" y2="260" />
+    <line class="axis-line" x1="60" y1="20" x2="60" y2="260" />
+    <line class="gridline" x1="60" y1="193.3" x2="860" y2="193.3" />
+    <line class="gridline" x1="60" y1="126.7" x2="860" y2="126.7" />
+    <line class="gridline" x1="60" y1="60" x2="860" y2="60" />
+    <text class="tick" x="55" y="264" text-anchor="end">300</text>
+    <text class="tick" x="55" y="197.3" text-anchor="end">350</text>
+    <text class="tick" x="55" y="130.7" text-anchor="end">400</text>
+    <text class="tick" x="55" y="64" text-anchor="end">450</text>
+    <text class="tick" x="60" y="280" text-anchor="middle">70mo</text>
+    <text class="tick" x="288.6" y="280" text-anchor="middle">80mo</text>
+    <text class="tick" x="517.1" y="280" text-anchor="middle">90mo</text>
+    <text class="tick" x="745.7" y="280" text-anchor="middle">100mo</text>
+
+    <polyline class="normal-line" points="226.9,80.0 364.0,81.3 501.1,80.0 638.3,89.3 775.4,81.3" />
+    <circle class="dot-normal" cx="775.4" cy="81.3" r="4" />
+    <text class="name-label normal" x="700" y="65">Twilight 434kg</text>
+
+    <polyline class="concern-line" points="176.6,122.7 290.9,114.7 428.0,109.3 519.4,114.7 633.7,152.0 725.1,180.0" />
+    <circle class="dot-concern" cx="725.1" cy="180.0" r="4" />
+    <text class="name-label concern" x="640" y="200">Bug 360kg</text>
+  </svg>
+  <p class="footnote">Suspected cause: at 8+ years old with a clean peak-then-decline shape, this is the classic profile for <strong>dental wear</strong> — an older cow losing the ability to graze and chew effectively, rather than sudden illness. Age-related organ decline or a chronic condition are also possible. Not confirmed; worth a dental/mouth exam before assuming it's diet or parasites.</p>
+</div>
+
+<div class="panel">
+  <h2>Deviation from expected weight-for-age</h2>
+  <table>
+    <thead><tr><th>Animal</th><th>Age</th><th>Actual</th><th>Expected (corridor mean)</th><th>Deviation</th><th>Read</th></tr></thead>
+    <tbody>
+      <tr><td>Feather</td><td>23.3mo</td><td>360kg</td><td>~331kg</td><td class="dev-ok">+8.8%</td><td>Normal — upper edge of corridor</td></tr>
+      <tr><td>Chalky</td><td>19.1mo</td><td>260kg</td><td>~276kg</td><td class="dev-ok">−5.6%</td><td>Normal</td></tr>
+      <tr><td>River</td><td>36.0mo</td><td>357kg</td><td>~382kg</td><td class="dev-ok">−6.5%</td><td>Normal</td></tr>
+      <tr><td>Twilight</td><td>101.3mo</td><td>434kg</td><td>~415kg</td><td class="dev-ok">+4.6%</td><td>Normal, mature plateau</td></tr>
+      <tr><td>Fresian</td><td>22.9mo</td><td>295kg</td><td>~326kg</td><td class="dev-neg">−9.5%</td><td>Light for age, watch</td></tr>
+      <tr><td>Tulip</td><td>27.1mo</td><td>315kg</td><td>~353kg</td><td class="dev-neg">−10.8%</td><td>Underweight for age — flag for vet check</td></tr>
+      <tr><td>Bug</td><td>99.1mo</td><td>360kg</td><td>~415kg</td><td class="dev-neg">−13.3%</td><td>Was stable, now declining</td></tr>
+      <tr><td>Spots</td><td>18.7mo</td><td>349kg</td><td>~270kg</td><td class="dev-pos-high">+29%</td><td>Anomalous jump — check sensor</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · growth-rate illustration</footer>
+</div>
+</body>
+</html>

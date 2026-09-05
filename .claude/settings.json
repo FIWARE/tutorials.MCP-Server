@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "deny": [
-      "Read(data/**)",
-      "Read(schemas/**)",
-      "Read(prompts/**)"
-    ]
-  }
-}

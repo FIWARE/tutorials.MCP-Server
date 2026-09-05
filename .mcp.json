@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "ngsi-ld": {
-      "type": "streamable-http",
-      "url": "http://localhost:3003/mcp"
-    }
-  }
-}
