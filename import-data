@@ -44,6 +44,7 @@ sleep 3
 
 echo -e "\nCreating animals for the farm ..."
 curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -H "offset-duration: MONTH" -F "file=@./data/cow-history.csv" http://tutorial:3000/csv/Animal
+curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -H "offset-duration: WEEK" -F "file=@./data/cow-history-young.csv" http://tutorial:3000/csv/Animal
 curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/cow.csv" http://tutorial:3000/csv/Animal
 curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/pig.csv" http://tutorial:3000/csv/Animal
 

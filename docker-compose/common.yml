@@ -215,6 +215,10 @@ services:
         source: ${PWD}/schemas
         target: /schemas
         read_only: true
+      - type: bind
+        source: ${PWD}/prompts
+        target: /prompts
+        read_only: true
 
 networks:
   default:
