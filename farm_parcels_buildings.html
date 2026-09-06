@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Parcels &amp; buildings — farm layout</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --wet: #3a7ca8; --wet-soft: #dfeaf2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --wet: #6fb3dd; --wet-soft: #223038;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --wet: #6fb3dd; --wet-soft: #223038; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --wet: #3a7ca8; --wet-soft: #dfeaf2; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.75rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 0.75rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-top: 0.5rem; margin-bottom: 0.75rem; }
+  th, td { border: 1px solid var(--border); padding: 0.4rem 0.65rem; text-align: left; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.wet { color: var(--wet); font-weight: 600; }
+  .tag { display: inline-block; font-size: 0.72rem; padding: 0.1rem 0.5rem; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .tag.wet { background: var(--wet-soft); color: var(--wet); }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.6rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🌽 Parcels &amp; buildings — farm layout</h1>
+<p class="sub">Live NGSI-LD <code>AgriParcel</code> and <code>Building</code> records for both holdings, queried from the context broker — 2026-09-06</p>
+
+<div class="panel">
+  <h2>Arable parcels — Victory Farm</h2>
+  <p class="desc">Old MacDonald's crop ground, two fields under active cultivation.</p>
+  <table>
+    <thead><tr><th>Parcel</th><th>Crop</th><th>Status</th><th>Soil</th><th>Soil moisture</th><th>Air temp</th></tr></thead>
+    <tbody>
+      <tr><td>Wheatfield</td><td>Buckwheat</td><td>Seeded</td><td>Clay / clay loam</td><td>50%</td><td>15.4&nbsp;°C</td></tr>
+      <tr><td>Cornfield</td><td>Corn</td><td>Growing</td><td>Loam</td><td>60%</td><td>—</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Grazing parcels — Animal Farm</h2>
+  <p class="desc">Four grass pastures, all in the same "maturing" phenological stage. Water Meadow runs wettest at 70%; the other three sit evenly at 60%.</p>
+  <table>
+    <thead><tr><th>Parcel</th><th>Cover</th><th>Status</th><th>Soil</th><th>Soil moisture</th></tr></thead>
+    <tbody>
+      <tr><td>South Pasture</td><td>Grass</td><td>Maturing</td><td>Loam</td><td>60%</td></tr>
+      <tr><td>East Pasture</td><td>Grass</td><td>Maturing</td><td>Silt loam</td><td>60%</td></tr>
+      <tr><td>Water Meadow</td><td>Grass</td><td>Maturing</td><td>Sandy loam</td><td class="wet">70% <span class="tag wet">wettest</span></td></tr>
+      <tr><td>The Paddock</td><td>Grass</td><td>Maturing</td><td>Loam</td><td>60%</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">No parcel — arable or grazing — carries boundary geometry or a stored area attribute in this dataset. Every hectare figure elsewhere in this transcript is inferred from collar GPS, not read from the parcel record itself.</p>
+</div>
+
+<div class="panel">
+  <h2>Buildings</h2>
+  <table>
+    <thead><tr><th>Building</th><th>Farm</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr><td>Farmhouse</td><td>Victory Farm</td><td>Old MacDonald's residence</td></tr>
+      <tr><td>Triton Tower</td><td>Victory Farm</td><td>Water tower</td></tr>
+      <tr><td>Big Red Barn</td><td>Victory Farm</td><td>Calving pen / holding barn — currently housing Twilight and Buttercup</td></tr>
+      <tr><td>Farmhouse</td><td>Animal Farm</td><td>Napoleon's residence</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">No floor area or capacity is recorded for any building. The pigs carry no <code>hasBuilding</code> relationship at all — they sit near the buildings by GPS proximity only, not by a stored housing record.</p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · parcels &amp; buildings illustration</footer>
+</div>
+</body>
+</html>

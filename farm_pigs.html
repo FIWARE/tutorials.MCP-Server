@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The piggery — full herd</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --pig: #c9822e; --pig-soft: #f8ead4;
+    --incalf: #3a7ca8; --incalf-soft: #dfeaf2;
+    --inheat: #b3401e; --inheat-soft: #fbe4dc;
+    --inactive: #8a8678; --inactive-soft: #ece9de;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --pig: #e8b165; --pig-soft: #3a2f1f;
+      --incalf: #6fb3dd; --incalf-soft: #223038;
+      --inheat: #e88a5e; --inheat-soft: #3a271f;
+      --inactive: #a9a596; --inactive-soft: #2c2a24;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --pig: #e8b165; --pig-soft: #3a2f1f; --incalf: #6fb3dd; --incalf-soft: #223038; --inheat: #e88a5e; --inheat-soft: #3a271f; --inactive: #a9a596; --inactive-soft: #2c2a24; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --pig: #c9822e; --pig-soft: #f8ead4; --incalf: #3a7ca8; --incalf-soft: #dfeaf2; --inheat: #b3401e; --inheat-soft: #fbe4dc; --inactive: #8a8678; --inactive-soft: #ece9de; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.75rem; }
+  .stats { display: flex; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem; }
+  .stat { flex: 1 1 140px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 0.85rem 1rem; }
+  .stat .num { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+  .stat .lbl { font-size: 0.78rem; color: var(--ink-soft); }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 0.75rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.35rem 0.6rem; text-align: left; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  .tag { display: inline-block; font-size: 0.72rem; padding: 0.1rem 0.5rem; border-radius: 999px; font-weight: 600; }
+  .tag.incalf { background: var(--incalf-soft); color: var(--incalf); }
+  .tag.inheat { background: var(--inheat-soft); color: var(--inheat); }
+  .tag.inactive { background: var(--inactive-soft); color: var(--inactive); }
+  .tag.boar { background: var(--pig-soft); color: var(--pig); }
+  .tag.active { background: var(--accent-soft); color: var(--accent); }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.6rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .panel .footnote strong { color: var(--inheat); font-style: normal; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐖 The piggery — full herd</h1>
+<p class="sub">Live NGSI-LD <code>Animal</code> records for every pig on the farm, queried from the context broker — 2026-09-06</p>
+
+<div class="stats">
+  <div class="stat"><div class="num">30</div><div class="lbl">Total pigs</div></div>
+  <div class="stat"><div class="num">27 / 3</div><div class="lbl">Sows &amp; gilts / boars</div></div>
+  <div class="stat"><div class="num">200–343&nbsp;kg</div><div class="lbl">Weight range</div></div>
+  <div class="stat"><div class="num">0</div><div class="lbl">Piglets (all adults)</div></div>
+</div>
+
+<div class="panel">
+  <h2>Litters on the way</h2>
+  <p class="desc">No piglets have been born or registered yet — this is the entire breeding pipeline as it stands.</p>
+  <table>
+    <thead><tr><th>Name</th><th>Legal ID</th><th>Status</th><th>Weight</th><th>Resting HR</th></tr></thead>
+    <tbody>
+      <tr><td>Peach</td><td>F-sow006-Peach</td><td><span class="tag incalf">in-pig</span></td><td>234&nbsp;kg</td><td>61&nbsp;bpm</td></tr>
+      <tr><td>Tango</td><td>F-sow016-Tango</td><td><span class="tag incalf">in-pig</span></td><td>293&nbsp;kg</td><td>63&nbsp;bpm</td></tr>
+      <tr><td>Magenta</td><td>F-sow008-Magenta</td><td><span class="tag inheat">in heat</span></td><td>302&nbsp;kg</td><td>60&nbsp;bpm</td></tr>
+      <tr><td>Bruce</td><td>F-sow036-Bruce</td><td><span class="tag inheat">in heat</span></td><td>316&nbsp;kg</td><td>64&nbsp;bpm</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">Only 2 of 27 showing in-pig is low for a continuously bred herd (5–7 pregnant at any moment is more typical) — current breeding activity reads as the bottom of the expected range.</p>
+</div>
+
+<div class="panel">
+  <h2>Boars</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Legal ID</th><th>Weight</th><th>Resting HR</th><th>Location</th></tr></thead>
+    <tbody>
+      <tr><td>Giant</td><td>M-boar035-Giant</td><td>340&nbsp;kg</td><td>62&nbsp;bpm</td><td>13.34695, 52.51965</td></tr>
+      <tr><td>Mammoth</td><td>M-boar031-Mammoth</td><td>325&nbsp;kg</td><td>63&nbsp;bpm</td><td>13.34730, 52.51970</td></tr>
+      <tr><td>Colossus</td><td>M-boar037-Colossus</td><td>241&nbsp;kg</td><td>61&nbsp;bpm</td><td>13.34715, 52.51985</td></tr>
+    </tbody>
+  </table>
+  <p class="desc" style="margin-top:0.5rem;">Boar ratio 1:9 against the 27 sows/gilts — adequate, so output isn't sire-limited. See <a href="./farm_bulls_boars.html">bulls vs. boars</a> for the species comparison against cattle.</p>
+</div>
+
+<div class="panel">
+  <h2>Rest of the herd</h2>
+  <p class="desc">21 sows/gilts on <span class="tag active">active</span> status, plus 2 on <span class="tag inactive">inactive</span>.</p>
+  <table>
+    <thead><tr><th>Name</th><th>Legal ID</th><th>Status</th><th>Weight</th><th>Resting HR</th></tr></thead>
+    <tbody>
+      <tr><td>Bubblegum</td><td>F-sow001-Bubblegum</td><td><span class="tag active">active</span></td><td>261&nbsp;kg</td><td>64&nbsp;bpm</td></tr>
+      <tr><td>Fuchshia</td><td>F-sow002-Fuchshia</td><td><span class="tag active">active</span></td><td>241&nbsp;kg</td><td>61&nbsp;bpm</td></tr>
+      <tr><td>Flamingo</td><td>F-sow003-Flamingo</td><td><span class="tag active">active</span></td><td>332&nbsp;kg</td><td>62&nbsp;bpm</td></tr>
+      <tr><td>Salmon</td><td>F-sow004-Salmon</td><td><span class="tag active">active</span></td><td>282&nbsp;kg</td><td>63&nbsp;bpm</td></tr>
+      <tr><td>Rouge</td><td>F-sow005-Rouge</td><td><span class="tag active">active</span></td><td>333&nbsp;kg</td><td>62&nbsp;bpm</td></tr>
+      <tr><td>Coral</td><td>F-sow007-Coral</td><td><span class="tag active">active</span></td><td>325&nbsp;kg</td><td>64&nbsp;bpm</td></tr>
+      <tr><td>Cherry</td><td>F-sow009-Cherry</td><td><span class="tag active">active</span></td><td>301&nbsp;kg</td><td>65&nbsp;bpm</td></tr>
+      <tr><td>Carnation</td><td>F-sow010-Carnation</td><td><span class="tag active">active</span></td><td>298&nbsp;kg</td><td>65&nbsp;bpm</td></tr>
+      <tr><td>Strawberry</td><td>F-sow011-Strawberry</td><td><span class="tag active">active</span></td><td>315&nbsp;kg</td><td>63&nbsp;bpm</td></tr>
+      <tr><td>Blush</td><td>F-sow012-Blush</td><td><span class="tag inactive">inactive</span></td><td>200&nbsp;kg</td><td>63&nbsp;bpm</td></tr>
+      <tr><td>Mauve</td><td>F-sow013-Mauve</td><td><span class="tag active">active</span></td><td>254&nbsp;kg</td><td>60&nbsp;bpm</td></tr>
+      <tr><td>Orchid</td><td>F-sow014-Orchid</td><td><span class="tag active">active</span></td><td>255&nbsp;kg</td><td>64&nbsp;bpm</td></tr>
+      <tr><td>Cotton</td><td>F-sow015-Cotton</td><td><span class="tag active">active</span></td><td>319&nbsp;kg</td><td>62&nbsp;bpm</td></tr>
+      <tr><td>Lavender</td><td>F-sow017-Lavender</td><td><span class="tag active">active</span></td><td>316&nbsp;kg</td><td>64&nbsp;bpm</td></tr>
+      <tr><td>Grape</td><td>F-sow018-Grape</td><td><span class="tag active">active</span></td><td>284&nbsp;kg</td><td>60&nbsp;bpm</td></tr>
+      <tr><td>Raspberry</td><td>F-sow019-Raspberry</td><td><span class="tag active">active</span></td><td>255&nbsp;kg</td><td>62&nbsp;bpm</td></tr>
+      <tr><td>Watermelon</td><td>F-sow021-Watermelon</td><td><span class="tag active">active</span></td><td>290&nbsp;kg</td><td>60&nbsp;bpm</td></tr>
+      <tr><td>Lemonade</td><td>F-sow023-Lemonade</td><td><span class="tag active">active</span></td><td>232&nbsp;kg</td><td>62&nbsp;bpm</td></tr>
+      <tr><td>Thor</td><td>F-sow034-Thor</td><td><span class="tag inactive">inactive</span></td><td>322&nbsp;kg</td><td>62&nbsp;bpm</td></tr>
+      <tr><td>Hulk</td><td>F-sow033-Hulk</td><td><span class="tag active">active</span></td><td>229&nbsp;kg</td><td>65&nbsp;bpm</td></tr>
+      <tr><td>Goliath</td><td>F-sow032-Goliath</td><td><span class="tag active">active</span></td><td>343&nbsp;kg</td><td>60&nbsp;bpm</td></tr>
+      <tr><td>Clifford</td><td>F-sow038-Clifford</td><td><span class="tag active">active</span></td><td>203&nbsp;kg</td><td>60&nbsp;bpm</td></tr>
+      <tr><td>Reptar</td><td>F-sow040-Reptar</td><td><span class="tag active">active</span></td><td>262&nbsp;kg</td><td>64&nbsp;bpm</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote"><strong>Flag:</strong> Goliath's collar (<code>pig032</code>) reads NOT OK with a flat battery — no fresh location/activity telemetry, worth checking on the ground given she's one of the heavier sows and farrowing is approaching for the herd.</p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · piggery illustration</footer>
+</div>
+</body>
+</html>

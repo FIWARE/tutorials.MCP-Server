@@ -68,12 +68,45 @@
     font-size: 0.8rem;
     color: var(--ink-soft);
   }
+  header.top p.hint {
+    margin-top: 0.3rem;
+    font-size: 0.75rem;
+    font-style: italic;
+  }
   .turn {
     display: flex;
     margin-bottom: 0.9rem;
   }
   .turn.user { justify-content: flex-end; }
-  .turn.bot { justify-content: flex-start; }
+  .turn.bot { justify-content: flex-start; align-items: flex-start; }
+  .icon-stack {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-left: 0.65rem;
+    align-self: flex-start;
+    padding-top: 0.2rem;
+  }
+  .topic-icon {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    background: #ffffff;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    box-shadow: 0 1px 5px rgba(0,0,0,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 0.15s ease;
+  }
+  a.topic-icon { cursor: pointer; }
+  a.topic-icon:hover { filter: brightness(0.93); }
+  .topic-icon img {
+    width: 28px;
+    height: 28px;
+  }
   .bubble {
     max-width: 82%;
     padding: 0.7rem 1rem;
@@ -135,6 +168,15 @@
     margin-top: 2rem;
     font-style: italic;
   }
+  footer .attribution {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.7rem;
+    font-style: normal;
+  }
+  footer .attribution a {
+    color: var(--ink-soft);
+  }
 </style>
 </head>
 <body>
@@ -142,6 +184,7 @@
 <header class="top">
   <h1>🌾 Victory Farm &amp; Animal Farm — FMIS</h1>
   <p>Full chat transcript · 2026-09-06</p>
+  <p class="hint">Icons beside a reply link to the underlying data — click one to open the map, growth chart, or record it's drawn from.</p>
 </header>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Describe the farm in detail.</div></div>
@@ -152,27 +195,27 @@
 <p><strong>Livestock — 73 head</strong>: 43 dairy cattle and 30 pigs. Cattle graze the four Animal Farm pastures (two held in the Big Red Barn); the pigs carry no parcel and sit near the buildings. Every animal wears a collar reporting heart rate, location and activity.</p>
 <p><strong>Weather</strong>: mild and dry across five stations — 15.3–16.2&nbsp;°C, ~50% humidity, negligible rain, light south-easterly. Forecast overcast, 11–16&nbsp;°C.</p>
 <p><strong>Flags</strong>: Goliath's collar (<code>pig032</code>) reads <code>NOT OK</code> with a flat battery. Also note the observation timestamps run ahead of today's date — the feed clock is fast.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_parcels_buildings.html"><img src="./img/corn.png" alt="Parcels"></a><a class="topic-icon" href="./farm_parcels_buildings.html"><img src="./img/barn.png" alt="Buildings"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>How many bulls on the farm?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p><strong>Two bulls</strong> — Beany (752&nbsp;kg, East Pasture) and Ferdinand (757&nbsp;kg, South Pasture), both Old MacDonald's. There is also one bull calf, Bumble (118&nbsp;kg, still with the cows on South Pasture). The three big pigs — Giant, Mammoth, Colossus — are boars, not bulls.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_bulls_boars.html"><img src="./img/cow.svg" alt="Cows"></a><a class="topic-icon" href="./farm_bulls_boars.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What is the soil type where Ferdinand is grazing?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>Ferdinand is on <strong>South Pasture</strong>, which is <strong>loam</strong> — an even mix of sand, silt and clay (texture class "Loam").</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_ferdinand_south_pasture.html"><img src="./img/corn.png" alt="Parcels"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Are all the cows on pasture today?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>No — 41 of the 43 cattle are out on the four pastures. Two are held in the Big Red Barn: <strong>Twilight</strong> (flagged "needs to see the vet") and <strong>Buttercup</strong> (a calf born today).</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_twilight_buttercup.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Why is Twilight still in the barn?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>Her record carries a single note — "Needs to see the vet." — with no diagnosis attached, so she is being held in the barn pending that check. Nothing else in her data points to a problem: health status still reads "healthy", heart rate 52&nbsp;bpm, weight flat at ~434&nbsp;kg for months. She is also on oats rather than grass, consistent with being kept in.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_twilight_buttercup.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Dig deeper — try to diagnose the issue.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -184,7 +227,7 @@
 <li>Weight dipped 436→427&nbsp;kg over the winter and recovered to 434 — a gestation body-condition swing.</li>
 </ul>
 <p>So the "see the vet" note is the routine fresh-cow / newborn check, not an emergency. <strong>Worth watching anyway</strong>: she is 8.4 years old (the milk-fever risk group) and her HR of 52 is the lowest in the herd; the calf is light at 20&nbsp;kg, so prioritise the colostrum check. Her collar is healthy, so the low HR is a real reading.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_twilight_buttercup.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>How healthy are the cows? Check history for growth and compare with norms.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -196,7 +239,7 @@
 <li><strong>Sun</strong> (<code>cow005</code>) — weight fine, but resting heart rate 70&nbsp;bpm against a herd average of 53. Sole cardiac outlier.</li>
 </ul>
 <p><strong>Data oddity:</strong> Spots (<code>cow040</code>) shows +63&nbsp;kg in one month against a history of +9–20 — physiologically impossible, so a mis-weigh. Re-weigh.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/bull-graph.png" alt="Weight history"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What breed are the cows — does that change your opinion?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -215,13 +258,13 @@
 <li><strong>Twilight</strong> (<code>cow006</code>) — routine post-calving check; watch the low HR given her age.</li>
 </ul>
 <p>Everything else in the sample reads healthy against Jersey norms.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/bull-graph.png" alt="Weight history"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What is the size of the North Pasture? What does the tracking data suggest?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>There is no North Pasture on this farm. The six parcels are Wheatfield and Cornfield (arable) and <strong>South Pasture, East Pasture, Water Meadow, The Paddock</strong> (grazing).</p>
 <p>And parcel size can't be read from the system for any of them: <code>AgriParcel</code> records carry crop, soil, sensors and current temperature/humidity, but <strong>no boundary geometry and no area attribute</strong>. So there's no stored acreage. Collar GPS is the only way to estimate extent — name a real pasture and I'll do it.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_parcels_buildings.html"><img src="./img/corn.png" alt="Parcels"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Check the South Pasture.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -233,20 +276,20 @@
 <li>Convex hull of the fixes ≈ <strong>0.79&nbsp;ha</strong> (1.95 acres)</li>
 </ul>
 <p>The hull is a hard lower bound — stock bunch and don't walk the fence line — so realistic field size is around <strong>1.2–2.5&nbsp;ha</strong>. Eight grazing head on that hull is ~4 LSU/ha, above the ~2–3 typical for set-stocked grazing; it may be a rotational cell. Tulip is in this mob, at the south-west edge.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_map_density.html"><img src="./img/maps.png" alt="Map"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What are the likely dimensions of the piggery?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>The pigs carry no parcel and no boundary record — this is from collar GPS, one snapshot at 06:36.</p>
 <p>The 30 fixes split into two groups: a <strong>main piggery of 27 sows/gilts</strong>, and <strong>three boars</strong> — Giant, Mammoth, Colossus — clustered ~200&nbsp;m north-west in a separate pen (normal husbandry).</p>
 <p><strong>Main piggery:</strong> ~63&nbsp;m east–west by ~98&nbsp;m north–south; bounding box ≈ 0.62&nbsp;ha, occupied hull ≈ 0.50&nbsp;ha. Treat as a lower bound — the real pen is plausibly <strong>0.6–1.0&nbsp;ha</strong>. At ~45–55 pigs/ha this reads as a <strong>bedded yard or hard-standing paddock</strong>, not extensive free-range. <strong>Boar pen:</strong> spans ~25&nbsp;m between fixes, so on the order of 20–30&nbsp;m across.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_map_density.html"><img src="./img/maps.png" alt="Map"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>How many piglets are there?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>None. Every pig in the system is an adult — 27 sows/gilts and 3 boars, all 200–343&nbsp;kg, none tagged as young or nursing.</p>
 <p>Litters are on the way: <strong>Peach</strong> and <strong>Tango</strong> are <code>inCalf</code> (in-pig), and <strong>Magenta</strong> and <strong>Bruce</strong> are <code>inHeat</code>. No piglets have been born or registered yet.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_pigs.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What would be an estimate based on the current pig data?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -257,7 +300,7 @@
 <li><strong>Steady-state capacity</strong> — ~24 productive sows → ~390/year (traditional rate) to ~530/year (pushed harder).</li>
 </ul>
 <p>Only 2 of 27 showing <code>inCalf</code> is low — a continuously bred herd would have 5–7 pregnant at any moment — so current breeding activity looks like the bottom of that range. Boar ratio 1:9 is adequate, so output isn't sire-limited. No litters are registered as entities, so nothing here counts actual piglets on the ground.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_pigs.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>So with the additional piglets, are there any welfare issues likely?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -294,7 +337,7 @@
 <li>Only the Voronoi allocation (~3&nbsp;ha, ~8–9/ha) looks acceptable, and that's inflated by dead land.</li>
 </ul>
 <p><strong>Boars:</strong> footprint gives ~75&nbsp;m²/boar, above the EU 6–10&nbsp;m² minimum. Their welfare risk is being housed together next to in-heat sows, not area.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_map_density.html"><img src="./img/maps.png" alt="Map"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Repeat for the pastures assuming the pigs have two separated enclosures too.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -314,9 +357,12 @@
 <p><strong>Which to trust:</strong> Voronoi hands each pasture 9–15&nbsp;ha of mostly dead ground — unusable for stocking. Footprint is the honest occupied area but a lower bound (herds bunched at 06:36). Best estimate: <strong>2–5&nbsp;ha per pasture</strong>.</p>
 <p><strong>Stocking</strong> (permanent pasture ~2–2.5 LSU/ha; a 400&nbsp;kg Jersey ≈ 0.67 LSU): on the realistic middle, the four pastures run <strong>at to modestly above</strong> the guideline — tolerable under rotation with rest. The <strong>sow yard is the real exception</strong> at ~24 LSU/ha on its footprint. Boars have adequate space.</p>
 <p><strong>Anomaly the geometry exposes:</strong> <strong>Beany</strong> (bull, registered to East Pasture, flagged "check hooves") is physically in the <strong>South Pasture</strong> cluster, right alongside the South Pasture bull <strong>Ferdinand</strong> — two mature bulls together, one in the wrong paddock per the records. Check fences and the location tag.</p>
-</div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_map_density.html"><img src="./img/maps.png" alt="Map"></a></div></div>
 
 </div>
-<footer>Victory Farm &amp; Animal Farm FMIS · full transcript</footer>
+<footer>
+  Victory Farm &amp; Animal Farm FMIS · full transcript
+  <small class="attribution">Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>,&nbsp;<a href="https://www.flaticon.com/authors/those-icons" title="Those Icons">Those Icons</a>  and&nbsp; <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from&nbsp; <a href="https://www.flaticon.com" title="Flaticon">www.flaticon.com</a> licensed by&nbsp;<a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></small>
+</footer>
 </body>
 </html>

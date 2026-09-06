@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Twilight &amp; Buttercup</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.75rem; }
+  .cards { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 1rem; margin-bottom: 1.5rem; flex: 1 1 380px; }
+  .panel.wide { flex-basis: 100%; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .photo { width: 100%; max-width: 320px; border-radius: 10px; border: 1px solid var(--border); display: block; margin: 0 0 0.9rem; }
+  dl { margin: 0.5rem 0 0; }
+  dl .row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.32rem 0; border-bottom: 1px dashed var(--border); font-size: 0.87rem; }
+  dl .row:last-child { border-bottom: none; }
+  dl dt { color: var(--ink-soft); }
+  dl dd { margin: 0; font-weight: 600; text-align: right; }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.9rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .panel .footnote strong { color: var(--accent); font-style: normal; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐄 Twilight &amp; Buttercup</h1>
+<p class="sub">Live NGSI-LD <code>Animal</code> records for the two head held in the Big Red Barn, queried from the context broker — 2026-09-06</p>
+
+<div class="cards">
+
+  <div class="panel">
+    <h2>Twilight</h2>
+    <p class="desc"><code>urn:ngsi-ld:Animal:cow006</code></p>
+    <img class="photo" src="./img/cow-006.jpg" alt="Twilight, a mature dairy cow">
+    <dl>
+      <div class="row"><dt>Species</dt><dd>Dairy cattle</dd></div>
+      <div class="row"><dt>Sex</dt><dd>Female</dd></div>
+      <div class="row"><dt>Age</dt><dd>~8.4 years (101.3&nbsp;mo)</dd></div>
+      <div class="row"><dt>Health status</dt><dd>Healthy</dd></div>
+      <div class="row"><dt>Reproductive status</dt><dd>No status — just calved</dd></div>
+      <div class="row"><dt>Weight</dt><dd>434&nbsp;kg</dd></div>
+      <div class="row"><dt>Resting heart rate</dt><dd>52&nbsp;bpm</dd></div>
+      <div class="row"><dt>Fed with</dt><dd>Oats</dd></div>
+      <div class="row"><dt>Note</dt><dd>"Needs to see the vet."</dd></div>
+      <div class="row"><dt>Located at</dt><dd>Big Red Barn</dd></div>
+    </dl>
+  </div>
+
+  <div class="panel">
+    <h2>Buttercup</h2>
+    <p class="desc"><code>urn:ngsi-ld:Animal:cow103</code></p>
+    <img class="photo" src="./img/cow-103.jpg" alt="Buttercup, a newborn calf">
+    <dl>
+      <div class="row"><dt>Species</dt><dd>Dairy cattle</dd></div>
+      <div class="row"><dt>Sex</dt><dd>Female</dd></div>
+      <div class="row"><dt>Age</dt><dd>Born today</dd></div>
+      <div class="row"><dt>Phenological condition</dt><dd>Lactating baby</dd></div>
+      <div class="row"><dt>Weight</dt><dd>20&nbsp;kg</dd></div>
+      <div class="row"><dt>Resting heart rate</dt><dd>55&nbsp;bpm</dd></div>
+      <div class="row"><dt>Fed with</dt><dd>Milk</dd></div>
+      <div class="row"><dt>Calved by</dt><dd>Twilight (cow006)</dd></div>
+      <div class="row"><dt>Sired by</dt><dd>Beany (cow001)</dd></div>
+      <div class="row"><dt>Located at</dt><dd>Big Red Barn</dd></div>
+    </dl>
+  </div>
+
+  <div class="panel wide">
+    <h2>Why they're in the barn</h2>
+    <p class="desc" style="margin-bottom:0;">Twilight isn't sick — she calved today. Buttercup's <code>calvedBy</code> relationship points straight at her (<code>cow006</code>), and everything else in the record lines up with a fresh cow: alone in the calving pen but for her calf, reproductive condition <code>noStatus</code> (the only adult cow not <code>active</code>/<code>inHeat</code>/<code>inCalf</code>), moved onto oats, and a weight dip-and-recovery (436→427→434&nbsp;kg) consistent with a gestation body-condition swing.</p>
+    <p class="footnote"><strong>Worth watching anyway:</strong> Twilight is 8.4 years old (the milk-fever risk group) and her 52&nbsp;bpm is the lowest resting heart rate in the herd — her collar is healthy, so it's a real reading, not a fault. Buttercup is light at 20&nbsp;kg, so the colostrum check should be the priority over the next few hours.</p>
+  </div>
+
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · animal profile</footer>
+</div>
+</body>
+</html>

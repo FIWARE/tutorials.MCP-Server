@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bulls vs. boars — a species check</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --pig: #c9822e; --pig-soft: #f8ead4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --pig: #e8b165; --pig-soft: #3a2f1f;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --pig: #e8b165; --pig-soft: #3a2f1f; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --pig: #c9822e; --pig-soft: #f8ead4; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.75rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 0.75rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  svg { width: 100%; height: auto; display: block; }
+  .axis-line { stroke: var(--border); stroke-width: 1.5; }
+  .gridline { stroke: var(--border); stroke-width: 1; stroke-dasharray: 2 4; opacity: 0.6; }
+  .tick { font-size: 12px; fill: var(--ink-soft); }
+  .bar-cattle { fill: var(--accent); }
+  .bar-pig { fill: var(--pig); }
+  .bar-label { font-size: 12px; fill: var(--ink); }
+  .bar-value { font-size: 12px; font-weight: 600; fill: var(--ink); }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.82rem; color: var(--ink-soft); padding: 0.5rem 0 1rem; align-items: center; }
+  .legend .swatch { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 0.4rem; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.87rem; margin-top: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.4rem 0.65rem; text-align: left; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.species-cattle { color: var(--accent); font-weight: 600; }
+  td.species-pig { color: var(--pig); font-weight: 600; }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.6rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐂 Bulls vs. boars — a species check</h1>
+<p class="sub">Live NGSI-LD <code>Animal</code> records for the farm's three largest male cattle and three largest male pigs — weight, resting heart rate, species, and location, queried from the context broker — 2026-09-06</p>
+
+<div class="legend">
+  <span><span class="swatch" style="background:var(--accent);"></span>Cattle bulls (dairy cattle)</span>
+  <span><span class="swatch" style="background:var(--pig);"></span>Pig boars</span>
+</div>
+
+<div class="panel">
+  <h2>Weight by animal</h2>
+  <p class="desc">Beany and Ferdinand are full-grown bulls; Bumble is a bull calf still with the herd. Colossus, Giant, and Mammoth — despite the imposing names — are boars, roughly a third to two-thirds the mass of an adult bull.</p>
+  <svg viewBox="0 0 900 300" role="img" aria-label="Horizontal bar chart comparing weight in kilograms of three cattle bulls (Beany, Ferdinand, Bumble) and three pig boars (Colossus, Giant, Mammoth)">
+    <line class="axis-line" x1="140" y1="270" x2="140" y2="20" />
+    <line class="axis-line" x1="140" y1="270" x2="840" y2="270" />
+    <line class="gridline" x1="315" y1="20" x2="315" y2="270" />
+    <line class="gridline" x1="490" y1="20" x2="490" y2="270" />
+    <line class="gridline" x1="665" y1="20" x2="665" y2="270" />
+    <line class="gridline" x1="840" y1="20" x2="840" y2="270" />
+    <text class="tick" x="140" y="290" text-anchor="middle">0</text>
+    <text class="tick" x="315" y="290" text-anchor="middle">200kg</text>
+    <text class="tick" x="490" y="290" text-anchor="middle">400kg</text>
+    <text class="tick" x="665" y="290" text-anchor="middle">600kg</text>
+    <text class="tick" x="840" y="290" text-anchor="middle">800kg</text>
+
+    <text class="bar-label" x="132" y="42" text-anchor="end">Beany</text>
+    <rect class="bar-cattle" x="140" y="26" width="658" height="26" rx="4" />
+    <text class="bar-value" x="806" y="43" text-anchor="start">752kg</text>
+
+    <text class="bar-label" x="132" y="84" text-anchor="end">Ferdinand</text>
+    <rect class="bar-cattle" x="140" y="68" width="662" height="26" rx="4" />
+    <text class="bar-value" x="810" y="85" text-anchor="start">757kg</text>
+
+    <text class="bar-label" x="132" y="126" text-anchor="end">Bumble (calf)</text>
+    <rect class="bar-cattle" x="140" y="110" width="103" height="26" rx="4" />
+    <text class="bar-value" x="251" y="127" text-anchor="start">118kg</text>
+
+    <text class="bar-label" x="132" y="176" text-anchor="end">Colossus</text>
+    <rect class="bar-pig" x="140" y="160" width="211" height="26" rx="4" />
+    <text class="bar-value" x="359" y="177" text-anchor="start">241kg</text>
+
+    <text class="bar-label" x="132" y="218" text-anchor="end">Giant</text>
+    <rect class="bar-pig" x="140" y="202" width="298" height="26" rx="4" />
+    <text class="bar-value" x="446" y="219" text-anchor="start">340kg</text>
+
+    <text class="bar-label" x="132" y="260" text-anchor="end">Mammoth</text>
+    <rect class="bar-pig" x="140" y="244" width="284" height="26" rx="4" />
+    <text class="bar-value" x="432" y="261" text-anchor="start">325kg</text>
+  </svg>
+</div>
+
+<div class="panel">
+  <h2>Full record</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Species</th><th>Sex</th><th>Weight</th><th>Resting HR</th><th>Location</th></tr></thead>
+    <tbody>
+      <tr><td>Beany</td><td class="species-cattle">dairy cattle</td><td>Male</td><td>752kg</td><td>51&nbsp;bpm</td><td>East Pasture (flagged: check hooves)</td></tr>
+      <tr><td>Ferdinand</td><td class="species-cattle">dairy cattle</td><td>Male</td><td>757kg</td><td>50&nbsp;bpm</td><td>South Pasture</td></tr>
+      <tr><td>Bumble</td><td class="species-cattle">dairy cattle</td><td>Male</td><td>118kg</td><td>55&nbsp;bpm</td><td>South Pasture (grazing baby)</td></tr>
+      <tr><td>Colossus</td><td class="species-pig">pig</td><td>Male</td><td>241kg</td><td>61&nbsp;bpm</td><td>Boar pen (13.34715, 52.51985)</td></tr>
+      <tr><td>Giant</td><td class="species-pig">pig</td><td>Male</td><td>340kg</td><td>62&nbsp;bpm</td><td>Boar pen (13.34695, 52.51965)</td></tr>
+      <tr><td>Mammoth</td><td class="species-pig">pig</td><td>Male</td><td>325kg</td><td>63&nbsp;bpm</td><td>Boar pen (13.34730, 52.51970)</td></tr>
+    </tbody>
+  </table>
+  <p class="footnote">Resting heart rate splits cleanly by species too — 50–55&nbsp;bpm for the cattle against 61–63&nbsp;bpm for the boars — matching typical adult-cattle (48–84&nbsp;bpm) vs. adult-pig (60–100&nbsp;bpm) resting ranges. Two independent signals, both saying the same thing: <strong>Giant, Mammoth, and Colossus are pigs, not cattle</strong> — the "big three" nickname is a farm-floor joke, not a species record.</p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · species-comparison illustration</footer>
+</div>
+</body>
+</html>

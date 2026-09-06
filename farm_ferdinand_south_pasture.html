@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Ferdinand &amp; South Pasture</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.75rem; }
+  .cards { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 1rem; margin-bottom: 1.5rem; flex: 1 1 380px; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .photo { width: 100%; max-width: 320px; border-radius: 10px; border: 1px solid var(--border); display: block; margin: 0 0 0.9rem; }
+  dl { margin: 0.5rem 0 0; }
+  dl .row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.32rem 0; border-bottom: 1px dashed var(--border); font-size: 0.87rem; }
+  dl .row:last-child { border-bottom: none; }
+  dl dt { color: var(--ink-soft); }
+  dl dd { margin: 0; font-weight: 600; text-align: right; }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.9rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  ul.pasture-mates { margin: 0.5rem 0 0; padding-left: 1.2rem; font-size: 0.85rem; }
+  ul.pasture-mates li { margin-bottom: 0.25rem; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐂 Ferdinand &amp; South Pasture</h1>
+<p class="sub">Live NGSI-LD <code>Animal</code> and <code>AgriParcel</code> records, queried from the context broker — 2026-09-06</p>
+
+<div class="cards">
+
+  <div class="panel">
+    <h2>Ferdinand</h2>
+    <p class="desc"><code>urn:ngsi-ld:Animal:cow021</code></p>
+    <img class="photo" src="./img/cow-001.jpg" alt="Ferdinand, a mature bull">
+    <dl>
+      <div class="row"><dt>Legal ID</dt><dd>M-bull021-Ferdinand</dd></div>
+      <div class="row"><dt>Species</dt><dd>Dairy cattle</dd></div>
+      <div class="row"><dt>Sex</dt><dd>Male</dd></div>
+      <div class="row"><dt>Age class</dt><dd>Mature adult</dd></div>
+      <div class="row"><dt>Reproductive status</dt><dd>Active</dd></div>
+      <div class="row"><dt>Weight</dt><dd>757&nbsp;kg</dd></div>
+      <div class="row"><dt>Resting heart rate</dt><dd>50&nbsp;bpm</dd></div>
+      <div class="row"><dt>Fed with</dt><dd>Grass</dd></div>
+      <div class="row"><dt>Owner</dt><dd>Old MacDonald</dd></div>
+      <div class="row"><dt>Located at</dt><dd>South Pasture</dd></div>
+    </dl>
+  </div>
+
+  <div class="panel">
+    <h2>South Pasture</h2>
+    <p class="desc"><code>urn:ngsi-ld:AgriParcel:003</code></p>
+    <dl>
+      <div class="row"><dt>Cover</dt><dd>Grass</dd></div>
+      <div class="row"><dt>Status</dt><dd>Maturing</dd></div>
+      <div class="row"><dt>Soil texture</dt><dd>Loam</dd></div>
+      <div class="row"><dt>Soil moisture</dt><dd>60%</dd></div>
+      <div class="row"><dt>Boundary geometry</dt><dd>Not recorded</dd></div>
+      <div class="row"><dt>Estimated extent</dt><dd>~1.2–2.5&nbsp;ha (GPS-inferred)</dd></div>
+    </dl>
+    <p class="desc" style="margin-top:0.9rem;">Loam is an even three-way mix of sand, silt and clay — good structure, moderate drainage, no single texture dominating.</p>
+    <p class="desc" style="margin-bottom:0;"><strong>Sharing this pasture (06:36 GPS snapshot):</strong></p>
+    <ul class="pasture-mates">
+      <li>Trotter &amp; Bumble (calf) — on the identical fix</li>
+      <li>Tulip — south-west edge of the mob</li>
+      <li>Beany — registered to East Pasture but physically here (flagged anomaly)</li>
+    </ul>
+    <p class="footnote">8 grazing head on the convex-hull footprint reads ~4&nbsp;LSU/ha — above the ~2–3 typical for set-stocked grazing, consistent with a rotational cell rather than a fixed paddock.</p>
+  </div>
+
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · animal &amp; parcel profile</footer>
+</div>
+</body>
+</html>
