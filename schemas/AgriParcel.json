@@ -186,24 +186,28 @@
           "type": "string",
           "format": "uri",
           "x-ngsi-type": "Relationship",
+          "x-observedAt": true,
           "description": "Relationship. Reference to the WeatherObserved entity for this parcel"
         },
         "prediction": {
           "type": "string",
           "format": "uri",
           "x-ngsi-type": "Relationship",
+          "x-observedAt": true,
           "description": "Relationship. Reference to the WeatherForecast entity for this parcel"
         },
         "temperature": {
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "CEL",
+          "x-observedAt": true,
           "description": "Property. Ambient temperature observed in the parcel. Units:'degrees Celsius' (UN/CEFACT CEL)"
         },
         "humidity": {
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "P1",
+          "x-observedAt": true,
           "description": "Property. Soil humidity/moisture observed in the parcel, as a fraction. Units:'percent' (UN/CEFACT P1)"
         },
         "soilTextureType": {

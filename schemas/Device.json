@@ -37,12 +37,14 @@
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "5K",
+          "x-observedAt": true,
           "description": "Property. Heart rate measured by the device. Units:'beats per minute' (UN/CEFACT 5K)"
         },
         "humidity": {
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "P1",
+          "x-observedAt": true,
           "description": "Property. Humidity measured by the device, as a fraction. Units:'percent' (UN/CEFACT P1)"
         },
         "status": {

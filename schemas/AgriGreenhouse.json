@@ -115,28 +115,33 @@
           "minimum": 0.0,
           "maximum": 1.0,
           "x-ngsi-type": "Property",
+          "x-observedAt": true,
           "description": "Property. Model:'http://schema.org/Number'. The inside relative humidity, as a fraction between 0 and 1 representing 0% to 100%"
         },
         "leafTemperature": {
           "type": "integer",
           "x-ngsi-type": "Property",
           "x-unitCode": "CEL",
+          "x-observedAt": true,
           "description": "Property. Model:'http://schema.org/Number'. The average leaf temperature. Units:'degrees Celsius' (UN/CEFACT CEL)"
         },
         "co2": {
           "type": "integer",
           "x-ngsi-type": "Property",
           "x-unitCode": "M1",
+          "x-observedAt": true,
           "description": "Property. Model:'http://schema.org/Number'. The measured interior CO2 concentration. Units:'milligrams per litre' (UN/CEFACT M1)"
         },
         "dailyLight": {
           "type": "integer",
           "x-ngsi-type": "Property",
+          "x-observedAt": true,
           "description": "Property. Model:'http://schema.org/Number'. Daily accumulated light. Units:'kW per square metre'"
         },
         "drainFlow": {
           "type": "object",
           "x-ngsi-type": "Property",
+          "x-observedAt": true,
           "description": "Property. Model:'http://schema.org/Number'. The observed drain flow rate. Units:'litres per second'",
           "properties": {
             "value": {

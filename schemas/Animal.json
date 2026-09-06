@@ -5,6 +5,7 @@
   "$id": "https://smart-data-models.github.io/dataModel.Agrifood/Animal/schema.json",
   "title": "Animal model IoF2020 ShareBeef UC",
   "description": "An observation of animal conditions at a certain place and time. This data model has been developed for the IoF2020 UC ShareBeef by UCO and SensoWave.",
+  "x-mobile": true,
   "type": "object",
   "allOf": [
     {
@@ -29,6 +30,7 @@
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "5K",
+          "x-observedAt": true,
           "description": "Property. Heart rate of the animal. Units:'beats per minute' (UN/CEFACT 5K)"
         },
         "species": {
@@ -110,6 +112,7 @@
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "KGM",
+          "x-observedAt": true,
           "description": "Property. Model:'http://schema.org/Number'. The weight of the animal as a number. Units:'kg' (UN/CEFACT KGM)"
         },
         "ownedBy": {
@@ -146,6 +149,7 @@
             }
           ],
           "x-ngsi-type": "Relationship",
+          "x-observedAt": true,
           "description": "Relationship. The AgriParcel the animal is located at"
         },
         "phenologicalCondition": {

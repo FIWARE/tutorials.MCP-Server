@@ -3,6 +3,7 @@
   "$id": "https://ngsi-ld-tutorials/generated/Tractor/schema.json",
   "title": "Tractor",
   "description": "Agricultural machinery working the farm's parcels; controlled over IoT with start/stop commands. Baseline generated from 4 live entities on tenant 'openiot' plus the /types attribute list.",
+  "x-mobile": true,
   "x-derivedFrom": {
     "method": "entity-introspection + /types",
     "parent": "Device",

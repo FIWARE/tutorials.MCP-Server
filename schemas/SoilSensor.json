@@ -27,6 +27,7 @@
           "type": "number",
           "x-ngsi-type": "Property",
           "x-unitCode": "P1",
+          "x-observedAt": true,
           "description": "Property. Soil humidity/moisture measured by the sensor, as a fraction. Units:'percent' (UN/CEFACT P1)"
         }
       },
