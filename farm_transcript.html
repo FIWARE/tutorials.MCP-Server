@@ -141,199 +141,179 @@
 <div class="wrap">
 <header class="top">
   <h1>🌾 Victory Farm &amp; Animal Farm — FMIS</h1>
-  <p>Full chat transcript · 2026-09-05</p>
+  <p>Full chat transcript · 2026-09-06</p>
 </header>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>What can you tell me about?</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>Describe the farm in detail.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>The farm's Smart Farm broker has state loaded across these areas:</p>
-<ul>
-<li><strong>Farm &amp; land</strong> — <code>AgriFarm</code>, <code>Building</code>, <code>AgriParcel</code> (soil texture, crops, humidity/temperature)</li>
-<li><strong>Crops</strong> — <code>AgriCrop</code>, <code>AgriSoil</code>, <code>AgriPest</code></li>
-<li><strong>Animals</strong> — <code>Animal</code> (species, weight, health, heart rate, lineage)</li>
-<li><strong>People</strong> — <code>Person</code> (owners/farm staff)</li>
-<li><strong>Devices</strong> — <code>Device</code>, <code>SoilSensor</code>, <code>Water</code> (irrigation valve), <code>Tractor</code>, <code>FillingLevelSensor</code></li>
-<li><strong>Weather</strong> — <code>WeatherObserved</code> (live readings) and <code>WeatherForecast</code></li>
-</ul>
-<p>Ask me about parcels, crops, animals, devices, or weather and I'll pull the current farm state.</p>
+<p>Two adjoining holdings in Berlin-Tiergarten, run as one operation.</p>
+<p><strong>Victory Farm</strong> (Old MacDonald, Agricultural Manager) — arable. Parcels: <strong>Wheatfield</strong> (buckwheat, seeded, clay/clay loam, soil moisture 50%, air 15.4&nbsp;°C) and <strong>Cornfield</strong> (corn, growing, loam, 60%). Buildings: farmhouse, Triton Tower (water tower), Big Red Barn.</p>
+<p><strong>Animal Farm</strong> — also "Manor Farm" (Napoleon the Pig). Four grass parcels, all maturing: <strong>South Pasture</strong> (loam), <strong>East Pasture</strong> (silt loam), <strong>Water Meadow</strong> (sandy loam, wettest at 70%), <strong>The Paddock</strong> (loam). Building: farmhouse. Squealer and Snowball are on the books with no land or stock.</p>
+<p><strong>Livestock — 73 head</strong>: 43 dairy cattle and 30 pigs. Cattle graze the four Animal Farm pastures (two held in the Big Red Barn); the pigs carry no parcel and sit near the buildings. Every animal wears a collar reporting heart rate, location and activity.</p>
+<p><strong>Weather</strong>: mild and dry across five stations — 15.3–16.2&nbsp;°C, ~50% humidity, negligible rain, light south-easterly. Forecast overcast, 11–16&nbsp;°C.</p>
+<p><strong>Flags</strong>: Goliath's collar (<code>pig032</code>) reads <code>NOT OK</code> with a flat battery. Also note the observation timestamps run ahead of today's date — the feed clock is fast.</p>
+</div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>How many bulls on the farm?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p><strong>Two bulls</strong> — Beany (752&nbsp;kg, East Pasture) and Ferdinand (757&nbsp;kg, South Pasture), both Old MacDonald's. There is also one bull calf, Bumble (118&nbsp;kg, still with the cows on South Pasture). The three big pigs — Giant, Mammoth, Colossus — are boars, not bulls.</p>
 </div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What is the soil type where Ferdinand is grazing?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Ferdinand (dairy cattle, cow021) is grazing in <strong>North Pasture</strong>, which has <strong>loam</strong> soil.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>describe the farm in detail</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>The farm is actually two adjoining holdings, both in Berlin's Tiergarten district:</p>
-<p><strong>Victory Farm</strong> (owned by Old MacDonald, Agricultural Manager)<br>
-Buildings: Victory Farm farmhouse, Triton Tower (water tower), Big Red Barn.<br>
-Parcels: Wheatfield (Clay Loam, buckwheat, seeded, 15.4°C/50% humidity) and Cornfield (Loam, corn, growing, 60% humidity).</p>
-<p><strong>Animal Farm / "Manor Farm"</strong> (owned by Napoleon the Pig, Agricultural Manager — with Squealer as broadcasting presenter and Snowball as agricultural consultant)<br>
-Building: Animal Farm farmhouse.<br>
-Parcels, all grass and maturing: North Pasture (Loam), East Pasture (Silt Loam), Water Meadow (Sandy Loam), The Paddock (Loam) — humidity running 60-70% across the board.</p>
-<p><strong>Livestock</strong>: 83 animals total — 62 dairy cattle (grazing across the four grass parcels, a couple of calves and Twilight/Buttercup kept in Big Red Barn) plus 40 pigs (unassigned to a parcel, likely penned near the farmhouse). Ferdinand (bull, 757kg) and Bumble are the two bulls, both in North Pasture; everything else is female. All animals wear collar sensors reporting battery/state.</p>
-<p><strong>Weather</strong>: mild and dry across all five observed points — 15.3-16.2°C, ~50% humidity, near-zero precipitation, light wind.</p>
-<p><strong>Two things worth flagging</strong>: pig032's collar is reporting <code>NOT OK</code> with a dead battery, and cow029's collar is down to 40% battery — both may need a swap.</p>
+<p>Ferdinand is on <strong>South Pasture</strong>, which is <strong>loam</strong> — an even mix of sand, silt and clay (texture class "Loam").</p>
 </div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Are all the cows on pasture today?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>No — two are still in the barn rather than out on pasture: <strong>Twilight</strong> and <strong>Buttercup</strong>, both located at Big Red Barn. The other 60 cows are spread across the four pasture parcels (North Pasture, East Pasture, Water Meadow, The Paddock).</p>
+<p>No — 41 of the 43 cattle are out on the four pastures. Two are held in the Big Red Barn: <strong>Twilight</strong> (flagged "needs to see the vet") and <strong>Buttercup</strong> (a calf born today).</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>Why are Twilight and Buttercup still in the barn?</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>Why is Twilight still in the barn?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Twilight just calved — Buttercup was born today (sired by Beany, cow001), so she's a newborn nursing on milk in the barn. Twilight herself has a note flagged "needs to see the vet," so she's being kept in the barn with her calf rather than sent out to pasture.</p>
+<p>Her record carries a single note — "Needs to see the vet." — with no diagnosis attached, so she is being held in the barn pending that check. Nothing else in her data points to a problem: health status still reads "healthy", heart rate 52&nbsp;bpm, weight flat at ~434&nbsp;kg for months. She is also on oats rather than grass, consistent with being kept in.</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>Why would Twilight need the vet check?</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>Dig deeper — try to diagnose the issue.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>The record only has a comment flag — "Needs to see the vet." — with no diagnosis or symptom attached. Her vitals otherwise look normal: heart rate 52 bpm, health condition marked "healthy," 434kg. Most likely it's a routine post-calving check given she gave birth to Buttercup today, but that's an inference, not something recorded — the entity doesn't say why.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>How healthy are the cows?</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Overall the herd looks in good shape: 43 dairy cattle, heart rates mostly sitting in the normal 50-55 bpm range for cattle.</p>
-<p>Two things stand out:</p>
+<p>Twilight isn't sick — <strong>she calved today.</strong> Buttercup, the newborn in the barn with her, has <code>calvedBy</code> pointing to Twilight (<code>cow006</code>). Everything else lines up with a fresh cow:</p>
 <ul>
-<li><strong>Sun</strong> (cow005) has a heart rate of 70 bpm — noticeably above the herd average, worth keeping an eye on.</li>
-<li><strong>Twilight</strong> (cow006) has a "needs to see the vet" flag (likely post-calving), and <strong>Beany</strong> (cow001) has a "please check hooves" note — both otherwise marked healthy.</li>
+<li>In the Big Red Barn (calving pen), alone but for her calf.</li>
+<li>Reproductive condition <code>noStatus</code> — the only adult cow not <code>active</code>/<code>inHeat</code>/<code>inCalf</code>.</li>
+<li>Moved onto oats; status <em>AT REST</em>; heart rate 52&nbsp;bpm.</li>
+<li>Weight dipped 436→427&nbsp;kg over the winter and recovered to 434 — a gestation body-condition swing.</li>
 </ul>
-<p>Only Beany and Twilight have an explicit <code>healthCondition</code> recorded (both "healthy"); the rest don't carry that field but show nothing abnormal in vitals or comments.</p>
+<p>So the "see the vet" note is the routine fresh-cow / newborn check, not an emergency. <strong>Worth watching anyway</strong>: she is 8.4 years old (the milk-fever risk group) and her HR of 52 is the lowest in the herd; the calf is light at 20&nbsp;kg, so prioritise the colostrum check. Her collar is healthy, so the low HR is a real reading.</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>❯ check heart rates for anomalies and check history for growth</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>How healthy are the cows? Check history for growth and compare with norms.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p><strong>Heart rate anomaly</strong>: Only <strong>Sun</strong> (cow005) stands out — 70 bpm vs. the herd's tight 50-55 bpm baseline. No history is kept per-reading for heart rate (only the current value), so I can't tell if this is a spike or sustained, but it's worth a vet look given the outlier size.</p>
-<p><strong>Growth history</strong>:</p>
+<p>Pulled 12–25 months of weight history on 20 head across every age group. <strong>The herd is mostly sound</strong> — mature cows holding steady, growth curves on track, both bulls fine, nursing calves Bumble (0.79&nbsp;kg/day) and Blossom (0.70&nbsp;kg/day) on target.</p>
+<p><strong>Three individuals to investigate:</strong></p>
 <ul>
-<li><strong>Sun</strong>'s weight has been flat/stable for two years (410-428kg, no trend) — consistent with a fully mature cow, nothing concerning there despite the heart rate.</li>
-<li><strong>Ferdinand</strong> (bull) shows steady, healthy growth: 747kg → 757kg over the past two years, slow mature-bull gain.</li>
-<li><strong>Buttercup</strong> (newborn) only has a single reading (20kg, born today) — no history yet to assess growth.</li>
+<li><strong>Tulip</strong> (<code>cow010</code>) — rose to 355&nbsp;kg by May, then 355→342→328→315→315: lost 40&nbsp;kg (11%) over four months, now stalled. Abnormal for a young adult.</li>
+<li><strong>Bug</strong> (<code>cow025</code>) — 413→360&nbsp;kg steady decline over ~14 months, 8-year-old cow. Chronic-disease pattern.</li>
+<li><strong>Sun</strong> (<code>cow005</code>) — weight fine, but resting heart rate 70&nbsp;bpm against a herd average of 53. Sole cardiac outlier.</li>
 </ul>
-<p>Want me to pull weight history across the rest of the herd to check for any animals losing weight or plateauing unexpectedly?</p>
+<p><strong>Data oddity:</strong> Spots (<code>cow040</code>) shows +63&nbsp;kg in one month against a history of +9–20 — physiologically impossible, so a mis-weigh. Re-weigh.</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>yes, check the rest of the herd</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>What breed are the cows — does that change your opinion?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Went through weight history for all 40 remaining cows. Two clear concerns, plus one data oddity:</p>
-<p><strong>Weight loss (flag for vet/nutrition check):</strong></p>
+<p>Breed isn't recorded — every animal just carries <code>species: "dairy cattle"</code>, no <code>breed</code> attribute. ("Fresian" and "Jersey" appear only as the names of two individual cows.)</p>
+<p>From the weights it behaves like <strong>Jersey</strong> or a small breed: mature cows plateau at ~360–490&nbsp;kg and the bulls sit at ~750&nbsp;kg, well under Holstein-Friesian. If that's right, the <em>absolute-weight</em> worries soften — mature cows holding at 360–490&nbsp;kg are at legitimate size, and the 2025-born heifers running ~0.5&nbsp;kg/day are low-normal rather than stunted. The <em>trend</em> flags — Tulip, Bug, Sun — don't depend on breed and stand either way. Worth adding <code>breed</code> to the records so growth can be benchmarked properly.</p>
+</div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>All cows are Jerseys. Which outliers does that leave to check?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Confirming Jersey clears the whole absolute-weight column — mature cows and the 2025 heifers are all normal for the breed, and Buttercup's 20&nbsp;kg birthweight is only mildly light. What's left:</p>
 <ul>
-<li><strong>Tulip</strong> (cow010) — peaked at 394kg in Jan 2026, has since dropped steadily to 315kg (-79kg over 8 months).</li>
-<li><strong>Bug</strong> (cow025) — peaked at 413kg in Aug 2025, down to 360kg now (-53kg over 13 months).</li>
+<li><strong>Tulip</strong> (<code>cow010</code>) — top priority. −11% over four months, now stalled. Parasites, Johne's, or feed-access competition.</li>
+<li><strong>Bug</strong> (<code>cow025</code>) — 53&nbsp;kg decline over 14 months. Run a Johne's screen; check her teeth.</li>
+<li><strong>Sun</strong> (<code>cow005</code>) — resting HR 70 vs herd 53. Look for pain, fever, or stress.</li>
+<li><strong>Spots</strong> (<code>cow040</code>) — data fix: re-weigh, likely a mis-weigh or tag swap.</li>
+<li><strong>Twilight</strong> (<code>cow006</code>) — routine post-calving check; watch the low HR given her age.</li>
 </ul>
-<p>Both show a sustained decline, not just noise — worth investigating (parasites, feed competition, dental issues are common causes).</p>
-<p><strong>Possible sensor glitch:</strong></p>
+<p>Everything else in the sample reads healthy against Jersey norms.</p>
+</div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>What is the size of the North Pasture? What does the tracking data suggest?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>There is no North Pasture on this farm. The six parcels are Wheatfield and Cornfield (arable) and <strong>South Pasture, East Pasture, Water Meadow, The Paddock</strong> (grazing).</p>
+<p>And parcel size can't be read from the system for any of them: <code>AgriParcel</code> records carry crop, soil, sensors and current temperature/humidity, but <strong>no boundary geometry and no area attribute</strong>. So there's no stored acreage. Collar GPS is the only way to estimate extent — name a real pasture and I'll do it.</p>
+</div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Check the South Pasture.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Inferred from collar GPS — a single fix per animal, all stamped 06:36 on 2026-09-06, no track history.</p>
+<p><strong>9 fixes</strong> (Trotter and the calf Bumble on the identical point), centred just south-west of the Big Red Barn:</p>
 <ul>
-<li><strong>Spots</strong> (cow040) — jumped from 324kg to 349kg in the last month, well outside her normal ~5-8kg/month gain pattern. Worth double-checking the reading rather than assuming a real gain.</li>
+<li>Spread ~120&nbsp;m east–west by ~80&nbsp;m north–south</li>
+<li>Bounding box ≈ <strong>0.97&nbsp;ha</strong> (2.4 acres)</li>
+<li>Convex hull of the fixes ≈ <strong>0.79&nbsp;ha</strong> (1.95 acres)</li>
 </ul>
-<p><strong>Everything else is normal</strong>: the rest of the herd shows expected patterns — young animals (Fisher, Chalky, Happy, Fluffy, Feather, Cloud, Bumble, Blossom) on steady upward growth curves, and mature cows holding stable weight with normal month-to-month fluctuation.</p>
-<p>Combined with the earlier findings, that gives four things on the watch list: Sun's elevated heart rate, Twilight's vet flag, and now Tulip's and Bug's weight loss.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>given the expected weight gain for dairy cattle, which animals are underweight based on age?</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Using standard dairy-cattle growth curves (weight as % of mature body weight by age) against this herd's own mature baselines — ~415kg for adult cows, ~755kg for bulls — three animals stand out as underweight for their age, beyond normal individual variation:</p>
-<table>
-<thead><tr><th>Animal</th><th>Age</th><th>Actual</th><th>Expected</th><th>Deficit</th></tr></thead>
-<tbody>
-<tr><td>Bug (cow025)</td><td>8.25 yrs</td><td>360kg</td><td>~415kg</td><td>~13% under</td></tr>
-<tr><td>Tulip (cow010)</td><td>27 months</td><td>315kg</td><td>~357kg</td><td>~12% under</td></tr>
-<tr><td>Fresian (cow027)</td><td>23 months</td><td>295kg</td><td>~332kg</td><td>~11% under</td></tr>
-</tbody>
-</table>
-<p>Bug and Tulip are the two we already flagged for sustained weight-loss trends — this confirms it's not just a dip, they're genuinely below where an animal their age should be. Fresian is new: a young cow tracking noticeably light for 23 months old, worth a condition check even though her trend line has been rising (just slower than it should).</p>
-<p><strong>One more to watch</strong>: <strong>Buttercup</strong> (newborn, 20kg) is about half the typical Holstein birth weight (~40kg) — likely just individual variation for a same-day birth, but worth a vet look given how far off it is.</p>
-<p>A handful of others (Chalky, Clover, Star, Silver, Flower, Pepsi) run 7-9% under their age-expected weight — within normal individual variation, not something I'd flag on its own.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>What is the size of the North Pasture?</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>No parcel area/size field is recorded on North Pasture (<code>urn:ngsi-ld:AgriParcel:003</code>) — its attributes cover soil type (loam), crop (grass, maturing), humidity, and occupancy, but no area or boundary geometry is tracked in this broker.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>Can you estimate it?</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>There's no geometry or area field on the parcel to calculate from directly, but I can ballpark it from stocking density.</p>
-<p>North Pasture currently holds <strong>9 cattle</strong>: Tulip, Trotter, Marble, Silver, Ferdinand (bull), Clover, Star, Citrus, and Bumble (calf).</p>
-<p>Using a typical rotational-grazing stocking rate for dairy cattle on temperate pasture (roughly 1 cow per acre, adjusting down slightly for the calf) puts North Pasture at roughly <strong>8-10 acres (3.2-4 hectares)</strong>.</p>
-<p>This is a rough estimate based on herd size and standard stocking guidelines, not measured data — the broker doesn't track parcel area or boundaries.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>What does the tracking data suggest?</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Pulled the GPS coordinates for the 9 animals currently in North Pasture. They cluster in a tight area:</p>
-<ul>
-<li>Longitude range: 13.34806 to 13.34984 (~121m spread)</li>
-<li>Latitude range: 52.51114 to 52.51186 (~80m spread)</li>
-</ul>
-<p>That bounding box works out to roughly <strong>1 hectare (2.4 acres)</strong> — noticeably smaller than my earlier stocking-density guess of 8-10 acres.</p>
-<p>Caveat: this is a single snapshot of where 9 animals happen to be standing right now, not the parcel's actual fence line. Cattle don't spread out to fill a pasture evenly — they cluster near water, shade, or each other — so this almost certainly understates the true size. It's a useful floor (the pasture is <em>at least</em> this big) rather than a real measurement. Tracking data over time (multiple snapshots showing the full range animals roam) would give a tighter estimate, but I only have the current positions.</p>
+<p>The hull is a hard lower bound — stock bunch and don't walk the fence line — so realistic field size is around <strong>1.2–2.5&nbsp;ha</strong>. Eight grazing head on that hull is ~4 LSU/ha, above the ~2–3 typical for set-stocked grazing; it may be a rotational cell. Tulip is in this mob, at the south-west edge.</p>
 </div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What are the likely dimensions of the piggery?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Pulled GPS coordinates for all 40 pigs — none of them carry a <code>locatedAt</code> building reference at all (unlike the barn cattle), so there's no formal building/parcel link, only raw device positions.</p>
-<p>The bounding box of those 40 points:</p>
-<ul>
-<li>Longitude spread: 13.35006 to 13.35099 (~63m)</li>
-<li>Latitude spread: 52.51806 to 52.51899 (~103m)</li>
-</ul>
-<p>That's roughly <strong>63m × 103m (~6,500m², 0.65 hectares/1.6 acres)</strong>.</p>
-<p>That's far too large to be a single confined piggery building — real indoor pig housing runs about 1-2m² of floor space per finishing pig, so a barn for 40 pigs would only need roughly 40-80m². A footprint this size (~6,500m²) points to the pigs being <strong>free-range in an outdoor paddock/yard</strong>, not housed in a compact structure — consistent with them having no building assignment in the data at all.</p>
+<p>The pigs carry no parcel and no boundary record — this is from collar GPS, one snapshot at 06:36.</p>
+<p>The 30 fixes split into two groups: a <strong>main piggery of 27 sows/gilts</strong>, and <strong>three boars</strong> — Giant, Mammoth, Colossus — clustered ~200&nbsp;m north-west in a separate pen (normal husbandry).</p>
+<p><strong>Main piggery:</strong> ~63&nbsp;m east–west by ~98&nbsp;m north–south; bounding box ≈ 0.62&nbsp;ha, occupied hull ≈ 0.50&nbsp;ha. Treat as a lower bound — the real pen is plausibly <strong>0.6–1.0&nbsp;ha</strong>. At ~45–55 pigs/ha this reads as a <strong>bedded yard or hard-standing paddock</strong>, not extensive free-range. <strong>Boar pen:</strong> spans ~25&nbsp;m between fixes, so on the order of 20–30&nbsp;m across.</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>is that likely to be overcrowded?</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>How many piglets are there?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Doing the density math: 6,500m² ÷ 40 pigs ≈ <strong>162m² per pig</strong>.</p>
-<p>Compared against typical free-range/outdoor pig welfare guidance — commonly around 250m² per adult pig (roughly 40 sows/hectare is the UK outdoor-unit benchmark) — this snapshot comes in tighter than the recommended minimum, which would suggest borderline overcrowding.</p>
-<p>But the same caveat applies as with North Pasture: this is a bounding box of where 40 pigs happen to be standing in one GPS snapshot, not the actual paddock fence line. Pigs cluster around feed, wallows, and each other rather than spreading evenly, so the true enclosure is very likely larger than 6,500m² — meaning the real stocking density is probably better than this snapshot implies. I'd call it "possibly tight, not confirmed overcrowded" rather than a definite problem.</p>
+<p>None. Every pig in the system is an adult — 27 sows/gilts and 3 boars, all 200–343&nbsp;kg, none tagged as young or nursing.</p>
+<p>Litters are on the way: <strong>Peach</strong> and <strong>Tango</strong> are <code>inCalf</code> (in-pig), and <strong>Magenta</strong> and <strong>Bruce</strong> are <code>inHeat</code>. No piglets have been born or registered yet.</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>how many piglets on the farm?</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>What would be an estimate based on the current pig data?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p><strong>Zero piglets</strong> — all 40 pigs on the farm are recorded as <code>femaleAdult</code> or <code>maleAdult</code> (36 sows, 4 boars), ranging 200-343kg. No young pigs, and no <code>birthdate</code> recorded for any of them either.</p>
-</div></div>
-
-<div class="turn user"><div class="bubble"><span class="label">You</span>What would be an estimate based on the current pig data</div></div>
-<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Since there are zero piglets recorded, here's a breeding-output estimate based on the adult population (36 sows, 4 boars):</p>
+<p>Working from 27 breeding females, 3 boars and the reproductive flags, with standard pig figures (~10–12 born alive per litter, 115-day gestation, up to ~2 litters/sow/year):</p>
 <ul>
-<li><strong>Boar ratio</strong>: 4 boars : 36 sows (~1:9) — healthy ratio for natural service, not a bottleneck.</li>
-<li><strong>Typical sow output</strong>: ~2.2 litters/year, ~10-12 piglets/litter for a commercial breed.</li>
+<li><strong>Confirmed pipeline now</strong> — 2 sows <code>inCalf</code> → ~20–25 piglets, due within about four months.</li>
+<li><strong>Next round</strong> — add the 2 sows <code>inHeat</code> if served → another ~20–25; combined ~40–50 over the next 5–6 months.</li>
+<li><strong>Steady-state capacity</strong> — ~24 productive sows → ~390/year (traditional rate) to ~530/year (pushed harder).</li>
 </ul>
-<p>That puts expected output at:</p>
-<ul>
-<li><strong>~360-430 piglets per farrowing round</strong> (all 36 sows farrowing once)</li>
-<li><strong>~800-950 piglets/year</strong> across the full breeding cycle</li>
-</ul>
-<p>This is a projection from herd size and standard sow productivity, not anything in the broker — there's no gestation, breeding, or litter data recorded to confirm it.</p>
+<p>Only 2 of 27 showing <code>inCalf</code> is low — a continuously bred herd would have 5–7 pregnant at any moment — so current breeding activity looks like the bottom of that range. Boar ratio 1:9 is adequate, so output isn't sire-limited. No litters are registered as entities, so nothing here counts actual piglets on the ground.</p>
 </div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>So with the additional piglets, are there any welfare issues likely?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Yes — layering projected piglets onto the current setup raises several real risks, mostly stemming from things the data shows are <em>missing</em> rather than present:</p>
+<p>Likely, yes. The main risk isn't square-metres — it's that the data shows <strong>one undifferentiated pig group with no farrowing sub-pens</strong>, and two sows due to farrow into that shared space within ~4 months.</p>
 <ul>
-<li><strong>No farrowing infrastructure</strong>: no building, ark, or shelter is recorded for any pig — everything is open paddock. Newborn piglets can't thermoregulate and are highly vulnerable to chilling and rain exposure without a farrowing hut.</li>
-<li><strong>Crushing risk</strong>: without individual farrowing pens, sows farrowing in a shared open area with 35 other adults around is the single biggest driver of piglet mortality in pig farming (commonly 10-20%+ pre-weaning loss when this isn't managed).</li>
-<li><strong>Boar-piglet aggression</strong>: 4 boars are mixed in with the sows. Boars housed alongside lactating sows and new litters is a known cause of piglet injury/death — they're normally separated out well before farrowing.</li>
-<li><strong>Space already tight</strong>: the paddock was already borderline (~162m²/pig vs. the ~250m²/pig outdoor guideline) for 40 adults. Adding 350-950 piglets to that same footprint, even temporarily, would push density well past workable limits unless the area is expanded or sows are rotated into dedicated farrowing paddocks.</li>
+<li><strong>Crushing and savaging</strong> — group farrowing without protected creeps drives pre-weaning death; expect 15–25%+ litter mortality rather than ~10–15%.</li>
+<li><strong>Chilling</strong> — newborns need a 30–34&nbsp;°C micro-climate; ambient is ~15&nbsp;°C and cooling, with no creep provision recorded.</li>
+<li><strong>Overcrowding as litters grow</strong> — the sow group already sits at ~45–55 pigs/ha; piglets at 25–30&nbsp;kg by ten weeks push bedding and fouling load hard.</li>
+<li><strong>Neonatal disease</strong> — higher density plus young stock builds up scour pathogens, joint ill, greasy pig disease.</li>
+<li><strong>Sow condition</strong> — several females already light (Blush 200&nbsp;kg, Clifford 203&nbsp;kg); group feeding lets dominant sows push lactating sows off feed.</li>
 </ul>
-<p>Net: on the data as recorded, welfare issues look likely, not just possible — the farm has no visible provision for farrowing separation, shelter, or expanded space to absorb a litter surge.</p>
+<p><strong>From the current data:</strong> Goliath's collar is down — a sow with no location/activity/heart-rate telemetry as farrowing nears. And three mature boars share a pen next to in-heat sows (fighting risk).</p>
+<p><strong>Caveat:</strong> if farrowing arcs or a farrowing house exist but simply aren't recorded as entities, the first three points largely go away. Confirm on the ground before the first sow is due.</p>
 </div></div>
 
-<div class="turn user"><div class="bubble"><span class="label">You</span>What would you recommend to fix these gaps?</div></div>
+<div class="turn user"><div class="bubble"><span class="label">You</span>Assuming the boars and sows are separate parcels, take the bounding box of the farm and calculate the approximate parcel size using a) Voronoi partitioning from centroid b) nearest-neighbour circles c) cluster footprint only — then check the values against good husbandry stocking guidelines.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Practical fixes, roughly in priority order:</p>
-<ol>
-<li><strong>Install farrowing arks/huts</strong> — one per sow due to farrow, out on the paddock or in a dedicated area. Gives piglets a draft-free, insulated space to bed down away from the herd, and cuts chilling deaths.</li>
-<li><strong>Separate boars from the farrowing area</strong> — pull the 4 boars out into their own paddock once sows are due, and keep them out until piglets are weaned. Removes the single biggest piglet-injury risk.</li>
-<li><strong>Stagger farrowing rather than batch it</strong> — group sows into 3-4 breeding batches instead of all 36 farrowing at once. Spreads the piglet surge over time so you're never managing hundreds of newborns in one paddock simultaneously.</li>
-<li><strong>Expand or rotate paddock space during farrowing</strong> — give farrowing sows a separate, lower-density paddock (aim for the ~250m²/pig outdoor guideline) rather than adding piglets to the existing crowded 162m²/pig space.</li>
-<li><strong>Track farrowing and mortality once it starts</strong> — none of this is in the broker yet (no birthdate, litter, or mortality attributes on the pig records). Once sows start farrowing, that data should get recorded so you can actually see if crushing/chilling losses are happening rather than estimating blind.</li>
-<li><strong>Re-check the boar ratio at scale</strong> — 1:9 is fine for the current 36 sows, but if the herd grows, keep it under ~1:15-20 to avoid over-competition among boars.</li>
-</ol>
+<p>Inputs: 27 sow/gilt fixes and 3 boar fixes from the 06:36 snapshot, projected to metres. Bounding box of the pig data = <strong>273.7&nbsp;m × 193.7&nbsp;m = 5.30&nbsp;ha</strong> (the holding itself has no recorded boundary).</p>
+<table>
+<thead><tr><th>Method</th><th>Sow parcel</th><th>Boar parcel</th></tr></thead>
+<tbody>
+<tr><td>(a) Voronoi, 2 centroids</td><td>2.97 ha</td><td>2.33 ha</td></tr>
+<tr><td>(a) Voronoi, 30 points</td><td>3.39 ha</td><td>1.91 ha</td></tr>
+<tr><td>(b) NN circles, r = NN/2</td><td>0.35 ha</td><td>0.011 ha</td></tr>
+<tr><td>(b) NN circles, r = NN</td><td>1.40 ha</td><td>0.043 ha</td></tr>
+<tr><td>(c) Cluster footprint (hull)</td><td>0.54 ha</td><td>0.0023 ha</td></tr>
+</tbody>
+</table>
+<p>Voronoi over-allocates — most of its area is empty ground between the groups. NN circles measure spacing, not paddock. <strong>The convex-hull footprint (~0.5&nbsp;ha sows) is the most defensible parcel size</strong>, and it's a lower bound — call the sow paddock <strong>0.5–1.0&nbsp;ha</strong>, the boar pen <strong>0.05–0.1&nbsp;ha</strong>.</p>
+<p><strong>Stocking check</strong> (27 sows ~283&nbsp;kg; benchmark 9–15 sows/ha outdoor, ~1,000–1,500&nbsp;kg&nbsp;LW/ha sustainable):</p>
+<ul>
+<li>On the footprint: ~50 sows/ha, ~14,000&nbsp;kg/ha — <strong>3–5× the density guideline, ~10× the loading</strong>. Yard, not pasture.</li>
+<li>On NN r = NN (1.40&nbsp;ha): ~19 sows/ha — still over the 9–15 range.</li>
+<li>Only the Voronoi allocation (~3&nbsp;ha, ~8–9/ha) looks acceptable, and that's inflated by dead land.</li>
+</ul>
+<p><strong>Boars:</strong> footprint gives ~75&nbsp;m²/boar, above the EU 6–10&nbsp;m² minimum. Their welfare risk is being housed together next to in-heat sows, not area.</p>
+</div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Repeat for the pastures assuming the pigs have two separated enclosures too.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Six-way partition: the four pastures plus the sow and boar enclosures. <strong>Animal Farm bounding box (71 fixes): 612&nbsp;m × 970&nbsp;m = 59.4&nbsp;ha</strong> — mostly empty ground; the clusters sit 250–500&nbsp;m apart.</p>
+<table>
+<thead><tr><th>Parcel</th><th>n</th><th>Voronoi /cent</th><th>NN (r=NN)</th><th>Footprint</th></tr></thead>
+<tbody>
+<tr><td>South Pasture</td><td>9</td><td>9.39 ha</td><td>1.54 ha</td><td>0.80 ha</td></tr>
+<tr><td>East Pasture</td><td>10</td><td>15.25 ha</td><td>28.1 ha*</td><td>1.75 ha*</td></tr>
+<tr><td>Water Meadow</td><td>13</td><td>10.23 ha</td><td>2.68 ha</td><td>0.98 ha</td></tr>
+<tr><td>The Paddock</td><td>9</td><td>10.51 ha</td><td>2.51 ha</td><td>0.80 ha</td></tr>
+<tr><td>Sows</td><td>27</td><td>12.16 ha</td><td>1.40 ha</td><td>0.54 ha</td></tr>
+<tr><td>Boars</td><td>3</td><td>1.84 ha</td><td>0.43 ha</td><td>0.02 ha</td></tr>
+</tbody>
+</table>
+<p><em>* East Pasture is distorted by one animal (Beany) sitting 250&nbsp;m from the rest.</em></p>
+<p><strong>Which to trust:</strong> Voronoi hands each pasture 9–15&nbsp;ha of mostly dead ground — unusable for stocking. Footprint is the honest occupied area but a lower bound (herds bunched at 06:36). Best estimate: <strong>2–5&nbsp;ha per pasture</strong>.</p>
+<p><strong>Stocking</strong> (permanent pasture ~2–2.5 LSU/ha; a 400&nbsp;kg Jersey ≈ 0.67 LSU): on the realistic middle, the four pastures run <strong>at to modestly above</strong> the guideline — tolerable under rotation with rest. The <strong>sow yard is the real exception</strong> at ~24 LSU/ha on its footprint. Boars have adequate space.</p>
+<p><strong>Anomaly the geometry exposes:</strong> <strong>Beany</strong> (bull, registered to East Pasture, flagged "check hooves") is physically in the <strong>South Pasture</strong> cluster, right alongside the South Pasture bull <strong>Ferdinand</strong> — two mature bulls together, one in the wrong paddock per the records. Check fences and the location tag.</p>
 </div></div>
 
 </div>
