@@ -20,15 +20,17 @@
           "enum": [
             "AgriSoil"
           ],
-          "description": "Property. NGSI Entity Type: It has to be AgriSoil"
+          "description": "NGSI Entity Type: It has to be AgriSoil"
         },
         "agroVocConcept": {
           "type": "string",
           "format": "uri",
-          "description": "Relationship. Model:'http://schema.org/URL'. Reference to the agrovoc term associated with this item"
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'http://schema.org/URL'. The link with the defined concept in the AgroVoc vocabulary"
         },
         "hasAgriProductType": {
           "type": "array",
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Reference to the recommended types of product (such as fertiliser) that can be used to condition this soil type",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"

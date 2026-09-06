@@ -3,42 +3,39 @@
   "$id": "https://ngsi-ld-tutorials/generated/Tractor/schema.json",
   "title": "Tractor",
   "description": "Agricultural machinery working the farm's parcels; controlled over IoT with start/stop commands. Baseline generated from 4 live entities on tenant 'openiot' plus the /types attribute list.",
-  "modelTags": "generated",
   "x-derivedFrom": {
     "method": "entity-introspection + /types",
-    "broker": "http://localhost:1026/ngsi-ld/v1",
-    "tenant": "openiot",
-    "sampleCount": 4,
-    "declaredAttributes": [
-      "start",
-      "stop"
-    ],
-    "typeUri": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#Tractor",
-    "generatedAt": "2026-09-03T07:36:28.729478Z"
+    "parent": "Device",
+    "instances": 4
   },
   "type": "object",
-  "properties": {
-    "id": {
-      "type": "string",
-      "format": "uri"
+  "allOf": [
+    {
+      "$ref": "./Device.json"
     },
-    "type": {
-      "type": "string",
-      "enum": [
-        "Tractor"
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Tractor"
+          ],
+          "description": "NGSI Entity Type. It has to be Tractor"
+        },
+        "start": {
+          "x-ngsi-type": "Command",
+          "description": "Actuation command (write-only; not returned on read)."
+        },
+        "stop": {
+          "x-ngsi-type": "Command",
+          "description": "Actuation command (write-only; not returned on read)."
+        }
+      },
+      "required": [
+        "id",
+        "type"
       ]
-    },
-    "start": {
-      "x-ngsi-type": "Command",
-      "description": "Actuation command (write-only; not returned on read)."
-    },
-    "stop": {
-      "x-ngsi-type": "Command",
-      "description": "Actuation command (write-only; not returned on read)."
     }
-  },
-  "required": [
-    "id",
-    "type"
   ]
 }

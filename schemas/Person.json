@@ -3,13 +3,9 @@
   "$id": "https://ngsi-ld-tutorials/generated/Person/schema.json",
   "title": "Person",
   "description": "A person (alive, dead, undead, or fictional). Mapped to schema:Person in the user context.",
-  "modelTags": "generated",
   "x-derivedFrom": {
     "method": "entity-introspection",
-    "broker": "http://localhost:1026/ngsi-ld/v1",
-    "sampleCount": 4,
-    "generatedAt": "2026-09-03T07:28:38.638921Z",
-    "typeUri": "https://schema.org/Person"
+    "instances": 4
   },
   "type": "object",
   "properties": {
@@ -31,8 +27,7 @@
     "givenName": {
       "description": "Given name. In the U.S., the first name of a Person.",
       "type": "string",
-      "x-ngsi-type": "Property",
-      "x-sample": "Napoleon"
+      "x-ngsi-type": "Property"
     },
     "jobTitle": {
       "description": "The job title of the person (for example, Financial Manager).",
@@ -42,21 +37,18 @@
     "name": {
       "description": "The name of the item.",
       "type": "string",
-      "x-ngsi-type": "Property",
-      "x-sample": "Old MacDonald"
+      "x-ngsi-type": "Property"
     },
     "owns": {
       "description": "Things owned by the organization or person.",
       "type": "string",
       "format": "uri",
-      "x-ngsi-type": "Relationship",
-      "x-sample": "urn:ngsi-ld:AgriFarm:farm001"
+      "x-ngsi-type": "Relationship"
     },
     "weight": {
       "description": "The weight of the product or person.",
       "type": "number",
-      "x-ngsi-type": "Property",
-      "x-sample": 270
+      "x-ngsi-type": "Property"
     }
   },
   "required": [

@@ -23,7 +23,7 @@
           "enum": [
             "WeatherForecast"
           ],
-          "description": "Property. NGSI Entity type. It has to be WeatherForecast"
+          "description": "NGSI Entity type. It has to be WeatherForecast"
         },
         "dateRetrieved": {
           "type": "string",

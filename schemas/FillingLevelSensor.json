@@ -3,42 +3,39 @@
   "$id": "https://ngsi-ld-tutorials/generated/FillingLevelSensor/schema.json",
   "title": "FillingLevelSensor",
   "description": "Sensor/actuator for a feed or water trough; add/remove commands adjust the filling level. Baseline generated from 4 live entities on tenant 'openiot' plus the /types attribute list.",
-  "modelTags": "generated",
   "x-derivedFrom": {
     "method": "entity-introspection + /types",
-    "broker": "http://localhost:1026/ngsi-ld/v1",
-    "tenant": "openiot",
-    "sampleCount": 4,
-    "declaredAttributes": [
-      "add",
-      "remove"
-    ],
-    "typeUri": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#FillingLevelSensor",
-    "generatedAt": "2026-09-03T07:36:28.729478Z"
+    "parent": "Device",
+    "instances": 4
   },
   "type": "object",
-  "properties": {
-    "id": {
-      "type": "string",
-      "format": "uri"
+  "allOf": [
+    {
+      "$ref": "./Device.json"
     },
-    "type": {
-      "type": "string",
-      "enum": [
-        "FillingLevelSensor"
+    {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "FillingLevelSensor"
+          ],
+          "description": "NGSI Entity Type. It has to be FillingLevelSensor"
+        },
+        "add": {
+          "x-ngsi-type": "Command",
+          "description": "Actuation command (write-only; not returned on read)."
+        },
+        "remove": {
+          "x-ngsi-type": "Command",
+          "description": "Actuation command (write-only; not returned on read)."
+        }
+      },
+      "required": [
+        "id",
+        "type"
       ]
-    },
-    "add": {
-      "x-ngsi-type": "Command",
-      "description": "Actuation command (write-only; not returned on read)."
-    },
-    "remove": {
-      "x-ngsi-type": "Command",
-      "description": "Actuation command (write-only; not returned on read)."
     }
-  },
-  "required": [
-    "id",
-    "type"
   ]
 }

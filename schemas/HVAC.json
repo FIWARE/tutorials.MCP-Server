@@ -3,14 +3,11 @@
   "$id": "https://ngsi-ld-tutorials/generated/HVAC/schema.json",
   "title": "HVAC",
   "description": "Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort. In the FIWARE NGSI-LD tutorial dataset this is an NGSI-LD **Device** entity whose controlledProperty includes 'temperature'. No instances exist on the current broker; this profile is derived from the user @context, SAREF and the Smart Data Models Device schema.",
-  "modelTags": "generated,profile",
+  "modelTags": "profile",
   "x-derivedFrom": {
     "method": "context-term + SAREF + parent-model",
     "parent": "Device",
-    "sarefClass": "https://w3id.org/saref#HVAC",
-    "broker": "http://localhost:1026/ngsi-ld/v1",
-    "instances": 0,
-    "generatedAt": "2026-09-03T07:29:47.112241Z"
+    "instances": 0
   },
   "type": "object",
   "allOf": [
@@ -27,24 +24,21 @@
           ]
         },
         "category": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          },
-          "x-fixedValue": [
-            "actuator"
-          ],
-          "description": "Device category. Fixed to 'actuator' for this profile."
+          "type": "string",
+          "x-ngsi-type": "VocabProperty",
+          "x-fixedValue": "actuator",
+          "description": "VocabProperty. Device category, held as a controlled-vocabulary term. Fixed to 'actuator' for this profile."
         },
         "controlledProperty": {
           "type": "array",
           "items": {
             "type": "string"
           },
+          "x-ngsi-type": "Property",
           "contains": {
             "const": "temperature"
           },
-          "description": "Must include 'temperature'."
+          "description": "Property. Must include 'temperature'."
         },
         "temperature": {
           "type": "number",

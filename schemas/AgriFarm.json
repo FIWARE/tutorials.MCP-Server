@@ -23,7 +23,7 @@
           "enum": [
             "AgriFarm"
           ],
-          "description": "Property. NGSI Entity Type. It has to be AgriFarm"
+          "description": "NGSI Entity Type. It has to be AgriFarm"
         },
         "landLocation": {
           "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons/properties/location"
@@ -31,25 +31,27 @@
         "contactPoint": {
           "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Contact-Commons/properties/contactPoint"
         },
-        "ownedBy": {
+        "owner": {
           "anyOf": [
             {
               "type": "string",
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Owner (Person or Organization) of the farm"
         },
         "hasBuilding": {
           "type": "array",
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. List of buildings belonging to the farm",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
@@ -57,6 +59,7 @@
         },
         "hasAgriParcel": {
           "type": "array",
+          "x-ngsi-type": "Relationship",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
           },

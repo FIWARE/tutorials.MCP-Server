@@ -1,0 +1,228 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schemaVersion": "0.2.1",
+  "modelTags": "",
+  "$id": "https://smart-data-models.github.io/dataModel.Agrifood/Pen/schema.json",
+  "title": "Smart Data Models - Pen schema",
+  "description": "Fenced area in a building or department or outside housing a group of animals. Animals in a pen can move and interact freely. Pens are often not completely separated from each other (half walls, iron bars, fences), making it possible that animals from neighbouring pens can see or touch each other.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons"
+    },
+    {
+      "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons"
+    },
+    {
+      "$ref": "https://smart-data-models.github.io/dataModel.Agrifood/agrifood-schema.json#/definitions/AgriFood-Commons"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "Pen"
+          ],
+          "description": "NGSI Entity Type. It has to be Pen"
+        },
+        "additionalInfo": {
+          "type": "array",
+          "x-ngsi-type": "Property",
+          "description": "Property. List of all the raw values sent by the sensor or platform with any extra properties not included in the main structure, e.g. {'name': 'temperature', 'value': 32}",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "value": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "arrivalTimestamp": {
+          "type": "string",
+          "format": "date-time",
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/DateTime'. Date and time of the arrival of animals to the pen"
+        },
+        "avgGrowth": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "x-unitCode": "KGM",
+          "description": "Property. Model:'https://schema.org/Number'. The average growth in weight of the animals in this pen. Units:'kilograms' (UN/CEFACT KGM)"
+        },
+        "avgWeight": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "x-unitCode": "KGM",
+          "description": "Property. Model:'https://schema.org/Number'. The average weight of the animals in this pen. Units:'kilograms' (UN/CEFACT KGM)"
+        },
+        "buildingId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Model:'https://schema.org/URL'. Unique identifier of the Building the item is located in"
+        },
+        "co2": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/Number'. The CO2 concentration in the pen"
+        },
+        "companyId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Model:'https://schema.org/URL'. Unique identifier of a company"
+        },
+        "compartmentId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Model:'https://schema.org/URL'. Unique identifier of the Compartment the pen is located in"
+        },
+        "deadAnimalsSinceDateOfArrival": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/Number'. Number of dead animals since the date of arrival"
+        },
+        "farmId": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Model:'https://schema.org/URL'. Unique identifier of the Farm the pen is located in"
+        },
+        "feedConsumption": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "x-unitCode": "KGM",
+          "description": "Property. Model:'https://schema.org/Number'. The total amount of food eaten from the feeding station(s) in the pen. Units:'kilograms' (UN/CEFACT KGM)"
+        },
+        "humidity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/Number'. Amount of water vapour in the atmosphere in the pen, as a fraction between 0 and 1"
+        },
+        "lastUpdate": {
+          "type": "string",
+          "format": "date-time",
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/DateTime'. Date and time at which the measurements in the item were taken"
+        },
+        "luminosity": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "x-unitCode": "LUX",
+          "description": "Property. Model:'https://schema.org/Number'. The brightness of a light source at the item. Units:'lux' (UN/CEFACT LUX)"
+        },
+        "numAnimals": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/Number'. Number of animals contained in the pen"
+        },
+        "sex": {
+          "type": "string",
+          "enum": [
+            "M",
+            "F",
+            "unknown",
+            ""
+          ],
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Model:'https://schema.org/Text'. The sex of the animals contained in the pen, held as a controlled-vocabulary term. Enum:'M, F, unknown'"
+        },
+        "temperature": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Model:'https://schema.org/Number'. Temperature of the pen. Units:'degrees Celsius' (UN/CEFACT CEL)"
+        },
+        "waterConsumption": {
+          "type": "number",
+          "minimum": 0,
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/Number'. The total amount of water that came out from the tap(s) in the pen"
+        },
+        "weightStDev": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "KGM",
+          "description": "Property. Model:'https://schema.org/Number'. The standard deviation associated with the average weight of the animals contained in the pen. Units:'kilograms' (UN/CEFACT KGM)"
+        }
+      }
+    }
+  ],
+  "required": [
+    "id",
+    "type",
+    "lastUpdate"
+  ]
+}

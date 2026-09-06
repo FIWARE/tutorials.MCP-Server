@@ -23,7 +23,7 @@
           "enum": [
             "WeatherObserved"
           ],
-          "description": "Property. NGSI Entity type. It has to be WeatherObserved"
+          "description": "NGSI Entity type. It has to be WeatherObserved"
         },
         "dateObserved": {
           "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/dateObserved"
@@ -75,14 +75,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Model:'https://schema.org/URL'. A reference to the device(s) which captured this observation"
         },
         "streamGauge": {

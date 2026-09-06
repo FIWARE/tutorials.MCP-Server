@@ -23,15 +23,18 @@
           "enum": [
             "AgriParcel"
           ],
-          "description": "Property. NGSI Entity Type. It has to be AgriParcel"
+          "description": "NGSI Entity Type. It has to be AgriParcel"
         },
         "area": {
           "type": "number",
           "minimum": 0,
-          "description": "Property. Model:'http://schema.org/Number'. Units:'m2'. The area of the parcel nominally in square meters"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "MTK",
+          "description": "Property. Model:'http://schema.org/Number'. Units:'m2' (UN/CEFACT MTK). The area of the parcel nominally in square meters"
         },
         "category": {
           "type": "string",
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'http://schema.org/Text'. The category of the parcel of land e.g.: **arable, grassland, vineyard, orchard, mixed crop, lowland, upland, set-aside, forestry, wetland.**"
         },
         "belongsTo": {
@@ -41,14 +44,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Entity the item belongs to"
         },
         "ownedBy": {
@@ -58,14 +62,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Owner (Person or Organization) of the item"
         },
         "hasAgriParcelParent": {
@@ -75,18 +80,20 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Reference to the parent AgriParcel"
         },
         "hasAgriParcelChildren": {
           "type": "array",
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Related sub AgriParcel records to which this entity relates",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
@@ -99,14 +106,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Reference to the crop associated with this parcel"
         },
         "hasAgriSoil": {
@@ -116,18 +124,20 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Reference to the soil associated with this parcel of land"
         },
         "hasAirQualityObserved": {
           "type": "array",
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Reference to the air quality observed in this parcel of land",
           "items": {
             "anyOf": [
@@ -136,19 +146,20 @@
                 "minLength": 1,
                 "maxLength": 256,
                 "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-                "description": "Property. Identifier format of any NGSI entity"
+                "description": "Identifier format of any NGSI entity"
               },
               {
                 "type": "string",
                 "format": "uri",
-                "description": "Property. Identifier format of any NGSI entity"
+                "description": "Identifier format of any NGSI entity"
               }
             ]
           }
         },
         "cropStatus": {
           "type": "string",
-          "description": "Property. Enum:'seeded, justBorn, growing, maturing, readyForHarvesting'. A choice from an enumerated list describing the crop planting status",
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Crop planting status, held as a controlled-vocabulary term. Enum:'seeded, justBorn, growing, maturing, readyForHarvesting'",
           "enum": [
             "seeded",
             "justBorn",
@@ -160,17 +171,44 @@
         "lastPlantedAt": {
           "type": "string",
           "format": "date-time",
+          "x-ngsi-type": "Property",
           "description": "Property. Indicates the date when the crop was last planted"
         },
-        "hasDevice": {
+        "hasDevices": {
           "type": "array",
-          "description": "Property. Reference to the IoT devices associated with this parcel i.e. sensors, controls",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to the IoT devices associated with this parcel i.e. sensors, controls",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
           }
         },
+        "observation": {
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to the WeatherObserved entity for this parcel"
+        },
+        "prediction": {
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to the WeatherForecast entity for this parcel"
+        },
+        "temperature": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Ambient temperature observed in the parcel. Units:'degrees Celsius' (UN/CEFACT CEL)"
+        },
+        "humidity": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "P1",
+          "description": "Property. Soil humidity/moisture observed in the parcel, as a fraction. Units:'percent' (UN/CEFACT P1)"
+        },
         "soilTextureType": {
           "type": "string",
+          "x-ngsi-type": "Property",
           "description": "Property. Enum: 'Sands', 'Loamy sands', 'Sandy loams', 'Loam', 'Silt loam', 'Silt', 'Sandy clay loam', 'Clay loam', 'Silty clay loam', 'Sandy clay', 'Silty clay', 'Clay'. Based on the soil texture classification of the United States Department of Agriculture (USDA): https://www.nrcs.usda.gov/wps/portal/nrcs/detailfull/soils/ref/?cid=nrcs142p2_054262",
           "enum": [
             "Sands",
@@ -189,6 +227,7 @@
         },
         "irrigationSystemType": {
           "type": "string",
+          "x-ngsi-type": "Property",
           "description": "Property. Enum: 'Surface irrigation', 'Localized irrigation', 'Drip irrigation', 'Sprinkler irrigation', 'Center pivot irrigation', 'Lateral move irrigation', 'Sub-irrigation', 'Manual irrigation'. Based on common types of irrigation systems as defined by Centers for Disease Control and Prevention (CDC): https://www.cdc.gov/healthywater/other/agricultural/types.html",
           "enum": [
             "Surface irrigation",

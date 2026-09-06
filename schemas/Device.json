@@ -23,14 +23,32 @@
           "enum": [
             "Device"
           ],
-          "description": "Property. NGSI Entity type. It has to be Device"
+          "description": "NGSI Entity type. It has to be Device"
         },
         "controlledAsset": {
           "type": "array",
-          "description": "Property. Model:'https://schema.org/Text'. List of the asset(s) (building, object, etc.) controlled by the device",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Model:'https://schema.org/Text'. List of the asset(s) (building, object, etc.) controlled by the device",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
           }
+        },
+        "heartRate": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "5K",
+          "description": "Property. Heart rate measured by the device. Units:'beats per minute' (UN/CEFACT 5K)"
+        },
+        "humidity": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "P1",
+          "description": "Property. Humidity measured by the device, as a fraction. Units:'percent' (UN/CEFACT P1)"
+        },
+        "status": {
+          "type": "string",
+          "x-ngsi-type": "Property",
+          "description": "Property. Free-text operational status reported by the device"
         },
         "mnc": {
           "type": "string",
@@ -105,6 +123,7 @@
         },
         "distance": {
           "type": "number",
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/Distance'. Location of this device represented by a distance from a starting point. All units are accepted in [CEFACT](https://www.unece.org/cefact.html) code"
         },
         "dstAware": {
@@ -113,6 +132,7 @@
         },
         "depth": {
           "type": "number",
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/depth'. Location of this device represented by a depth from a starting point. All units are accepted in [CEFACT](https://www.unece.org/cefact.html) code"
         },
         "relativePosition": {
@@ -143,10 +163,19 @@
           "description": "Property. Model:'https://schema.org/provider'. The provider of the device"
         },
         "refDeviceModel": {
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Model of the device",
           "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
         },
+        "deviceModel": {
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to the DeviceModel entity for this device"
+        },
         "batteryLevel": {
+          "x-ngsi-type": "Property",
+          "x-unitCode": "C68",
           "description": "Property. Model:'https://schema.org/Number'. Device battery level. It must be equal to 1.0 when battery is full. 0.0 when battery is empty. -1 when transiently cannot be determined",
           "oneOf": [
             {
@@ -163,10 +192,12 @@
         },
         "rssi": {
           "type": "number",
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/Number'. Received signal strength indicator for a wireless enabled device. It must be expressed in dBm or mW, use unitcode to set it out. "
         },
         "deviceState": {
           "type": "string",
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/Text'. State of this device from an operational point of view. Its value can be vendor dependent"
         },
         "dateLastValueReported": {

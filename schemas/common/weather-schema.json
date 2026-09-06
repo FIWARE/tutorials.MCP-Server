@@ -36,17 +36,22 @@
       "properties": {
         "temperature": {
           "type": "number",
-          "description": "Property. Temperature of the item"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Temperature of the item. Units:'degrees Celsius' (UN/CEFACT CEL)"
         },
         "feelLikesTemperature": {
           "type": "number",
-          "description": "Property. Temperature appreciation of the item"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Temperature appreciation of the item. Units:'degrees Celsius' (UN/CEFACT CEL)"
         },
         "relativeHumidity": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Property. Humidity in the Air. Observed instantaneous relative humidity (water vapour in air)"
+          "x-ngsi-type": "Property",
+          "description": "Property. Humidity in the Air. Observed instantaneous relative humidity (water vapour in air), as a fraction between 0 and 1"
         }
       }
     },
@@ -79,46 +84,62 @@
         },
         "windDirection": {
           "type": "number",
-          "description": "Property. Model:'http://schema.org/Number'. Direction of the wind bet",
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'http://schema.org/Number'. Direction of the wind, in decimal degrees clockwise from true north",
           "minimum": 0,
           "maximum": 360
         },
         "windSpeed": {
           "type": "number",
-          "description": "Property. Model:'http//schema.org/Number'. Intensity of the wind",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "MTS",
+          "description": "Property. Model:'http//schema.org/Number'. Intensity of the wind. Units:'metres per second' (UN/CEFACT MTS)",
           "minimum": 0
         },
         "gustSpeed": {
           "type": "number",
-          "description": "Property. A sudden burst of high-speed wind over the observed average wind speed lasting only for a few seconds"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "MTS",
+          "description": "Property. A sudden burst of high-speed wind over the observed average wind speed lasting only for a few seconds. Units:'metres per second' (UN/CEFACT MTS)"
         },
         "refPointOfInterest": {
           "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Model:'http://schema.org/URL'. Point of interest related to the item"
         },
         "atmosphericPressure": {
           "type": "number",
           "minimum": 0,
-          "description": "Property. Model:'https://schema.org/Number'. The atmospheric pressure observed measured in Hecto Pascals. Units:'Hecto pascals'"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "PAL",
+          "description": "Property. Model:'https://schema.org/Number'. The atmospheric pressure observed. Units:'pascals' (UN/CEFACT PAL)"
         },
         "illuminance": {
           "type": "number",
           "minimum": 0,
-          "description": "Property. Model:'https://schema.org/Number'. (https://en.wikipedia.org/wiki/Illuminance) observed measured in lux (lx) or lumens per square metre (cd·sr·m−2). Units:'Lux'"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CDL",
+          "description": "Property. Model:'https://schema.org/Number'. (https://en.wikipedia.org/wiki/Illuminance) observed measured in lux. Units:'candela' (UN/CEFACT CDL)"
         },
         "temperature": {
           "type": "number",
-          "description": "Property. Temperature of the item"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Temperature of the item. Units:'degrees Celsius' (UN/CEFACT CEL)"
         },
         "feelsLikeTemperature": {
           "type": "number",
-          "description": "Property. Temperature appreciation of the item"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Temperature appreciation of the item. Units:'degrees Celsius' (UN/CEFACT CEL)"
         },
         "relativeHumidity": {
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description": "Property. Humidity in the Air. Observed instantaneous relative humidity (water vapour in air)"
+          "x-ngsi-type": "Property",
+          "description": "Property. Humidity in the Air. Observed instantaneous relative humidity (water vapour in air), as a fraction between 0 and 1"
         }
       }
     },
@@ -171,14 +192,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Source of the alert. Model:'http://schema.org/URL'"
         },
         "data": {

@@ -20,14 +20,13 @@
           "enum": [
             "Building"
           ],
-          "description": "Property. NGSI Entity type"
+          "description": "NGSI Entity type. It has to be Building"
         },
         "category": {
-          "type": "array",
-          "description": "Property. Category of the building. Enum:'apartments, bakehouse, barn, bridge, bungalow, bunker, cathedral, cabin, carport, chapel, church, civic, commercial, conservatory, construction, cowshed, detached, digester, dormitory, farm, farm_auxiliary, garage, garages, garbage_shed, grandstand, greenhouse, hangar, hospital, hotel, house, houseboat, hut, industrial, kindergarten, kiosk, mosque, office, parking, pavilion, public, residential, retail, riding_hall, roof, ruins, school, service, shed, shrine, stable, stadium, static_caravan, sty, synagogue, temple, terrace, train_station, transformer_tower, transportation, university, warehouse, water_tower'",
-          "items": {
-            "type": "string",
-            "enum": [
+          "type": "string",
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Category of the building, held as a controlled-vocabulary term. Enum:'apartments, bakehouse, barn, bridge, bungalow, bunker, cathedral, cabin, carport, chapel, church, civic, commercial, conservatory, construction, cowshed, detached, digester, dormitory, farm, farm_auxiliary, garage, garages, garbage_shed, grandstand, greenhouse, hangar, hospital, hotel, house, houseboat, hut, industrial, kindergarten, kiosk, mosque, office, parking, pavilion, public, residential, retail, riding_hall, roof, ruins, school, service, shed, shrine, stable, stadium, static_caravan, sty, synagogue, temple, terrace, train_station, transformer_tower, transportation, university, warehouse, water_tower'",
+          "enum": [
               "apartments",
               "bakehouse",
               "barn",
@@ -91,14 +90,20 @@
               "university",
               "warehouse",
               "water_tower"
-            ]
-          }
+          ]
         },
         "containedInPlace": {
           "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons/properties/location"
         },
+        "owner": {
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Owner (Person or Organization) of the building"
+        },
         "occupier": {
           "type": "array",
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Person or entity using the building. Model:'https://schema.org/URL'",
           "items": {
             "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
@@ -106,31 +111,23 @@
         },
         "floorsAboveGround": {
           "type": "integer",
+          "x-ngsi-type": "Property",
           "description": "Property. Floors above the ground level. Model:'https://schema.org/Number'"
         },
         "floorsBelowGround": {
           "type": "integer",
+          "x-ngsi-type": "Property",
           "description": "Property. Floors below the ground level. Model:'https://schema.org/Number'"
         },
         "mapUrl": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256,
-              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
-            },
-            {
-              "type": "string",
-              "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
-            }
-          ],
-          "description": "Relationship. Reference to the map containing the building"
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'https://schema.org/URL'. URL of a map showing the building"
         },
         "openingHours": {
           "type": "array",
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/openingHours'. Opening hours of this building",
           "items": {
             "type": "string"
@@ -140,16 +137,19 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1,
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/Number'. Probability of total collapse of the building"
         },
         "peopleCapacity": {
           "type": "number",
           "minimum": 0,
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/Number'. Allowed people present at the building"
         },
         "peopleOccupancy": {
           "type": "number",
           "minimum": 0,
+          "x-ngsi-type": "Property",
           "description": "Property. Model:'https://schema.org/Number'. People present at the building"
         }
       }

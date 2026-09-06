@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schemaVersion": "0.0.4",
+  "modelTags": "",
+  "$id": "https://smart-data-models.github.io/dataModel.Agrifood/AgriGreenhouse/schema.json",
+  "title": "Smart Data Models - Agri Greenhouse",
+  "description": "This entity contains a harmonised description of the conditions recorded within a generic greenhouse, a type of AgriParcel.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons"
+    },
+    {
+      "$ref": "https://smart-data-models.github.io/dataModel.Agrifood/agrifood-schema.json#/definitions/AgriFood-Commons"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "AgriGreenhouse"
+          ],
+          "description": "NGSI Entity Type. It has to be AgriGreenhouse"
+        },
+        "ownedBy": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Owner (Person or Organization) of the AgriGreenhouse"
+        },
+        "belongsTo": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Entity the greenhouse belongs to"
+        },
+        "hasAgriParcelParent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to the AgriParcel entity to which this entity relates"
+        },
+        "hasAgriParcelChildren": {
+          "type": "array",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Related sub AgriParcel records to which this entity relates",
+          "items": {
+            "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
+          }
+        },
+        "hasWeatherObserved": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256,
+              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
+              "description": "Identifier format of any NGSI entity"
+            },
+            {
+              "type": "string",
+              "format": "uri",
+              "description": "Identifier format of any NGSI entity"
+            }
+          ],
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to the weather observation record current for this entity"
+        },
+        "hasWaterQualityObserved": {
+          "type": "array",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Reference to one or more water quality observation records current for this entity",
+          "items": {
+            "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
+          }
+        },
+        "relativeHumidity": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'http://schema.org/Number'. The inside relative humidity, as a fraction between 0 and 1 representing 0% to 100%"
+        },
+        "leafTemperature": {
+          "type": "integer",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "CEL",
+          "description": "Property. Model:'http://schema.org/Number'. The average leaf temperature. Units:'degrees Celsius' (UN/CEFACT CEL)"
+        },
+        "co2": {
+          "type": "integer",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "M1",
+          "description": "Property. Model:'http://schema.org/Number'. The measured interior CO2 concentration. Units:'milligrams per litre' (UN/CEFACT M1)"
+        },
+        "dailyLight": {
+          "type": "integer",
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'http://schema.org/Number'. Daily accumulated light. Units:'kW per square metre'"
+        },
+        "drainFlow": {
+          "type": "object",
+          "x-ngsi-type": "Property",
+          "description": "Property. Model:'http://schema.org/Number'. The observed drain flow rate. Units:'litres per second'",
+          "properties": {
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Value of the drain flow"
+            },
+            "maxValue": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Maximum value of the drain flow"
+            },
+            "minValue": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Minimum value of the drain flow"
+            },
+            "unitText": {
+              "type": "string",
+              "description": "Description of the units of the drain flow"
+            }
+          }
+        },
+        "hasDevice": {
+          "type": "array",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Model:'http://schema.org/URL'. Reference to the IoT devices associated with this greenhouse i.e. sensors, controls",
+          "items": {
+            "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/EntityIdentifierType"
+          }
+        }
+      }
+    }
+  ],
+  "required": [
+    "id",
+    "type",
+    "hasAgriParcelParent"
+  ]
+}

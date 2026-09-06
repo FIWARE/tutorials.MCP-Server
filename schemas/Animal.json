@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$schemaVersion": "0.0.2",
   "modelTags": "",
-  "$id": "https://smart-data-models.github.io/dataModel.Agrifood/Animall/schema.json",
+  "$id": "https://smart-data-models.github.io/dataModel.Agrifood/Animal/schema.json",
   "title": "Animal model IoF2020 ShareBeef UC",
   "description": "An observation of animal conditions at a certain place and time. This data model has been developed for the IoF2020 UC ShareBeef by UCO and SensoWave.",
   "type": "object",
@@ -23,7 +23,13 @@
           "enum": [
             "Animal"
           ],
-          "description": "Property. NGSI Entity Type: It has to be Animal"
+          "description": "NGSI Entity Type: It has to be Animal"
+        },
+        "heartRate": {
+          "type": "number",
+          "x-ngsi-type": "Property",
+          "x-unitCode": "5K",
+          "description": "Property. Heart rate of the animal. Units:'beats per minute' (UN/CEFACT 5K)"
         },
         "species": {
           "type": "string",
@@ -36,15 +42,18 @@
             "pig",
             "sheep"
           ],
-          "description": "Property. Species to which the animal belongs. This enum can be increased. Enum:'cow, goat, horse, pig, sheep, dairy cattle, beef cattle'\u00b7 Model:'https://schema.org/Text'"
+          "x-ngsi-type": "Property",
+          "description": "Property. Species to which the animal belongs. This enum can be increased. Enum:'cow, goat, horse, pig, sheep, dairy cattle, beef cattle'· Model:'https://schema.org/Text'"
         },
         "legalId": {
           "type": "string",
+          "x-ngsi-type": "Property",
           "description": "Property. Legal ID of the animal"
         },
         "birthdate": {
           "type": "string",
           "format": "date-time",
+          "x-ngsi-type": "Property",
           "description": "Property. Animal's birthdate. Model:'https://schema.org/DateTime'"
         },
         "sex": {
@@ -53,10 +62,12 @@
             "female",
             "male"
           ],
-          "description": "Property. Sex of the animal. Enum:'male, female'"
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Sex of the animal, held as a controlled-vocabulary term (mapped to https://schema.org/Male / https://schema.org/Female). Enum:'male, female'"
         },
         "breed": {
           "type": "string",
+          "x-ngsi-type": "Property",
           "description": "Property. Breed of the animal"
         },
         "calvedBy": {
@@ -66,14 +77,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Mother of the animal"
         },
         "siredBy": {
@@ -83,19 +95,22 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. Father of the animal"
         },
         "weight": {
           "type": "number",
-          "description": "Relationship. Model:'http://schema.org/Number'. The weight of the animal as a number. Units:'kg'"
+          "x-ngsi-type": "Property",
+          "x-unitCode": "KGM",
+          "description": "Property. Model:'http://schema.org/Number'. The weight of the animal as a number. Units:'kg' (UN/CEFACT KGM)"
         },
         "ownedBy": {
           "anyOf": [
@@ -104,14 +119,15 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
+          "x-ngsi-type": "Relationship",
           "description": "Relationship. The owner of the animal"
         },
         "locatedAt": {
@@ -121,15 +137,16 @@
               "minLength": 1,
               "maxLength": 256,
               "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             },
             {
               "type": "string",
               "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
+              "description": "Identifier format of any NGSI entity"
             }
           ],
-          "description": "Relationship. Id of the AgriParcel relationship"
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. The AgriParcel the animal is located at"
         },
         "phenologicalCondition": {
           "type": "string",
@@ -141,7 +158,8 @@
             "maleAdult",
             "maleYoung"
           ],
-          "description": "Property. Phenological condition of the animal. Enum:'lactatingBaby, grazingBaby, maleAdult, femaleAdult, maleYoung, femaleYoung'"
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Phenological condition of the animal, held as a controlled-vocabulary term. Enum:'lactatingBaby, grazingBaby, maleAdult, femaleAdult, maleYoung, femaleYoung'"
         },
         "reproductiveCondition": {
           "type": "string",
@@ -152,7 +170,8 @@
             "inHeat",
             "noStatus"
           ],
-          "description": "Property. Reproductive condition of the animal. Enum:'noStatus, inactive, inCalf, inHeat, active'"
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Reproductive condition of the animal, held as a controlled-vocabulary term. Enum:'noStatus, inactive, inCalf, inHeat, active'"
         },
         "healthCondition": {
           "type": "string",
@@ -161,24 +180,13 @@
             "inTreatment",
             "sick"
           ],
-          "description": "Property. Phenological condition of the animal. Enum:' healthy, sick, inTreatment'"
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Health condition of the animal, held as a controlled-vocabulary term. Enum:'healthy, sick, inTreatment'"
         },
         "fedWith": {
-          "anyOf": [
-            {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 256,
-              "pattern": "^[\\w\\-\\.\\{\\}\\$\\+\\*\\[\\]`|~^@!,:\\\\]+$",
-              "description": "Property. Identifier format of any NGSI entity"
-            },
-            {
-              "type": "string",
-              "format": "uri",
-              "description": "Property. Identifier format of any NGSI entity"
-            }
-          ],
-          "description": "Relationship. Food used for the animal"
+          "type": "string",
+          "x-ngsi-type": "Property",
+          "description": "Property. Food used for the animal"
         },
         "welfareCondition": {
           "type": "string",
@@ -186,7 +194,8 @@
             "issue",
             "adequate"
           ],
-          "description": "Property. Indicator of the animal welfare. Enum:'issue, adequate'"
+          "x-ngsi-type": "VocabProperty",
+          "description": "VocabProperty. Indicator of the animal welfare, held as a controlled-vocabulary term. Enum:'issue, adequate'"
         }
       }
     }

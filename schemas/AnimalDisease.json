@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schemaVersion": "0.0.1",
+  "modelTags": "I4Trust",
+  "$id": "https://smart-data-models.github.io/dataModel.Agrifood/AnimalDisease/schema.json",
+  "title": "Animal Disease FarmData4All i4Trust",
+  "description": "Object modelling an animal disease for a livestock farm.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/GSMA-Commons"
+    },
+    {
+      "$ref": "https://smart-data-models.github.io/data-models/common-schema.json#/definitions/Location-Commons"
+    },
+    {
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "AnimalDisease"
+          ],
+          "description": "NGSI Entity Type. It has to be AnimalDisease"
+        },
+        "disease": {
+          "type": "string",
+          "x-ngsi-type": "Property",
+          "description": "Property. Animal disease as diagnosed by a veterinarian. Reference list of diseases: https://www.mapa.gob.es/es/ganaderia/temas/sanidad-animal-higiene-ganadera/sanidad-animal/enfermedades/"
+        },
+        "diagnosticTest": {
+          "type": "string",
+          "x-ngsi-type": "Property",
+          "description": "Property. Diagnostic test performed on the animals for the determination of the disease by a veterinarian"
+        },
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "x-ngsi-type": "Property",
+          "description": "Property. Date of diagnosis of the disease by a veterinarian"
+        },
+        "veterinarianTreatment": {
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Medical treatment diagnosed by the veterinarian to treat the disease. Model:'https://github.com/smart-data-models/dataModel.Agrifood/blob/master/VeterinarianTreatment/schema.json'"
+        },
+        "animals": {
+          "type": "array",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Animal or list of animals diagnosed with the disease. Model:'https://github.com/smart-data-models/dataModel.Agrifood/blob/master/Animal/schema.json'",
+          "items": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "veterinarian": {
+          "type": "string",
+          "format": "uri",
+          "x-ngsi-type": "Relationship",
+          "description": "Relationship. Diagnostic veterinarian. Relationship to the prescribing veterinarian"
+        }
+      }
+    }
+  ],
+  "required": [
+    "id",
+    "type",
+    "disease"
+  ]
+}

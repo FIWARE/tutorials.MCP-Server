@@ -3,13 +3,10 @@
   "$id": "https://ngsi-ld-tutorials/generated/PartField/schema.json",
   "title": "PartField",
   "description": "A sub-division of an AgriParcel (a management zone within a field). Stub: no instances on the broker and no resolvable model definition; fields are the tutorial-conventional minimum.",
-  "modelTags": "generated,stub",
+  "modelTags": "stub",
   "x-derivedFrom": {
     "method": "context-term only",
-    "typeUri": "https://ngsi-ld-tutorials.readthedocs.io/en/latest/datamodels.html#PartField",
-    "broker": "http://localhost:1026/ngsi-ld/v1",
-    "instances": 0,
-    "generatedAt": "2026-09-03T07:29:47.112241Z"
+    "instances": 0
   },
   "type": "object",
   "properties": {
