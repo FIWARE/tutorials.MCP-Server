@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Animal disease register — the records</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --concern: #b3401e; --concern-soft: #fbe4dc;
+    --warn: #b8860b; --warn-soft: #f6ecd2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --concern: #e88a5e; --concern-soft: #3a271f; --warn: #e0b84a; --warn-soft: #3a301c;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --concern: #e88a5e; --concern-soft: #3a271f; --warn: #e0b84a; --warn-soft: #3a301c; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --concern: #b3401e; --concern-soft: #fbe4dc; --warn: #b8860b; --warn-soft: #f6ecd2; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.5rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.25rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.15rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.05rem; margin: 0 0 0.35rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .stats { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .stat { flex: 1 1 120px; border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.75rem; background: var(--bg); }
+  .stat .n { font-size: 1.4rem; font-weight: 700; line-height: 1; }
+  .stat .l { font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.2rem; }
+  .stat.zoo .n { color: var(--concern); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.83rem; margin-top: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.5rem 0.6rem; text-align: left; vertical-align: top; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td code, .desc code, .note code { background: rgba(74,124,63,0.14); padding: 0.03rem 0.28rem; border-radius: 4px; font-size: 0.92em; }
+  .badge { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 0.08rem 0.42rem; border-radius: 999px; white-space: nowrap; }
+  .badge.suspected { background: var(--warn-soft); color: var(--warn); }
+  .badge.anticipated { background: var(--accent-soft); color: var(--accent); }
+  .badge.risk { background: var(--concern-soft); color: var(--concern); }
+  .badge.obs { background: var(--bg); color: var(--ink-soft); border: 1px solid var(--border); }
+  .badge.zoo { background: var(--concern-soft); color: var(--concern); }
+  .kv { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  .kv th { width: 170px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .note { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; margin: 0.7rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .note strong { color: var(--concern); font-style: normal; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🩺 Animal disease register — the records</h1>
+<p class="sub">Illustrative of 2026-09-07: <strong>10 <code>AnimalDisease</code> entities</strong> created from the herd review — 5 for cattle, 5 for pigs — each linked to its animal(s) via <code>affectedAnimal</code>&nbsp;↔&nbsp;<code>hasDisease</code>. Records, not diagnoses: every one is <em>suspected</em>, <em>anticipated</em> or a standing <em>risk</em> pending veterinary work.</p>
+
+<div class="panel">
+  <h2>1. What was written</h2>
+  <div class="stats">
+    <div class="stat"><div class="n">10</div><div class="l"><code>AnimalDisease</code> records</div></div>
+    <div class="stat"><div class="n">5 / 5</div><div class="l">cattle / pig</div></div>
+    <div class="stat"><div class="n">6</div><div class="l"><span class="badge suspected">suspected</span></div></div>
+    <div class="stat"><div class="n">3</div><div class="l"><span class="badge anticipated">anticipated</span></div></div>
+    <div class="stat zoo"><div class="n">1</div><div class="l">zoonotic flag (<em>S. suis</em>)</div></div>
+  </div>
+  <p class="note">Also written: <code>hasDisease</code> on each affected animal — <code>cow001</code>, <code>cow005</code>, <code>cow010</code>, <code>cow020</code>, <code>cow025</code>, and <code>pig006</code>, <code>pig016</code>, <code>pig031</code>, <code>pig035</code>, <code>pig037</code>. <code>query_entities</code> does not yet resolve the new type (broker index lag); records read back by ID.</p>
+</div>
+
+<div class="panel">
+  <h2>2. Cattle — 5 records</h2>
+  <table>
+    <thead><tr><th>Animal</th><th>Record</th><th>Suspected disease</th><th>Status</th><th>Severity</th><th>Recommended treatment (short)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Tulip</strong><br><code>cow010</code></td>
+        <td><code>AnimalDisease:<br>cow010-parasitism</code></td>
+        <td>Parasitic gastroenteritis / chronic wasting</td>
+        <td><span class="badge suspected">suspected</span></td>
+        <td>moderate</td>
+        <td>Anthelmintic guided by faecal egg count (± flukicide); correct trace elements; move to clean grazing; re-weigh in 3–4 wk.</td>
+      </tr>
+      <tr>
+        <td><strong>Bug</strong><br><code>cow025</code></td>
+        <td><code>AnimalDisease:<br>cow025-johnes</code></td>
+        <td>Johne's disease (paratuberculosis); differentials: dental, parasitism, fluke, lymphosarcoma</td>
+        <td><span class="badge suspected">suspected</span></td>
+        <td>high</td>
+        <td>No cure if confirmed — cull or isolate, don't breed replacements, discard her milk line. Treat the differential if that proves to be the cause (rasp teeth + soft ration; anthelmintic + flukicide).</td>
+      </tr>
+      <tr>
+        <td><strong>Chalky</strong><br><code>cow020</code></td>
+        <td><code>AnimalDisease:<br>cow020-parasitism</code></td>
+        <td>Subclinical PGE / ill-thrift</td>
+        <td><span class="badge obs">under-observation</span></td>
+        <td>mild</td>
+        <td>Strategic anthelmintic if FEC positive; review growing-heifer ration and feed-barrier space; monthly weigh; escalate if ADG stays &lt; 0.5 kg/day.</td>
+      </tr>
+      <tr>
+        <td><strong>Beany</strong><br><code>cow001</code></td>
+        <td><code>AnimalDisease:<br>cow001-lameness</code></td>
+        <td>Lameness / claw lesion — foot rot, digital dermatitis, sole ulcer or white-line</td>
+        <td><span class="badge suspected">suspected</span></td>
+        <td>unknown *</td>
+        <td>Functional hoof trim. Foot rot → parenteral penicillin/oxytetracycline + topical. Digital dermatitis → topical oxytet + group footbath. NSAID for pain; soft dry bedding; recheck 7–10 d.</td>
+      </tr>
+      <tr>
+        <td><strong>Sun</strong><br><code>cow005</code></td>
+        <td><code>AnimalDisease:<br>cow005-tachycardia</code></td>
+        <td>Persistent resting tachycardia — cause unknown (TRP, endocarditis, infection, anaemia, stress)</td>
+        <td><span class="badge suspected">suspected</span></td>
+        <td>moderate</td>
+        <td>Treat to the diagnosis: TRP → magnet + antibiotic + NSAID, rest; systemic infection → antibiotic + NSAID; anaemia → treat cause; stress reading → none, recheck at rest.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="note">* Beany's severity stays "unknown" until a locomotion score and a foot exam in the crush are done.</p>
+</div>
+
+<div class="panel">
+  <h2>3. Pigs — 5 records</h2>
+  <p class="desc">No pig is clinically ill now. These are forecast against the two litters due within ~4 months and the current housing.</p>
+  <table>
+    <thead><tr><th>Scope</th><th>Record</th><th>Disease</th><th>Status</th><th>Severity</th><th>Recommended treatment / prevention (short)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Litters due — <strong>Tango</strong>, <strong>Peach</strong></td>
+        <td><code>AnimalDisease:<br>piggery-neonatal-enteritis</code></td>
+        <td>Piglet scour complex — ETEC, rotavirus, <em>C. perfringens</em> C, <em>Cystoisospora suis</em></td>
+        <td><span class="badge anticipated">anticipated</span></td>
+        <td>high</td>
+        <td>Electrolytes + antibiotic by sensitivity; toltrazuril for coccidiosis. Prevent: farrowing crates + heated creeps, sow pre-farrow <em>E. coli</em>/<em>C. perfringens</em> vaccine, colostrum within 6 h, all-in/all-out hygiene.</td>
+      </tr>
+      <tr>
+        <td>Litters due — <strong>Tango</strong>, <strong>Peach</strong></td>
+        <td><code>AnimalDisease:<br>piggery-jointill</code></td>
+        <td>Polyarthritis / navel ill — <em>S. suis</em>, <em>T. pyogenes</em>, <em>E. coli</em> <span class="badge zoo">zoonotic</span></td>
+        <td><span class="badge anticipated">anticipated</span></td>
+        <td>mod–high</td>
+        <td>Early parenteral penicillin/amoxicillin (or ceftiofur/TMP-sulfa by sensitivity) + meloxicam, 5–7 d. Prevent: navel dip at birth, clean non-abrasive creep. <strong>Glove up — <em>S. suis</em> infects people.</strong></td>
+      </tr>
+      <tr>
+        <td>Piglets / weaners</td>
+        <td><code>AnimalDisease:<br>piggery-greasy-pig</code></td>
+        <td>Exudative epidermitis (<em>Staphylococcus hyicus</em>)</td>
+        <td><span class="badge anticipated">anticipated</span></td>
+        <td>moderate</td>
+        <td>Antibiotic by culture (resistance common) + chlorhexidine washes + emollients; fluids and heat for severe cases; isolate. Prevent: cut skin trauma, control sow mange.</td>
+      </tr>
+      <tr>
+        <td><strong>Tango</strong>, <strong>Peach</strong> + thin sows (Blush, Clifford)</td>
+        <td><code>AnimalDisease:<br>piggery-mma</code></td>
+        <td>Mastitis-metritis-agalactia / postpartum dysgalactia</td>
+        <td><span class="badge risk">risk</span></td>
+        <td>mod–high</td>
+        <td>Coliform-active antibiotic + NSAID + small repeated oxytocin doses; warm the sow; cross-foster / supplement litter. Prevent: condition thin sows, protected feeding, laxative fibre pre-farrow, farrowing hygiene, water ≥ 2 L/min.</td>
+      </tr>
+      <tr>
+        <td>Boars — <strong>Mammoth</strong>, <strong>Giant</strong>, <strong>Colossus</strong></td>
+        <td><code>AnimalDisease:<br>boarpen-fight-trauma</code></td>
+        <td>Fight wounds / lameness / abscessation from group-housed boars</td>
+        <td><span class="badge risk">risk</span></td>
+        <td>moderate</td>
+        <td>Flush wounds, lance abscesses, broad-spectrum antibiotic + NSAID for significant injuries, hoof trim/block for feet, separate the bullied boar. Prevent: single-pen the boars, or move them out of sight/smell of the in-heat sows.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>4. The <code>AnimalDisease</code> record shape</h2>
+  <p class="desc">No schema was loaded for this type — the fields were chosen to hold a working clinical record. Example: <code>urn:ngsi-ld:AnimalDisease:cow025-johnes</code>.</p>
+  <table class="kv">
+    <tbody>
+      <tr><th><code>id</code> / <code>type</code></th><td><code>urn:ngsi-ld:AnimalDisease:cow025-johnes</code> / <code>AnimalDisease</code></td></tr>
+      <tr><th><code>name</code></th><td>Suspected Johne's disease (paratuberculosis) — Bug</td></tr>
+      <tr><th><code>disease</code></th><td>Johne's disease / paratuberculosis (<em>Mycobacterium avium</em> subsp. <em>paratuberculosis</em>)</td></tr>
+      <tr><th><code>status</code></th><td><code>suspected</code> · <code>anticipated</code> · <code>risk</code> · <code>under-observation</code></td></tr>
+      <tr><th><code>affectedAnimal</code> / <code>affectedGroup</code></th><td>relationship to the <code>Animal</code>(s), or a text scope for herd-level records</td></tr>
+      <tr><th><code>atRiskAnimal</code></th><td>relationship array — source dams / at-risk individuals (forecast records)</td></tr>
+      <tr><th><code>severity</code></th><td>mild · moderate · high (+ "(forecast)" where anticipated)</td></tr>
+      <tr><th><code>clinicalSigns</code></th><td>array — observed, or expected if it occurs</td></tr>
+      <tr><th><code>suspectedCause</code> / <code>differentialDiagnosis</code></th><td>free text / array of differentials to rule out</td></tr>
+      <tr><th><code>diagnosticPlan</code></th><td>array — the tests that would confirm or exclude it</td></tr>
+      <tr><th><code>preventiveMeasures</code></th><td>array — husbandry changes (forecast records)</td></tr>
+      <tr><th><code>recommendedTreatment</code></th><td>free text — drug classes and management, conditional on the diagnosis</td></tr>
+      <tr><th><code>treatmentStatus</code></th><td><code>pending diagnosis</code> · <code>monitoring</code> · <code>preventive — not yet occurring</code></td></tr>
+      <tr><th><code>zoonotic</code> / <code>notifiable</code></th><td>booleans, with a <code>zoonoticNote</code> / <code>notifiableNote</code> where relevant</td></tr>
+      <tr><th><code>dateDetected</code> / <code>detectedBy</code></th><td>2026-09-07 / "FMIS weight-trend review" or "FMIS herd risk review"</td></tr>
+      <tr><th><code>locatedAt</code></th><td>the parcel, farm or pen — <code>AgriParcel:003–006</code>, <code>AgriFarm:farm002</code>, <code>Pen:BoarPen</code></td></tr>
+    </tbody>
+  </table>
+  <p class="note">The animal-side <code>hasDisease</code> is the inverse of <code>affectedAnimal</code> — the herd can be queried for open cases from either end.</p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS · illustrative · disease-register writes 2026-09-07</footer>
+</div>
+</body>
+</html>

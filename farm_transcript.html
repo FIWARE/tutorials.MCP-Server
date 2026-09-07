@@ -467,6 +467,48 @@
 <p>Added. <strong>Chalky</strong> (<code>cow020</code>) stays <code>healthy</code> with a note: average daily gain ~0.41&nbsp;kg/day, roughly 15% below the Jersey age target, growth continuous with no stall — review ration and worm burden, re-weigh monthly.</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_health_condition.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
 
+<p style="text-align:center;color:var(--ink-soft);font-size:0.75rem;font-style:italic;margin:1.6rem 0 0.9rem;">— 2026-09-07 · disease register —</p>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Which potential animal diseases are suspected on the farm?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>From the <code>healthCondition</code> and <code>comment</code> fields on the animals:</p>
+<ul>
+<li><strong>Gastrointestinal parasitism</strong> — Tulip (<code>cow010</code>), Bug (<code>cow025</code>), and Chalky (<code>cow020</code>) as a watch item.</li>
+<li><strong>Johne's disease (paratuberculosis)</strong> — Bug: chronic steady wasting in an 8-year-old.</li>
+<li><strong>Subclinical / chronic disease</strong>, unspecified — Tulip, pending tests.</li>
+<li><strong>Dental disease</strong> — Bug, age-related.</li>
+<li><strong>Lameness / hoof lesion</strong> — Beany (<code>cow001</code>), from a "check hooves" note.</li>
+<li><strong>Cardiac / pain / fever</strong> — Sun (<code>cow005</code>), resting heart rate 70&nbsp;bpm against a herd mean of ~53.</li>
+</ul>
+<p>Pigs carry no health flags — only forecast farrowing risks and a dead collar battery on Goliath.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Generate appropriate Animal Disease records and a list of potential treatments. Fill out the records as best you can.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Created <strong>5 <code>AnimalDisease</code> records</strong>, each linked to its animal (<code>affectedAnimal</code> ↔ <code>hasDisease</code>) and parcel, with clinical signs, differentials, a diagnostic plan, severity, zoonotic/notifiable flags and a treatment field:</p>
+<ul>
+<li>Tulip — parasitic gastroenteritis / chronic wasting (<code>suspected</code>, moderate)</li>
+<li>Bug — Johne's disease (<code>suspected</code>, high)</li>
+<li>Chalky — subclinical PGE / ill-thrift (<code>under-observation</code>, mild)</li>
+<li>Beany — lameness / claw lesion, unspecified (<code>suspected</code>)</li>
+<li>Sun — resting tachycardia, undiagnosed (<code>suspected</code>, moderate)</li>
+</ul>
+<p><code>treatmentStatus</code> is <code>pending diagnosis</code> throughout — treatment options recorded per condition (anthelmintics ± flukicide, hoof trim + footbath, the traumatic-reticuloperitonitis protocol, etc.), nothing to be given blind.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Also add the pig diseases to the records.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Added <strong>5 more</strong>, all forecast since no pig is clinically ill:</p>
+<ul>
+<li>Piglet scour complex — litters due from Tango &amp; Peach (<code>anticipated</code>, high)</li>
+<li>Joint ill / navel infection — same litters (<code>anticipated</code>; <em>S. suis</em> is <strong>zoonotic</strong>)</li>
+<li>Greasy pig disease (<em>S. hyicus</em>) — piglets and weaners (<code>anticipated</code>)</li>
+<li>Mastitis-metritis-agalactia — Tango, Peach and the thin sows (<code>risk</code>)</li>
+<li>Boar fight trauma — Mammoth, Giant, Colossus (<code>risk</code>)</li>
+</ul>
+<p>Ten <code>AnimalDisease</code> records total — 5 cattle, 5 pig — plus <code>hasDisease</code> back-links on the ten animals involved.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
+
 </div>
 <footer>
   Victory Farm &amp; Animal Farm FMIS · full transcript
