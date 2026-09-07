@@ -402,6 +402,30 @@
 <p>Caveats: the collars keep reporting live positions, so <code>locatedAt</code> will not auto-update if a boar wanders out; the broker is not enforcing polygon filters, so containment was checked by hand.</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
 
+<div class="turn user"><div class="bubble"><span class="label">You</span>What data should the <code>Pen</code> entity hold?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Right now it carries only <code>name</code>, <code>description</code>, <code>lastUpdate</code> and <code>location</code> (the polygon) — the schema forced just <code>lastUpdate</code>. To work as an enclosure that animals sit in, it should also hold:</p>
+<ul>
+<li><strong>Classification</strong> — <code>category</code> (<code>boar</code>), <code>species</code> (<code>pig</code>)</li>
+<li><strong>Geometry</strong> — <code>area</code> from the polygon (~1250&nbsp;m²), <code>containedInPlace</code> → the parcel or farm it sits in</li>
+<li><strong>Occupancy</strong> — <code>hasAnimal</code> (the three boars, mirroring their <code>locatedAt</code>), plus <code>capacity</code> / <code>status</code></li>
+<li><strong>Husbandry</strong> — <code>surfaceType</code>, water/feed/shelter flags, <code>hasDevices</code> for sensors, <code>ownedBy</code></li>
+</ul>
+<p>Minimum worth adding now: <code>category</code>, <code>species</code>, <code>area</code>, <code>status</code>, <code>containedInPlace</code>, <code>hasAnimal</code>.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Go ahead and add that minimum set.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Written to <code>Pen:BoarPen</code>:</p>
+<ul>
+<li><code>category</code> <code>boar</code> · <code>species</code> <code>pig</code> · <code>status</code> <code>occupied</code></li>
+<li><code>area</code> 1249&nbsp;m² (the 32-gon's true area, ~416&nbsp;m²/boar)</li>
+<li><code>containedInPlace</code> → <code>AgriFarm:farm002</code> (Animal Farm)</li>
+<li><code>hasAnimal</code> → <code>pig031</code>, <code>pig035</code>, <code>pig037</code> — now pointing back at the same boars whose <code>locatedAt</code> points here</li>
+</ul>
+<p><code>lastUpdate</code> bumped to 12:15. The pen holds ten attributes total.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
+
 <div class="turn user"><div class="bubble"><span class="label">You</span>What historical weight data can you access?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>Via the temporal API:</p>
