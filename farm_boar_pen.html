@@ -44,6 +44,7 @@
   ins { background: var(--accent-soft); color: var(--accent); text-decoration: none; padding: 0 0.28rem; border-radius: 4px; }
   .kv { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
   .kv th { width: 130px; background: var(--accent-soft); color: var(--accent); }
+  .pill { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.05rem 0.4rem; border-radius: 999px; background: var(--concern-soft); color: var(--concern); }
   .note { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; margin: 0.7rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
   .note strong { color: var(--concern); font-style: normal; }
   .maplibregl-popup-content { font-size: 0.82rem; }
@@ -54,7 +55,7 @@
 <div class="wrap">
 
 <h1>🐖 Boar Pen — a 20 m enclosure around the three boars</h1>
-<p class="sub">Illustrative of the writes made on 2026-09-07: one new <code>Pen</code> entity generated from the boars' own positions, all three boars re-homed to it, and the pen record later fleshed out with classification, area and occupancy. Nothing physical moved — only the records changed.</p>
+<p class="sub">Illustrative of the writes made on 2026-09-07: one new <code>Pen</code> entity generated from the boars' own positions, all three boars re-homed to it, and the record later filled out against the Smart Data Models <em>Pen</em> schema. Nothing physical moved — only the records changed.</p>
 
 <div class="legend">
   <span><span class="sw" style="background:#ffffff;border:1px solid #2b2b23;"></span>boar — last collar fix</span>
@@ -102,25 +103,27 @@
 
 <div class="panel">
   <h2>3. The pen entity</h2>
-  <p class="desc">Created as a <code>Building</code>, rebuilt as a <code>Pen</code>, then &mdash; in a later pass &mdash; fleshed out with classification, area and occupancy. Rows in <ins>green</ins> were added after the initial create.</p>
+  <p class="desc">Built on the Smart Data Models <em>Pen</em> schema, served by the MCP at <code>ontology://agrifood/Pen</code> (required: <code>id</code>, <code>type</code>, <code>lastUpdate</code>). Created first as a <code>Building</code>, corrected to <code>Pen</code>, then filled out against the model.</p>
   <table class="kv">
     <tbody>
-      <tr><th><code>id</code></th><td><code>urn:ngsi-ld:Pen:BoarPen</code></td></tr>
-      <tr><th><code>type</code></th><td><del>Building</del> &nbsp;<ins>Pen</ins></td></tr>
-      <tr><th><code>name</code></th><td>Boar Pen</td></tr>
-      <tr><th><code>description</code></th><td>20&nbsp;m radius circular pen enclosing the boars (Mammoth, Giant, Colossus)</td></tr>
-      <tr><th><code>location</code></th><td>GeoProperty &middot; Polygon &middot; 33 points (32-gon + close) &middot; radius 20 m &middot; centre <code>[13.34713, 52.51973]</code></td></tr>
-      <tr><th><code>category</code></th><td><ins>boar</ins></td></tr>
-      <tr><th><code>species</code></th><td><ins>pig</ins></td></tr>
-      <tr><th><code>area</code></th><td><ins>1249&nbsp;m&sup2;</ins> (<code>MTK</code>) &mdash; the 32-gon's true area, ~416&nbsp;m&sup2;/boar</td></tr>
-      <tr><th><code>status</code></th><td><ins>occupied</ins></td></tr>
-      <tr><th><code>containedInPlace</code></th><td><ins>&rarr; <code>urn:ngsi-ld:AgriFarm:farm002</code></ins> (Animal Farm)</td></tr>
-      <tr><th><code>hasAnimal</code></th><td><ins>&rarr; <code>Animal:pig031</code>, <code>Animal:pig035</code>, <code>Animal:pig037</code></ins></td></tr>
-      <tr><th><code>lastUpdate</code></th><td><del>2026-09-07T11:47:00Z</del> &nbsp;<ins>2026-09-07T12:15:00Z</ins></td></tr>
-      <tr><th>links in</th><td><code>Animal:pig031/035/037</code> point here via <code>locatedAt</code> &mdash; the inverse of <code>hasAnimal</code></td></tr>
+      <tr><th colspan="2" style="background:var(--accent-soft);color:var(--accent)">Model fields (Smart Data Models Pen)</th></tr>
+      <tr><th><code>id</code> / <code>type</code></th><td><code>urn:ngsi-ld:Pen:BoarPen</code> / <del>Building</del> <ins>Pen</ins></td></tr>
+      <tr><th><code>lastUpdate</code> <span class="pill">required</span></th><td>2026-09-07T12:30:00Z</td></tr>
+      <tr><th><code>name</code> · <code>description</code></th><td>"Boar Pen" · "20&nbsp;m radius circular pen enclosing the boars"</td></tr>
+      <tr><th><code>location</code></th><td>GeoProperty · Polygon · 33 points (32-gon + close) · radius 20 m · centre <code>[13.34713, 52.51973]</code></td></tr>
+      <tr><th><code>farmId</code></th><td>&rarr; <code>urn:ngsi-ld:AgriFarm:farm002</code> (Animal Farm)</td></tr>
+      <tr><th><code>numAnimals</code></th><td>3</td></tr>
+      <tr><th><code>sex</code></th><td>VocabProperty <code>Male</code> (boars) &mdash; the model's enum is <code>M</code>/<code>F</code>, but the farm's <code>Animal</code> records use <code>Male</code>/<code>Female</code>, so this matches them</td></tr>
+      <tr><th><code>arrivalTimestamp</code></th><td>2026-09-07T11:46:00Z</td></tr>
+      <tr><th><code>avgWeight</code> · <code>weightStDev</code></th><td>302 · 44 kg (<code>KGM</code>) &mdash; from Mammoth 325, Giant 340, Colossus 241</td></tr>
+      <tr><th colspan="2" style="background:var(--pen-soft);color:var(--pen)">Extension fields (no equivalent in the model)</th></tr>
+      <tr><th><code>species</code></th><td>pig &mdash; the model has no species field, useful on a mixed cattle/pig farm</td></tr>
+      <tr><th><code>area</code></th><td>1249&nbsp;m&sup2; (<code>MTK</code>) &mdash; the 32-gon's true area, ~416&nbsp;m&sup2;/boar</td></tr>
+      <tr><th><code>status</code></th><td>occupied</td></tr>
+      <tr><th><code>hasAnimal</code></th><td>&rarr; <code>Animal:pig031</code>, <code>pig035</code>, <code>pig037</code> &mdash; the inverse of each boar's <code>locatedAt</code></td></tr>
     </tbody>
   </table>
-  <p class="note">Revision trail: <code>Building:BoarPen</code> created &rarr; boars pointed at it &rarr; <strong>type wrong</strong> &rarr; <code>Pen:BoarPen</code> created with the same polygon &rarr; boars re-pointed &rarr; <code>Building:BoarPen</code> deleted &rarr; <strong>six attributes added</strong> (classification, area, status, links) and <code>lastUpdate</code> bumped. Ten attributes total.</p>
+  <p class="note">Revision trail: <code>Building:BoarPen</code> created &rarr; boars pointed at it &rarr; <strong>type wrong</strong> &rarr; <code>Pen:BoarPen</code> re-created with the same polygon &rarr; boars re-pointed &rarr; <code>Building:BoarPen</code> deleted &rarr; occupancy fields added &rarr; <strong>re-aligned to the Pen schema</strong> (<code>containedInPlace</code>&rarr;<code>farmId</code>, dropped <code>category</code>, added <code>numAnimals</code> / <code>sex</code> / <code>arrivalTimestamp</code> / <code>avgWeight</code> / <code>weightStDev</code>).</p>
 </div>
 
 <footer>Victory Farm &amp; Animal Farm FMIS &middot; illustrative &middot; boar-pen writes 2026-09-07 &middot; basemap &copy; MapTiler &copy; OpenStreetMap contributors</footer>

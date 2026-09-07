@@ -13,9 +13,11 @@
     --ink-soft: #6b6a5e;
     --border: #ded8c6;
     --page: #ffffff;
+    --icon-rest: #e2ecda; --icon-hover: #f2f7ee;
   }
   @media (prefers-color-scheme: dark) {
     :root {
+      --icon-rest: #aabfa1; --icon-hover: #c9dabf;
       --bg: #17180f;
       --me-bubble: #4a7c3f;
       --me-text: #f2f2ea;
@@ -29,12 +31,12 @@
   :root[data-theme="dark"] {
     --bg: #17180f; --me-bubble: #4a7c3f; --me-text: #f2f2ea;
     --bot-bubble: #262820; --bot-text: #eae7dc; --ink-soft: #9a9789;
-    --border: #3a3b30; --page: #1c1e16;
+    --border: #3a3b30; --page: #1c1e16; --icon-rest: #aabfa1; --icon-hover: #c9dabf;
   }
   :root[data-theme="light"] {
     --bg: #f2efe6; --me-bubble: #4a7c3f; --me-text: #ffffff;
     --bot-bubble: #ffffff; --bot-text: #2b2b23; --ink-soft: #6b6a5e;
-    --border: #ded8c6; --page: #ffffff;
+    --border: #ded8c6; --page: #ffffff; --icon-rest: #e2ecda; --icon-hover: #f2f7ee;
   }
   * { box-sizing: border-box; }
   body {
@@ -93,17 +95,22 @@
     flex: 0 0 auto;
     width: 44px;
     height: 44px;
-    background: #ffffff;
+    background: var(--icon-rest);
     border-radius: 10px;
     border: 1px solid var(--border);
-    box-shadow: 0 1px 5px rgba(0,0,0,0.18);
+    box-shadow: 0 1px 6px rgba(58, 59, 48, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: filter 0.15s ease;
+    transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
   }
   a.topic-icon { cursor: pointer; }
-  a.topic-icon:hover { filter: brightness(0.93); }
+  a.topic-icon:hover {
+    background: var(--icon-hover);
+    border-color: var(--me-bubble);
+    box-shadow: 0 0 0 2px var(--me-bubble), 0 4px 14px rgba(58, 59, 48, 0.42);
+    transform: translateY(-1px);
+  }
   .topic-icon img {
     width: 28px;
     height: 28px;
@@ -404,26 +411,25 @@
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What data should the <code>Pen</code> entity hold?</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Right now it carries only <code>name</code>, <code>description</code>, <code>lastUpdate</code> and <code>location</code> (the polygon) — the schema forced just <code>lastUpdate</code>. To work as an enclosure that animals sit in, it should also hold:</p>
+<p>Right now it carries only <code>name</code>, <code>description</code>, <code>lastUpdate</code> and <code>location</code> (the polygon). There is a <code>Pen</code> schema — the Smart Data Models model at <code>ontology://agrifood/Pen</code> — which only forces <code>lastUpdate</code> but defines plenty more:</p>
 <ul>
-<li><strong>Classification</strong> — <code>category</code> (<code>boar</code>), <code>species</code> (<code>pig</code>)</li>
-<li><strong>Geometry</strong> — <code>area</code> from the polygon (~1250&nbsp;m²), <code>containedInPlace</code> → the parcel or farm it sits in</li>
-<li><strong>Occupancy</strong> — <code>hasAnimal</code> (the three boars, mirroring their <code>locatedAt</code>), plus <code>capacity</code> / <code>status</code></li>
-<li><strong>Husbandry</strong> — <code>surfaceType</code>, water/feed/shelter flags, <code>hasDevices</code> for sensors, <code>ownedBy</code></li>
+<li><strong>Siting</strong> — <code>farmId</code> → the farm, <code>buildingId</code> / <code>compartmentId</code> if indoors</li>
+<li><strong>Occupancy</strong> — <code>numAnimals</code>, <code>sex</code> (the farm uses <code>Male</code>/<code>Female</code>, as on the animals), <code>arrivalTimestamp</code>, <code>deadAnimalsSinceDateOfArrival</code></li>
+<li><strong>Performance</strong> — <code>avgWeight</code>, <code>weightStDev</code>, <code>avgGrowth</code>, <code>feedConsumption</code>, <code>waterConsumption</code></li>
+<li><strong>Environment</strong> — <code>temperature</code>, <code>humidity</code>, <code>co2</code>, <code>luminosity</code> (all <code>observedAt</code>)</li>
 </ul>
-<p>Minimum worth adding now: <code>category</code>, <code>species</code>, <code>area</code>, <code>status</code>, <code>containedInPlace</code>, <code>hasAnimal</code>.</p>
+<p>The model has no <code>species</code>, numeric <code>area</code> or occupancy <code>status</code> field, so those stay as extensions. Minimum worth adding now: <code>farmId</code>, <code>numAnimals</code>, <code>sex</code>, <code>arrivalTimestamp</code>, <code>avgWeight</code>, plus extension <code>area</code> / <code>status</code> / <code>hasAnimal</code>.</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Go ahead and add that minimum set.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Written to <code>Pen:BoarPen</code>:</p>
+<p>Written to <code>Pen:BoarPen</code> on the Pen schema:</p>
 <ul>
-<li><code>category</code> <code>boar</code> · <code>species</code> <code>pig</code> · <code>status</code> <code>occupied</code></li>
-<li><code>area</code> 1249&nbsp;m² (the 32-gon's true area, ~416&nbsp;m²/boar)</li>
-<li><code>containedInPlace</code> → <code>AgriFarm:farm002</code> (Animal Farm)</li>
-<li><code>hasAnimal</code> → <code>pig031</code>, <code>pig035</code>, <code>pig037</code> — now pointing back at the same boars whose <code>locatedAt</code> points here</li>
+<li><code>farmId</code> → <code>AgriFarm:farm002</code> (Animal Farm) · <code>numAnimals</code> 3 · <code>sex</code> <code>Male</code></li>
+<li><code>arrivalTimestamp</code> 2026-09-07T11:46Z · <code>avgWeight</code> 302&nbsp;kg · <code>weightStDev</code> 44&nbsp;kg (Mammoth 325, Giant 340, Colossus 241)</li>
+<li>extensions kept: <code>species</code> <code>pig</code>, <code>area</code> 1249&nbsp;m², <code>status</code> <code>occupied</code>, <code>hasAnimal</code> → the three boars (inverse of their <code>locatedAt</code>)</li>
 </ul>
-<p><code>lastUpdate</code> bumped to 12:15. The pen holds ten attributes total.</p>
+<p><code>lastUpdate</code> bumped to 12:30. (An earlier pass had used ad-hoc <code>category</code> / <code>containedInPlace</code> names; those were re-aligned to <code>sex</code> / <code>farmId</code>.)</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>What historical weight data can you access?</div></div>
@@ -481,11 +487,11 @@
 <li><strong>Cardiac / pain / fever</strong> — Sun (<code>cow005</code>), resting heart rate 70&nbsp;bpm against a herd mean of ~53.</li>
 </ul>
 <p>Pigs carry no health flags — only forecast farrowing risks and a dead collar battery on Goliath.</p>
-</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+</div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Generate appropriate Animal Disease records and a list of potential treatments. Fill out the records as best you can.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Created <strong>5 <code>AnimalDisease</code> records</strong>, each linked to its animal (<code>affectedAnimal</code> ↔ <code>hasDisease</code>) and parcel, with clinical signs, differentials, a diagnostic plan, severity, zoonotic/notifiable flags and a treatment field:</p>
+<p>Created <strong>5 <code>AnimalDisease</code> records</strong> on the Smart Data Models schema (<code>disease</code>, <code>animals</code>, <code>date</code>, <code>diagnosticTest</code>), each linked to its animal (<code>animals</code> ↔ <code>hasDisease</code>) and parcel, with extension fields for clinical signs, differentials, severity, zoonotic/notifiable flags and treatment notes:</p>
 <ul>
 <li>Tulip — parasitic gastroenteritis / chronic wasting (<code>suspected</code>, moderate)</li>
 <li>Bug — Johne's disease (<code>suspected</code>, high)</li>
@@ -494,7 +500,7 @@
 <li>Sun — resting tachycardia, undiagnosed (<code>suspected</code>, moderate)</li>
 </ul>
 <p><code>treatmentStatus</code> is <code>pending diagnosis</code> throughout — treatment options recorded per condition (anthelmintics ± flukicide, hoof trim + footbath, the traumatic-reticuloperitonitis protocol, etc.), nothing to be given blind.</p>
-</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/bacteria.png" alt="Disease"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Also add the pig diseases to the records.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
@@ -507,7 +513,7 @@
 <li>Boar fight trauma — Mammoth, Giant, Colossus (<code>risk</code>)</li>
 </ul>
 <p>Ten <code>AnimalDisease</code> records total — 5 cattle, 5 pig — plus <code>hasDisease</code> back-links on the ten animals involved.</p>
-</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_animal_disease.html"><img src="./img/bacteria.png" alt="Disease"></a></div></div>
 
 </div>
 <footer>

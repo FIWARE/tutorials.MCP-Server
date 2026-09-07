@@ -53,7 +53,7 @@
 <div class="wrap">
 
 <h1>🩺 Animal disease register — the records</h1>
-<p class="sub">Illustrative of 2026-09-07: <strong>10 <code>AnimalDisease</code> entities</strong> created from the herd review — 5 for cattle, 5 for pigs — each linked to its animal(s) via <code>affectedAnimal</code>&nbsp;↔&nbsp;<code>hasDisease</code>. Records, not diagnoses: every one is <em>suspected</em>, <em>anticipated</em> or a standing <em>risk</em> pending veterinary work.</p>
+<p class="sub">Illustrative of 2026-09-07: <strong>10 <code>AnimalDisease</code> entities</strong> created from the herd review — 5 for cattle, 5 for pigs — each linked to its animal(s) via <code>animals</code>&nbsp;↔&nbsp;<code>hasDisease</code>, following the Smart Data Models <em>AnimalDisease</em> schema. Records, not diagnoses: every one is <em>suspected</em>, <em>anticipated</em> or a standing <em>risk</em> pending veterinary work.</p>
 
 <div class="panel">
   <h2>1. What was written</h2>
@@ -170,28 +170,29 @@
 
 <div class="panel">
   <h2>4. The <code>AnimalDisease</code> record shape</h2>
-  <p class="desc">No schema was loaded for this type — the fields were chosen to hold a working clinical record. Example: <code>urn:ngsi-ld:AnimalDisease:johnes-001</code>.</p>
+  <p class="desc">There <strong>is</strong> a schema for this type — the Smart Data Models / FarmData4All (i4Trust) <em>AnimalDisease</em> model, served by the MCP at <code>ontology://agrifood/AnimalDisease</code>. It is deliberately minimal (only <code>id</code>, <code>type</code>, <code>disease</code> are required), so the records use the model's fields where they map and add extension fields for the clinical detail it does not carry. Example: <code>urn:ngsi-ld:AnimalDisease:johnes-001</code>.</p>
   <table class="kv">
     <tbody>
-      <tr><th><code>id</code> / <code>type</code></th><td><code>urn:ngsi-ld:AnimalDisease:johnes-001</code> / <code>AnimalDisease</code></td></tr>
-      <tr><th><code>name</code></th><td>Suspected Johne's disease (paratuberculosis) — Bug</td></tr>
-      <tr><th><code>disease</code></th><td>Johne's disease / paratuberculosis (<em>Mycobacterium avium</em> subsp. <em>paratuberculosis</em>)</td></tr>
+      <tr><th colspan="2" style="background:var(--accent-soft);color:var(--accent)">Model fields (Smart Data Models AnimalDisease)</th></tr>
+      <tr><th><code>disease</code> <span class="badge risk">required</span></th><td>the disease as it would be diagnosed — string. e.g. "Johne's disease / paratuberculosis (<em>Mycobacterium avium</em> subsp. <em>paratuberculosis</em>)"</td></tr>
+      <tr><th><code>animals</code></th><td>Relationship array → the <code>Animal</code>(s) with or at risk of the disease</td></tr>
+      <tr><th><code>date</code></th><td>date-time of diagnosis — set here to the review time <code>2026-09-07T12:00:00Z</code> (flagging date; nothing is vet-confirmed yet)</td></tr>
+      <tr><th><code>diagnosticTest</code></th><td>the test(s) to confirm or exclude it</td></tr>
+      <tr><th><code>veterinarianTreatment</code></th><td>Relationship → a <code>VeterinarianTreatment</code> entity. <strong>Left unset</strong> — that model needs an <code>appliedProduct</code>, and nothing has been administered</td></tr>
+      <tr><th><code>veterinarian</code></th><td>Relationship → the diagnosing vet. Unset — no vet involved yet</td></tr>
+      <tr><th><code>name</code> · <code>location</code></th><td>from GSMA-Commons / Location-Commons; <code>name</code> is the human-readable summary</td></tr>
+      <tr><th colspan="2" style="background:var(--warn-soft);color:var(--warn)">Extension fields (not in the model, added for triage)</th></tr>
       <tr><th><code>status</code></th><td><code>suspected</code> · <code>anticipated</code> · <code>risk</code> · <code>under-observation</code></td></tr>
-      <tr><th><code>affectedAnimal</code> / <code>affectedGroup</code></th><td>relationship to the <code>Animal</code>(s), or a text scope for herd-level records</td></tr>
-      <tr><th><code>atRiskAnimal</code></th><td>relationship array — source dams / at-risk individuals (forecast records)</td></tr>
-      <tr><th><code>severity</code></th><td>mild · moderate · high (+ "(forecast)" where anticipated)</td></tr>
-      <tr><th><code>clinicalSigns</code></th><td>array — observed, or expected if it occurs</td></tr>
-      <tr><th><code>suspectedCause</code> / <code>differentialDiagnosis</code></th><td>free text / array of differentials to rule out</td></tr>
-      <tr><th><code>diagnosticPlan</code></th><td>array — the tests that would confirm or exclude it</td></tr>
-      <tr><th><code>preventiveMeasures</code></th><td>array — husbandry changes (forecast records)</td></tr>
-      <tr><th><code>recommendedTreatment</code></th><td>free text — drug classes and management, conditional on the diagnosis</td></tr>
+      <tr><th><code>severity</code> · <code>clinicalSigns</code></th><td>mild / moderate / high (+ "(forecast)"); signs observed or expected</td></tr>
+      <tr><th><code>suspectedCause</code> · <code>differentialDiagnosis</code></th><td>working cause and the list to rule out</td></tr>
+      <tr><th><code>preventiveMeasures</code></th><td>husbandry changes (forecast records)</td></tr>
+      <tr><th><code>recommendedTreatment</code></th><td>drug classes and management, conditional on the diagnosis (prose — the eventual <code>VeterinarianTreatment</code> entity supersedes this once something is given)</td></tr>
       <tr><th><code>treatmentStatus</code></th><td><code>pending diagnosis</code> · <code>monitoring</code> · <code>preventive — not yet occurring</code></td></tr>
-      <tr><th><code>zoonotic</code> / <code>notifiable</code></th><td>booleans, with a <code>zoonoticNote</code> / <code>notifiableNote</code> where relevant</td></tr>
-      <tr><th><code>dateDetected</code> / <code>detectedBy</code></th><td>2026-09-07 / "FMIS weight-trend review" or "FMIS herd risk review"</td></tr>
-      <tr><th><code>locatedAt</code></th><td>the parcel, farm or pen — <code>AgriParcel:003–006</code>, <code>AgriFarm:farm002</code>, <code>Pen:BoarPen</code></td></tr>
+      <tr><th><code>zoonotic</code> · <code>notifiable</code></th><td>booleans, with a <code>zoonoticNote</code> / <code>notifiableNote</code> where relevant</td></tr>
+      <tr><th><code>detectedBy</code> · <code>affectedGroup</code> · <code>locatedAt</code></th><td>who flagged it; text scope for herd-level records; relationship to the parcel / farm / pen</td></tr>
     </tbody>
   </table>
-  <p class="note">The animal-side <code>hasDisease</code> is the inverse of <code>affectedAnimal</code> — the herd can be queried for open cases from either end.</p>
+  <p class="note">The animal-side <code>hasDisease</code> is the inverse of <code>animals</code> — the herd can be queried for open cases from either end. Treatments, when actually applied, belong in sibling <code>VeterinarianTreatment</code> entities (<code>ontology://agrifood/VeterinarianTreatment</code>) linked back via <code>veterinarianTreatment</code>.</p>
 </div>
 
 <footer>Victory Farm &amp; Animal Farm FMIS · illustrative · disease-register writes 2026-09-07</footer>
