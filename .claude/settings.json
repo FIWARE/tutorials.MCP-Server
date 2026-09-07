@@ -5,5 +5,19 @@
       "Read(schemas/**)",
       "Read(prompts/**)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "mcp__ngsi-ld__create_entity",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"import json,sys; d=json.load(sys.stdin); t=(d.get('tool_input') or {}).get('type','?'); print(json.dumps({'hookSpecificOutput':{'hookEventName':'PreToolUse','additionalContext':'About to create an NGSI-LD '+t+' entity. Unless its data model was already read this session, first call ReadMcpResourceTool(server=ngsi-ld, uri=ontology://<domain>/'+t+') - find <domain> via ListMcpResourcesTool - then build the entity on the schema field names, keeping any extras as clearly-labelled extension fields.'}}))\"",
+            "statusMessage": "Checking ontology model for entity type"
+          }
+        ]
+      }
+    ]
   }
 }
