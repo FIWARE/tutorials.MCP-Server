@@ -194,13 +194,13 @@
         "sex": {
           "type": "string",
           "enum": [
-            "M",
-            "F",
+            "Male",
+            "Female",
             "unknown",
             ""
           ],
           "x-ngsi-type": "VocabProperty",
-          "description": "VocabProperty. Model:'https://schema.org/Text'. The sex of the animals contained in the pen, held as a controlled-vocabulary term. Enum:'M, F, unknown'"
+          "description": "VocabProperty. Model:'https://schema.org/Text'. The sex of the animals contained in the pen, held as a controlled-vocabulary term (mapped to https://schema.org/Male / https://schema.org/Female). Enum:'Male, Female, unknown'"
         },
         "temperature": {
           "type": "number",
