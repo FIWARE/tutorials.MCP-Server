@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Boar Pen — a 20 m enclosure around the three boars</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css" />
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --concern: #b3401e; --concern-soft: #fbe4dc;
+    --pen: #a8562e; --pen-soft: #f0e0d6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --concern: #e88a5e; --concern-soft: #3a271f;
+      --pen: #d08a5c; --pen-soft: #38271d;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --concern: #e88a5e; --concern-soft: #3a271f; --pen: #d08a5c; --pen-soft: #38271d; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --concern: #b3401e; --concern-soft: #fbe4dc; --pen: #a8562e; --pen-soft: #f0e0d6; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.5rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.25rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.05rem; margin: 0 0 0.35rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .map-el { width: 100%; height: 560px; border-radius: 10px; margin-bottom: 0.75rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.85rem; color: var(--ink-soft); padding: 0.5rem 0.25rem; align-items: center; }
+  .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 0.4rem; vertical-align: middle; }
+  .legend .ring { display: inline-block; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--pen); background: transparent; margin-right: 0.4rem; vertical-align: middle; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.45rem 0.65rem; text-align: left; vertical-align: top; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.ok { color: var(--accent); font-weight: 600; }
+  td.now { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  td.was { color: var(--ink-soft); }
+  code { background: rgba(74,124,63,0.14); padding: 0.05rem 0.32rem; border-radius: 4px; font-size: 0.9em; }
+  del { color: var(--concern); text-decoration: line-through; }
+  ins { background: var(--accent-soft); color: var(--accent); text-decoration: none; padding: 0 0.28rem; border-radius: 4px; }
+  .kv { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  .kv th { width: 130px; background: var(--accent-soft); color: var(--accent); }
+  .note { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; margin: 0.7rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .note strong { color: var(--concern); font-style: normal; }
+  .maplibregl-popup-content { font-size: 0.82rem; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐖 Boar Pen — a 20 m enclosure around the three boars</h1>
+<p class="sub">Illustrative of the writes made on 2026-09-07: one new <code>Pen</code> entity generated from the boars' own positions, and all three boars re-homed to it. Nothing physical moved — only the records changed.</p>
+
+<div class="legend">
+  <span><span class="sw" style="background:#ffffff;border:1px solid #2b2b23;"></span>boar — last collar fix</span>
+  <span><span class="sw" style="background:#2b2b23;"></span>pen centre (boar centroid)</span>
+  <span><span class="ring"></span>generated pen boundary — 20 m radius</span>
+</div>
+
+<div class="panel">
+  <h2>1. The enclosure on the map</h2>
+  <p class="desc">A 32-vertex polygon approximating a circle of radius 20 m, centred on the mean of the three boar fixes (<code>[13.34713, 52.51973]</code>). Each boar sits 12&ndash;16 m from the centre, so the circle encloses all three with margin. Click a marker for its before/after.</p>
+  <div id="map" class="map-el"></div>
+  <p class="note">The broker stores no fences, so there was no boundary to check against &mdash; this polygon is the first geometry the pen has ever had. Collars keep reporting live positions; <strong>if a boar walks out, <code>locatedAt</code> will not update itself.</strong></p>
+</div>
+
+<div class="panel">
+  <h2>2. What changed on each boar</h2>
+  <p class="desc">One attribute written per animal: <code>locatedAt</code>. None of the three carried a parcel or pen link before.</p>
+  <table>
+    <thead><tr><th>Boar</th><th>Entity</th><th>Last fix</th><th><code>locatedAt</code> before</th><th><code>locatedAt</code> after</th><th>Fix&nbsp;&rarr;&nbsp;centre</th><th>Inside 20&nbsp;m?</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Mammoth</td><td><code>urn:ngsi-ld:Animal:pig031</code></td>
+        <td>13.34730, 52.51970</td>
+        <td class="was">&mdash; none &mdash;</td>
+        <td class="now"><code>urn:ngsi-ld:Pen:BoarPen</code></td>
+        <td>11.9 m</td><td class="ok">yes</td>
+      </tr>
+      <tr>
+        <td>Giant</td><td><code>urn:ngsi-ld:Animal:pig035</code></td>
+        <td>13.34695, 52.51965</td>
+        <td class="was">&mdash; none &mdash;</td>
+        <td class="now"><code>urn:ngsi-ld:Pen:BoarPen</code></td>
+        <td>15.5 m</td><td class="ok">yes</td>
+      </tr>
+      <tr>
+        <td>Colossus</td><td><code>urn:ngsi-ld:Animal:pig037</code></td>
+        <td>13.34715, 52.51985</td>
+        <td class="was">&mdash; none &mdash;</td>
+        <td class="now"><code>urn:ngsi-ld:Pen:BoarPen</code></td>
+        <td>13.0 m</td><td class="ok">yes</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>3. The pen entity that was created</h2>
+  <p class="desc">A single new entity holds the enclosure. It was first written as a <code>Building</code>, then rebuilt as a <code>Pen</code> once the type was corrected.</p>
+  <table class="kv">
+    <tbody>
+      <tr><th><code>id</code></th><td><code>urn:ngsi-ld:Pen:BoarPen</code></td></tr>
+      <tr><th><code>type</code></th><td><del>Building</del> &nbsp;<ins>Pen</ins></td></tr>
+      <tr><th><code>name</code></th><td>Boar Pen</td></tr>
+      <tr><th><code>location</code></th><td>GeoProperty &middot; Polygon &middot; 33 points (32-gon + close) &middot; radius 20 m &middot; centre <code>[13.34713, 52.51973]</code></td></tr>
+      <tr><th><code>lastUpdate</code></th><td>2026-09-07T11:47:00Z</td></tr>
+      <tr><th>links in</th><td><code>Animal:pig031</code>, <code>Animal:pig035</code>, <code>Animal:pig037</code> &mdash; via <code>locatedAt</code></td></tr>
+    </tbody>
+  </table>
+  <p class="note">Revision trail: <code>Building:BoarPen</code> created &rarr; boars pointed at it &rarr; <strong>type wrong</strong> &rarr; <code>Pen:BoarPen</code> created with the same polygon &rarr; boars re-pointed &rarr; <code>Building:BoarPen</code> deleted.</p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS &middot; illustrative &middot; boar-pen writes 2026-09-07 &middot; basemap &copy; MapTiler &copy; OpenStreetMap contributors</footer>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.js"></script>
+<script>
+  var CENTRE = [13.347133, 52.519733];
+  var RADIUS_M = 20;
+  var R = 111320;
+
+  var boars = [
+    { name: "Mammoth",  id: "pig031", lon: 13.3473,  lat: 52.5197,  d: "11.9 m" },
+    { name: "Giant",    id: "pig035", lon: 13.34695, lat: 52.51965, d: "15.5 m" },
+    { name: "Colossus", id: "pig037", lon: 13.34715, lat: 52.51985, d: "13.0 m" }
+  ];
+
+  function circlePolygon(center, radiusMeters, steps) {
+    steps = steps || 32;
+    var coords = [];
+    var mPerDegLon = R * Math.cos(center[1] * Math.PI / 180);
+    for (var i = 0; i <= steps; i++) {
+      var theta = (i / steps) * 2 * Math.PI;
+      var dLat = (radiusMeters * Math.cos(theta)) / R;
+      var dLon = (radiusMeters * Math.sin(theta)) / mPerDegLon;
+      coords.push([center[0] + dLon, center[1] + dLat]);
+    }
+    return coords;
+  }
+
+  var penRing = circlePolygon(CENTRE, RADIUS_M, 32);
+  var lons = penRing.map(function (p) { return p[0]; });
+  var lats = penRing.map(function (p) { return p[1]; });
+  var bounds = [[Math.min.apply(null, lons), Math.min.apply(null, lats)],
+                [Math.max.apply(null, lons), Math.max.apply(null, lats)]];
+
+  var STYLE_URL = 'https://api.maptiler.com/maps/streets-v2/style.json?key=foqzh86Jk2Ia9CL7w8ks';
+
+  var map = new maplibregl.Map({ container: 'map', style: STYLE_URL, attributionControl: { compact: true } });
+  map.addControl(new maplibregl.NavigationControl());
+  map.fitBounds(bounds, { padding: 90, duration: 0 });
+
+  map.on('load', function () {
+    map.addSource('pen', { type: 'geojson', data: {
+      type: 'Feature', geometry: { type: 'Polygon', coordinates: [penRing] }, properties: { name: 'Boar Pen' } } });
+    map.addLayer({ id: 'pen-fill', type: 'fill', source: 'pen', paint: { 'fill-color': '#a8562e', 'fill-opacity': 0.18 } });
+    map.addLayer({ id: 'pen-line', type: 'line', source: 'pen', paint: { 'line-color': '#a8562e', 'line-width': 2.5 } });
+
+    map.addSource('spokes', { type: 'geojson', data: { type: 'FeatureCollection', features: boars.map(function (b) {
+      return { type: 'Feature', geometry: { type: 'LineString', coordinates: [CENTRE, [b.lon, b.lat]] },
+        properties: { label: b.d } };
+    }) } });
+    map.addLayer({ id: 'spoke-line', type: 'line', source: 'spokes',
+      paint: { 'line-color': '#a8562e', 'line-width': 1, 'line-dasharray': [2, 2] } });
+    map.addLayer({ id: 'spoke-label', type: 'symbol', source: 'spokes',
+      layout: { 'symbol-placement': 'line-center', 'text-field': ['get', 'label'], 'text-size': 11 },
+      paint: { 'text-color': '#8a3f1c', 'text-halo-color': '#ffffff', 'text-halo-width': 1.4 } });
+
+    map.addSource('centre', { type: 'geojson', data: {
+      type: 'Feature', geometry: { type: 'Point', coordinates: CENTRE }, properties: {} } });
+    map.addLayer({ id: 'centre-dot', type: 'circle', source: 'centre',
+      paint: { 'circle-radius': 5, 'circle-color': '#2b2b23', 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' } });
+
+    map.addSource('boars', { type: 'geojson', data: { type: 'FeatureCollection', features: boars.map(function (b) {
+      return { type: 'Feature', geometry: { type: 'Point', coordinates: [b.lon, b.lat] },
+        properties: { name: b.name, id: b.id, d: b.d } };
+    }) } });
+    map.addLayer({ id: 'boar-dot', type: 'circle', source: 'boars',
+      paint: { 'circle-radius': 6, 'circle-color': '#ffffff', 'circle-stroke-width': 2, 'circle-stroke-color': '#2b2b23' } });
+    map.addLayer({ id: 'boar-label', type: 'symbol', source: 'boars',
+      layout: { 'text-field': ['get', 'name'], 'text-size': 12, 'text-offset': [0, 1.4], 'text-anchor': 'top' },
+      paint: { 'text-color': '#2b2b23', 'text-halo-color': '#ffffff', 'text-halo-width': 1.4 } });
+
+    map.on('click', 'boar-dot', function (e) {
+      var p = e.features[0].properties;
+      new maplibregl.Popup()
+        .setLngLat(e.features[0].geometry.coordinates)
+        .setHTML('<strong>' + p.name + '</strong> &middot; <code>Animal:' + p.id + '</code><br>' +
+                 'locatedAt: <del>none</del> &rarr; <ins>Pen:BoarPen</ins><br>' +
+                 p.d + ' from pen centre &middot; inside the 20 m circle')
+        .addTo(map);
+    });
+    map.on('mouseenter', 'boar-dot', function () { map.getCanvas().style.cursor = 'pointer'; });
+    map.on('mouseleave', 'boar-dot', function () { map.getCanvas().style.cursor = ''; });
+  });
+</script>
+</body>
+</html>

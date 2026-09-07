@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Beany &amp; East Pasture — the move</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.css" />
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --concern: #b3401e; --concern-soft: #fbe4dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --concern: #e88a5e; --concern-soft: #3a271f;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --concern: #e88a5e; --concern-soft: #3a271f; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --concern: #b3401e; --concern-soft: #fbe4dc; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.35rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.5rem; }
+  .cards { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem 1.5rem 1rem; margin-bottom: 1.5rem; }
+  .panel.card { flex: 1 1 380px; }
+  .panel h2 { font-size: 1.02rem; margin: 0 0 0.15rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .photo { width: 100%; max-width: 320px; border-radius: 10px; border: 1px solid var(--border); display: block; margin: 0 0 0.9rem; }
+  dl { margin: 0.5rem 0 0; }
+  dl .row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.32rem 0; border-bottom: 1px dashed var(--border); font-size: 0.87rem; }
+  dl .row:last-child { border-bottom: none; }
+  dl dt { color: var(--ink-soft); }
+  dl dd { margin: 0; font-weight: 600; text-align: right; }
+  dl .row.changed dd { text-align: right; }
+  del { color: var(--concern); text-decoration: line-through; font-weight: 400; }
+  ins { background: var(--accent-soft); color: var(--accent); text-decoration: none; padding: 0 0.28rem; border-radius: 4px; }
+  .panel .footnote { font-size: 0.78rem; color: var(--ink-soft); font-style: italic; margin: 0.9rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .panel .footnote strong { color: var(--concern); font-style: normal; }
+  ul.pasture-mates { margin: 0.5rem 0 0; padding-left: 1.2rem; font-size: 0.85rem; }
+  ul.pasture-mates li { margin-bottom: 0.25rem; }
+  .changebox { background: var(--accent-soft); border: 1px solid var(--border); border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.85rem; margin: 0 0 1.5rem; }
+  .changebox strong { color: var(--accent); }
+  .map-el { width: 100%; height: 540px; border-radius: 10px; margin-bottom: 0.75rem; }
+  .legend { display: flex; flex-wrap: wrap; gap: 1.1rem; font-size: 0.85rem; color: var(--ink-soft); padding: 0.4rem 0.25rem; align-items: center; }
+  .legend .sw { display: inline-block; width: 14px; height: 14px; border-radius: 3px; margin-right: 0.4rem; vertical-align: middle; }
+  .legend .dot { border-radius: 50%; }
+  .maplibregl-popup-content { font-size: 0.82rem; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 0.5rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐂 Beany &amp; East Pasture — the move</h1>
+<p class="sub">Live NGSI-LD <code>Animal</code> and <code>AgriParcel</code> records with the 2026-09-07 writes marked. Beany is a <strong>bull</strong> (<code>M-bull001</code>), registered to East Pasture but whose collar had him down in the South Pasture mob.</p>
+
+<div class="changebox">
+  <strong>Two attributes written on <code>urn:ngsi-ld:Animal:cow001</code>:</strong>
+  <code>breed</code> &mdash; added, <del>none</del> &rarr; <ins>Jersey</ins> &nbsp;&middot;&nbsp;
+  <code>location</code> &mdash; moved <del>[13.34973, 52.51139]</del> &rarr; <ins>[13.35359, 52.51361]</ins>, the mean of the other nine East&nbsp;Pasture animals (~300&nbsp;m north-east). <code>locatedAt</code> was already East Pasture and is unchanged.
+</div>
+
+<div class="cards">
+
+  <div class="panel card">
+    <h2>Beany</h2>
+    <p class="desc"><code>urn:ngsi-ld:Animal:cow001</code></p>
+    <img class="photo" src="./img/cow-001.jpg" alt="Beany, a mature bull">
+    <dl>
+      <div class="row"><dt>Legal ID</dt><dd>M-bull001-Beany</dd></div>
+      <div class="row"><dt>Species</dt><dd>Dairy cattle</dd></div>
+      <div class="row changed"><dt>Breed</dt><dd><del>none</del> <ins>Jersey</ins></dd></div>
+      <div class="row"><dt>Sex</dt><dd>Male</dd></div>
+      <div class="row"><dt>Age class</dt><dd>Mature adult &middot; b. 2022-09-08</dd></div>
+      <div class="row"><dt>Reproductive status</dt><dd>Active</dd></div>
+      <div class="row"><dt>Weight</dt><dd>752&nbsp;kg</dd></div>
+      <div class="row"><dt>Fed with</dt><dd>Grass</dd></div>
+      <div class="row"><dt>Owner</dt><dd>Old MacDonald</dd></div>
+      <div class="row"><dt>Located at</dt><dd>East Pasture</dd></div>
+      <div class="row changed"><dt>Location</dt><dd><del>[13.34973,&nbsp;52.51139]</del><br><ins>[13.35359,&nbsp;52.51361]</ins></dd></div>
+    </dl>
+    <p class="footnote">The old fix put Beany ~300&nbsp;m from every other East Pasture animal, right in the South Pasture cluster next to the South Pasture bull Ferdinand. <strong>The collar will overwrite this location on its next GPS report.</strong></p>
+  </div>
+
+  <div class="panel card">
+    <h2>East Pasture</h2>
+    <p class="desc"><code>urn:ngsi-ld:AgriParcel:004</code></p>
+    <dl>
+      <div class="row"><dt>Cover</dt><dd>Grass</dd></div>
+      <div class="row"><dt>Status</dt><dd>Maturing</dd></div>
+      <div class="row"><dt>Soil texture</dt><dd>Silt loam</dd></div>
+      <div class="row"><dt>Boundary geometry</dt><dd>Not recorded</dd></div>
+      <div class="row"><dt>Voronoi neighbours</dt><dd>South Pasture, Water Meadow, The Paddock</dd></div>
+    </dl>
+    <p class="desc" style="margin-top:0.9rem;margin-bottom:0;"><strong>Herd on East Pasture (collar fixes):</strong></p>
+    <ul class="pasture-mates">
+      <li>River, Rice, Rain, Eenie, Stamps, Happy, Jersey, Pepsi</li>
+      <li>Blossom (calf) &mdash; on River's fix</li>
+      <li>Beany (bull) &mdash; <del>South Pasture cluster</del> &rarr; <ins>herd centroid</ins></li>
+    </ul>
+    <p class="footnote">With no stored fences, "which pasture" is decided by nearest centroid. Beany's pre-move fix fell inside <strong>South Pasture's</strong> Voronoi cell &mdash; the records said East Pasture, the geometry said otherwise. The move drops him at the centre of East Pasture's cell.</p>
+  </div>
+
+</div>
+
+<div class="panel">
+  <h2>Voronoi partition &mdash; East Pasture and its neighbours</h2>
+  <p class="desc">Each pasture's territory drawn from its herd centroid (nearest-centroid / Voronoi). East Pasture's cell is filled; the black line is its boundary with South Pasture, Water Meadow and The Paddock. Both pastures' collar fixes are plotted &mdash; the South Pasture bull <strong>Ferdinand</strong> is highlighted, and Beany's before and after positions are shown against the boundary.</p>
+  <div class="legend">
+    <span><span class="sw" style="background:#4a7c3f;opacity:0.35;"></span>East Pasture cell</span>
+    <span><span class="sw" style="background:#9a9789;opacity:0.35;"></span>neighbour cells</span>
+    <span><span class="sw dot" style="background:#ffffff;border:1px solid #2b2b23;"></span>cow &mdash; collar fix</span>
+  </div>
+  <div class="legend">
+    <span><span class="sw dot" style="background:#c8912a;"></span>Ferdinand</span>
+    <span><span class="sw dot" style="background:#b3401e;"></span>Beany &mdash; before (11:32)</span>
+    <span><span class="sw dot" style="background:#4a7c3f;"></span>Beany &mdash; after</span>
+  </div>
+  <div id="map" class="map-el"></div>
+  <p class="footnote">Neighbour centroids are computed from each pasture's own collar snapshot; the clip rectangle is arbitrary, so cell <em>areas</em> here are illustrative &mdash; the <strong>boundary lines</strong> are the point.</p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS &middot; animal &amp; parcel profile &middot; Beany move 2026-09-07 &middot; basemap &copy; MapTiler &copy; OpenStreetMap contributors</footer>
+</div>
+
+<script src="https://unpkg.com/maplibre-gl@5.4.0/dist/maplibre-gl.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6.0.4/dist/d3-delaunay.min.js"></script>
+<script>
+  var sites = [
+    { name: 'South Pasture', c: [13.348912, 52.511514], east: false },
+    { name: 'East Pasture',  c: [13.353587, 52.513610], east: true  },
+    { name: 'Water Meadow',  c: [13.355042, 52.515535], east: false },
+    { name: 'The Paddock',   c: [13.348629, 52.517654], east: false }
+  ];
+
+  var eastCows = [
+    ['River', 13.35458, 52.51367], ['Rice', 13.35293, 52.5135], ['Rain', 13.35273, 52.51365],
+    ['Eenie', 13.3542, 52.51364], ['Stamps', 13.35249, 52.51334], ['Happy', 13.35342, 52.51328],
+    ['Jersey', 13.35399, 52.51391], ['Pepsi', 13.35336, 52.51383], ['Blossom (calf)', 13.35458, 52.51367]
+  ];
+  var southCows = [
+    ['Tulip', 13.34856, 52.51121, false], ['Trotter', 13.34806, 52.51186, false],
+    ['Marble', 13.34942, 52.5118, false], ['Silver', 13.34984, 52.51133, false],
+    ['Ferdinand (bull)', 13.34956, 52.51178, true], ['Clover', 13.34957, 52.51114, false],
+    ['Star', 13.34816, 52.51118, false], ['Citrus', 13.34898, 52.51147, false],
+    ['Bumble (calf)', 13.34806, 52.51186, false]
+  ];
+  var beanyBefore = [13.34973, 52.51139];
+  var beanyAfter  = [13.35359, 52.51361];
+
+  var clip = [13.3455, 52.5090, 13.3600, 52.5200];
+
+  var STYLE_URL = 'https://api.maptiler.com/maps/streets-v2/style.json?key=foqzh86Jk2Ia9CL7w8ks';
+
+  var focusPts = eastCows.map(function (c) { return [c[1], c[2]]; })
+    .concat(southCows.map(function (c) { return [c[1], c[2]]; }))
+    .concat([beanyBefore, beanyAfter]);
+  var lons = focusPts.map(function (p) { return p[0]; });
+  var lats = focusPts.map(function (p) { return p[1]; });
+  var bounds = [[Math.min.apply(null, lons), Math.min.apply(null, lats)],
+                [Math.max.apply(null, lons), Math.max.apply(null, lats)]];
+
+  var map = new maplibregl.Map({ container: 'map', style: STYLE_URL, attributionControl: { compact: true } });
+  map.addControl(new maplibregl.NavigationControl());
+  map.fitBounds(bounds, { padding: 80, duration: 0 });
+
+  map.on('load', function () {
+    var delaunay = d3.Delaunay.from(sites.map(function (s) { return s.c; }));
+    var voronoi = delaunay.voronoi(clip);
+
+    sites.forEach(function (s, i) {
+      var ring = voronoi.cellPolygon(i);
+      if (!ring) return;
+      var id = 'cell-' + i;
+      map.addSource(id, { type: 'geojson', data: { type: 'Feature', geometry: { type: 'Polygon', coordinates: [ring] }, properties: { name: s.name } } });
+      map.addLayer({ id: id + '-fill', type: 'fill', source: id,
+        paint: { 'fill-color': s.east ? '#4a7c3f' : '#9a9789', 'fill-opacity': s.east ? 0.22 : 0.10 } });
+      map.addLayer({ id: id + '-line', type: 'line', source: id,
+        paint: { 'line-color': s.east ? '#1f1f1a' : '#7a7768', 'line-width': s.east ? 2.5 : 1.2, 'line-dasharray': s.east ? [1, 0] : [3, 2] } });
+    });
+
+    map.addSource('site-labels', { type: 'geojson', data: { type: 'FeatureCollection',
+      features: sites.map(function (s) { return { type: 'Feature', geometry: { type: 'Point', coordinates: s.c }, properties: { name: s.name } }; }) } });
+    map.addLayer({ id: 'site-label', type: 'symbol', source: 'site-labels',
+      layout: { 'text-field': ['get', 'name'], 'text-size': 12 },
+      paint: { 'text-color': '#2b2b23', 'text-halo-color': '#ffffff', 'text-halo-width': 1.6 } });
+
+    map.addSource('cows', { type: 'geojson', data: { type: 'FeatureCollection',
+      features: eastCows.map(function (c) { return { type: 'Feature', geometry: { type: 'Point', coordinates: [c[1], c[2]] }, properties: { name: c[0] } }; }) } });
+    map.addLayer({ id: 'cow-dot', type: 'circle', source: 'cows',
+      paint: { 'circle-radius': 5, 'circle-color': '#ffffff', 'circle-stroke-width': 1.5, 'circle-stroke-color': '#2b2b23' } });
+    map.addLayer({ id: 'cow-label', type: 'symbol', source: 'cows',
+      layout: { 'text-field': ['get', 'name'], 'text-size': 10, 'text-offset': [0, 1.2], 'text-anchor': 'top' },
+      paint: { 'text-color': '#2b2b23', 'text-halo-color': '#ffffff', 'text-halo-width': 1.2 } });
+
+    map.addSource('south', { type: 'geojson', data: { type: 'FeatureCollection',
+      features: southCows.map(function (c) { return { type: 'Feature', geometry: { type: 'Point', coordinates: [c[1], c[2]] }, properties: { name: c[0], bull: !!c[3] } }; }) } });
+    map.addLayer({ id: 'south-dot', type: 'circle', source: 'south',
+      paint: {
+        'circle-radius': ['case', ['get', 'bull'], 7.5, 5],
+        'circle-color': ['case', ['get', 'bull'], '#c8912a', '#ffffff'],
+        'circle-stroke-width': ['case', ['get', 'bull'], 2, 1.5],
+        'circle-stroke-color': ['case', ['get', 'bull'], '#6f4e12', '#2b2b23']
+      } });
+    map.addLayer({ id: 'south-label', type: 'symbol', source: 'south',
+      layout: { 'text-field': ['get', 'name'], 'text-size': ['case', ['get', 'bull'], 11, 10], 'text-offset': [0, 1.2], 'text-anchor': 'top' },
+      paint: {
+        'text-color': ['case', ['get', 'bull'], '#6f4e12', '#2b2b23'],
+        'text-halo-color': '#ffffff', 'text-halo-width': ['case', ['get', 'bull'], 1.8, 1.2]
+      } });
+
+    map.addSource('move', { type: 'geojson', data: { type: 'Feature',
+      geometry: { type: 'LineString', coordinates: [beanyBefore, beanyAfter] }, properties: {} } });
+    map.addLayer({ id: 'move-line', type: 'line', source: 'move',
+      paint: { 'line-color': '#b3401e', 'line-width': 1.6, 'line-dasharray': [2, 2] } });
+
+    map.addSource('beany', { type: 'geojson', data: { type: 'FeatureCollection', features: [
+      { type: 'Feature', geometry: { type: 'Point', coordinates: beanyBefore }, properties: { when: 'before', label: 'Beany — before (11:32)' } },
+      { type: 'Feature', geometry: { type: 'Point', coordinates: beanyAfter }, properties: { when: 'after', label: 'Beany — after' } }
+    ] } });
+    map.addLayer({ id: 'beany-dot', type: 'circle', source: 'beany',
+      paint: {
+        'circle-radius': 8,
+        'circle-color': ['match', ['get', 'when'], 'before', '#b3401e', '#4a7c3f'],
+        'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff'
+      } });
+    map.addLayer({ id: 'beany-label', type: 'symbol', source: 'beany',
+      layout: { 'text-field': ['get', 'label'], 'text-size': 11, 'text-offset': [0, 1.5], 'text-anchor': 'top' },
+      paint: { 'text-color': '#2b2b23', 'text-halo-color': '#ffffff', 'text-halo-width': 1.6 } });
+
+    map.on('click', 'beany-dot', function (e) {
+      var f = e.features[0];
+      new maplibregl.Popup().setLngLat(f.geometry.coordinates)
+        .setHTML('<strong>' + f.properties.label + '</strong><br>' + f.geometry.coordinates[0].toFixed(5) + ', ' + f.geometry.coordinates[1].toFixed(5))
+        .addTo(map);
+    });
+  });
+</script>
+</body>
+</html>

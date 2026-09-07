@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Herd health condition — the writes</title>
+<style>
+  :root {
+    --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a;
+    --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6;
+    --concern: #b3401e; --concern-soft: #fbe4dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8;
+      --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30;
+      --concern: #e88a5e; --concern-soft: #3a271f;
+    }
+  }
+  :root[data-theme="dark"] { --bg: #1b1c17; --panel: #24261f; --ink: #eae7dc; --ink-soft: #b9b6a8; --accent: #7fbf6a; --accent-soft: #2b3524; --border: #3a3b30; --concern: #e88a5e; --concern-soft: #3a271f; }
+  :root[data-theme="light"] { --bg: #f7f5ef; --panel: #ffffff; --ink: #2b2b23; --ink-soft: #55554a; --accent: #4a7c3f; --accent-soft: #e7f0e1; --border: #ded8c6; --concern: #b3401e; --concern-soft: #fbe4dc; }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; margin: 0; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 3rem; }
+  h1 { font-size: 1.5rem; color: var(--accent); margin: 0 0 0.25rem; }
+  .sub { color: var(--ink-soft); font-size: 0.9rem; margin: 0 0 1.25rem; }
+  .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.15rem; margin-bottom: 1.5rem; }
+  .panel h2 { font-size: 1.05rem; margin: 0 0 0.35rem; color: var(--accent); }
+  .panel .desc { font-size: 0.85rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  .stats { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.25rem 0 0.5rem; }
+  .stat { flex: 1 1 120px; border: 1px solid var(--border); border-radius: 10px; padding: 0.6rem 0.75rem; background: var(--bg); }
+  .stat .n { font-size: 1.4rem; font-weight: 700; line-height: 1; }
+  .stat .l { font-size: 0.75rem; color: var(--ink-soft); margin-top: 0.2rem; }
+  .stat.sick .n { color: var(--concern); }
+  .stat.ok .n { color: var(--accent); }
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 0.5rem; }
+  th, td { border: 1px solid var(--border); padding: 0.5rem 0.65rem; text-align: left; vertical-align: top; }
+  th { background: var(--accent-soft); color: var(--accent); }
+  td.now { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  td.was { color: var(--ink-soft); }
+  td.sick { background: var(--concern-soft); color: var(--concern); font-weight: 600; }
+  code { background: rgba(74,124,63,0.14); padding: 0.05rem 0.32rem; border-radius: 4px; font-size: 0.9em; }
+  del { color: var(--concern); text-decoration: line-through; }
+  ins { background: var(--accent-soft); color: var(--accent); text-decoration: none; padding: 0 0.28rem; border-radius: 4px; }
+  .cmt { font-size: 0.82rem; line-height: 1.5; }
+  .spark { display: block; }
+  .spark .base { fill: none; stroke: var(--ink-soft); stroke-width: 1.4; opacity: 0.55; }
+  .spark .tail { fill: none; stroke: var(--concern); stroke-width: 2.2; }
+  .spark .gain { fill: none; stroke: var(--accent); stroke-width: 2.2; }
+  .spark .cap { fill: var(--concern); }
+  .spark .capg { fill: var(--accent); }
+  .spark text { font-size: 10px; fill: var(--ink-soft); }
+  details { margin-top: 0.5rem; font-size: 0.85rem; }
+  details summary { cursor: pointer; color: var(--accent); font-weight: 600; }
+  .grid { columns: 3; column-gap: 1.5rem; font-size: 0.82rem; margin-top: 0.6rem; }
+  .grid div { break-inside: avoid; padding: 0.1rem 0; }
+  .grid .s { color: var(--concern); font-weight: 600; }
+  .note { font-size: 0.8rem; color: var(--ink-soft); font-style: italic; margin: 0.7rem 0 0; padding-top: 0.6rem; border-top: 1px dashed var(--border); }
+  .note strong { color: var(--concern); font-style: normal; }
+  footer { text-align: center; color: var(--ink-soft); font-size: 0.8rem; margin-top: 1rem; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>🐄 Herd health condition — the writes</h1>
+<p class="sub">Illustrative of 2026-09-07: <code>healthCondition</code> set on all 43 cattle, plus <strong>4 cows amended individually</strong> — comments on Tulip, Bug and Chalky, and a weight correction on Spots. Records only — no animal was handled or treated.</p>
+
+<div class="panel">
+  <h2>1. Across the herd</h2>
+  <p class="desc">Before this pass, <code>healthCondition</code> existed on only <strong>2 of 43</strong> animals (Beany and Twilight, both <code>healthy</code>). It is now set on every head.</p>
+  <div class="stats">
+    <div class="stat"><div class="n">2 &rarr; 43</div><div class="l">cattle with <code>healthCondition</code></div></div>
+    <div class="stat ok"><div class="n">41</div><div class="l">written <code>healthy</code></div></div>
+    <div class="stat sick"><div class="n">2</div><div class="l">written <code>sick</code> (+ <code>comment</code>)</div></div>
+    <div class="stat"><div class="n">4</div><div class="l">cows amended individually</div></div>
+  </div>
+  <table style="margin-top:0.75rem;">
+    <thead><tr><th>Cow</th><th>Change</th><th>New <code>healthCondition</code></th></tr></thead>
+    <tbody>
+      <tr><td><strong>Tulip</strong> <code>cow010</code></td><td><code>comment</code> added</td><td class="sick">sick</td></tr>
+      <tr><td><strong>Bug</strong> <code>cow025</code></td><td><code>comment</code> added</td><td class="sick">sick</td></tr>
+      <tr><td><strong>Chalky</strong> <code>cow020</code></td><td><code>comment</code> added — under observation</td><td>healthy</td></tr>
+      <tr><td><strong>Spots</strong> <code>cow040</code></td><td><code>weight</code> corrected 349 &rarr; 300&nbsp;kg</td><td>healthy</td></tr>
+    </tbody>
+  </table>
+  <details>
+    <summary>All 43 — status written</summary>
+    <div class="grid">
+      <div>cow001 Beany <span style="color:var(--ink-soft)">(bull)</span> — healthy</div>
+      <div>cow002 Trotter — healthy</div>
+      <div>cow003 Petal — healthy</div>
+      <div>cow004 River — healthy</div>
+      <div>cow005 Sun — healthy</div>
+      <div>cow006 Twilight — healthy</div>
+      <div>cow007 Diamond — healthy</div>
+      <div>cow008 Pollen — healthy</div>
+      <div>cow009 Juicey — healthy</div>
+      <div class="s">cow010 Tulip — sick</div>
+      <div>cow011 Oats — healthy</div>
+      <div>cow012 Rain — healthy</div>
+      <div>cow013 Silver — healthy</div>
+      <div>cow014 Stamps — healthy</div>
+      <div>cow015 Button — healthy</div>
+      <div>cow016 Lacey — healthy</div>
+      <div>cow017 Fisher — healthy</div>
+      <div>cow018 Rice — healthy</div>
+      <div>cow019 Eenie — healthy</div>
+      <div>cow020 Chalky — healthy *</div>
+      <div>cow021 Ferdinand <span style="color:var(--ink-soft)">(bull)</span> — healthy</div>
+      <div>cow022 Feather — healthy</div>
+      <div>cow023 Happy — healthy</div>
+      <div>cow024 Fluffy — healthy</div>
+      <div class="s">cow025 Bug — sick</div>
+      <div>cow026 Opal — healthy</div>
+      <div>cow027 Fresian — healthy</div>
+      <div>cow028 Star — healthy</div>
+      <div>cow029 Clover — healthy</div>
+      <div>cow030 Flower — healthy</div>
+      <div>cow031 Grape — healthy</div>
+      <div>cow032 Citrus — healthy</div>
+      <div>cow033 Hero — healthy</div>
+      <div>cow034 Cloud — healthy</div>
+      <div>cow035 Jersey — healthy</div>
+      <div>cow036 Cream — healthy</div>
+      <div>cow037 Marble — healthy</div>
+      <div>cow038 Sugar — healthy</div>
+      <div>cow039 Pepsi — healthy</div>
+      <div>cow040 Spots — healthy</div>
+      <div>cow101 Bumble <span style="color:var(--ink-soft)">(calf)</span> — healthy</div>
+      <div>cow102 Blossom <span style="color:var(--ink-soft)">(calf)</span> — healthy</div>
+      <div>cow103 Buttercup <span style="color:var(--ink-soft)">(calf)</span> — healthy</div>
+    </div>
+  </details>
+  <p class="note">* Chalky (<code>cow020</code>) stays <code>healthy</code> but carries an "under observation" <code>comment</code> — see the flagged cows below.</p>
+</div>
+
+<div class="panel">
+  <h2>2. The three flagged cows</h2>
+  <p class="desc">All flagged from weight history alone. Tulip and Bug show a decline that does not fit a healthy Jersey — written <code>sick</code>. Chalky is growing, just slowly — left <code>healthy</code> with a watch note. <code>comment</code> was absent on all three before.</p>
+  <table>
+    <thead><tr><th>Cow</th><th>Weight trend (Sep 2024 &rarr; today)</th><th><code>healthCondition</code></th><th><code>comment</code> — added</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Tulip</strong><br><code>cow010</code><br><span style="color:var(--ink-soft);font-size:0.8rem">2.3 yr</span></td>
+        <td>
+          <svg class="spark" viewBox="0 0 260 48" width="260" height="48">
+            <polyline class="base" points="4.0,44.0 12.8,42.1 21.7,40.1 30.5,38.3 39.3,36.4 48.2,34.6 57.0,32.6 65.8,30.7 74.7,28.9 83.5,26.9 92.3,25.1 101.2,23.2 110.0,21.2 118.8,19.1 127.7,16.9 136.5,14.8 145.3,12.5 154.2,10.4 163.0,8.3 171.8,6.1 180.7,4.0"/>
+            <polyline class="tail" points="180.7,4.0 189.5,5.9 198.3,8.0 207.2,10.0 216.0,10.0"/>
+            <circle class="cap" cx="216.0" cy="10.0" r="2.6"/>
+            <text x="4" y="12">355 kg peak</text>
+            <text x="224" y="14">315</text>
+          </svg>
+          <div style="font-size:0.8rem;color:var(--concern);font-weight:600">&minus;40 kg (&minus;11%) May&ndash;Aug, then flat</div>
+        </td>
+        <td class="sick"><del>&mdash; none &mdash;</del><br><ins>sick</ins></td>
+        <td class="now"><span class="cmt">Progressive weight loss ~40&nbsp;kg (355&rarr;315&nbsp;kg, &minus;11%) between May and Aug 2026, now plateaued. Likely parasitism or subclinical disease; recommend body condition score and faecal egg count.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Bug</strong><br><code>cow025</code><br><span style="color:var(--ink-soft);font-size:0.8rem">8 yr</span></td>
+        <td>
+          <svg class="spark" viewBox="0 0 260 48" width="260" height="48">
+            <polyline class="base" points="4.0,11.5 12.8,11.5 21.7,9.3 30.5,9.3 39.3,9.3 48.2,7.0 57.0,7.0 65.8,7.0 74.7,5.5 83.5,5.5 92.3,6.3 101.2,4.0 110.0,4.8 118.8,6.3 127.7,5.5 136.5,7.0 145.3,9.3 154.2,9.3"/>
+            <polyline class="tail" points="154.2,9.3 163.0,16.8 171.8,23.6 180.7,28.2 189.5,34.9 198.3,41.0 207.2,44.0 216.0,44.0"/>
+            <circle class="cap" cx="216.0" cy="44.0" r="2.6"/>
+            <text x="4" y="9">~410 kg held</text>
+            <text x="224" y="46">360</text>
+          </svg>
+          <div style="font-size:0.8rem;color:var(--concern);font-weight:600">&minus;46 kg (&minus;13%) steady since Jan</div>
+        </td>
+        <td class="sick"><del>&mdash; none &mdash;</del><br><ins>sick</ins></td>
+        <td class="now"><span class="cmt">Steady monotonic weight loss ~46&nbsp;kg (406&rarr;360&nbsp;kg, &minus;13%) since Jan 2026. Chronic condition in an 8-year-old; likely parasitism, dental wear, or Johne's disease. Recommend vet exam, dentition check and faecal test.</span></td>
+      </tr>
+      <tr>
+        <td><strong>Chalky</strong><br><code>cow020</code><br><span style="color:var(--ink-soft);font-size:0.8rem">1.6 yr</span></td>
+        <td>
+          <svg class="spark" viewBox="0 0 260 48" width="260" height="48">
+            <polyline class="base" points="4.0,44.0 15.2,41.6 26.3,39.1 37.5,36.6 48.6,33.7 59.8,30.8 70.9,28.5 82.1,25.9 93.3,23.4 104.4,21.2 115.6,18.9 126.7,16.8 137.9,14.5 149.1,12.3 160.2,10.1 171.4,8.6 182.5,7.2 193.7,5.5 204.8,4.5 216.0,4.0"/>
+            <circle class="capg" cx="216.0" cy="4.0" r="2.6"/>
+            <text x="4" y="12">23 kg</text>
+            <text x="224" y="14">260</text>
+          </svg>
+          <div style="font-size:0.8rem;color:var(--ink-soft)">+237 kg steady &mdash; ~0.41 kg/day, ~15% under target</div>
+        </td>
+        <td><span style="color:var(--ink-soft)">healthy</span> <span style="font-size:0.8rem">(unchanged)</span></td>
+        <td class="now"><span class="cmt">Healthy but under observation. Average daily gain ~0.41&nbsp;kg/day since Feb 2025, tracking roughly 15% below Jersey weight target for age; growth continuous with no stall. Review ration and worm burden; re-weigh monthly.</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>3. Data fix — Spots</h2>
+  <p class="desc">The Aug&rarr;Sep reading jumped +63&nbsp;kg against a history of +9&ndash;20 &mdash; physiologically impossible, so a mis-weigh. Corrected to a value consistent with the trend; <code>healthCondition</code> left <code>healthy</code>.</p>
+  <table>
+    <thead><tr><th>Cow</th><th>Weight trend</th><th><code>weight</code></th><th><code>healthCondition</code></th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Spots</strong><br><code>cow040</code></td>
+        <td>
+          <svg class="spark" viewBox="0 0 260 48" width="260" height="48">
+            <polyline class="base" points="4.0,44.0 15.8,41.4 27.6,38.6 39.3,35.6 51.1,32.9 62.9,30.2 74.7,27.7 86.4,25.2 98.2,22.8 110.0,20.6 121.8,18.5 133.6,16.3 145.3,14.4 157.1,12.5 168.9,10.7 180.7,9.0 192.4,7.7 204.2,6.1"/>
+            <polyline class="gain" points="204.2,6.1 216.0,4.0"/>
+            <circle class="capg" cx="216.0" cy="4.0" r="2.6"/>
+            <text x="4" y="12">27 kg</text>
+            <text x="196" y="46">300</text>
+          </svg>
+          <div style="font-size:0.8rem;color:var(--ink-soft)">reported 349, corrected to 300</div>
+        </td>
+        <td><del>349&nbsp;kg</del> &nbsp;<ins>300&nbsp;kg</ins></td>
+        <td class="was">healthy <span style="font-size:0.8rem">(unchanged)</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="note">The mis-weigh is why Spots showed as a growth flag in the earlier health review &mdash; <strong>the fix removes the anomaly, not a real gain.</strong></p>
+</div>
+
+<footer>Victory Farm &amp; Animal Farm FMIS &middot; illustrative &middot; health-condition writes 2026-09-07</footer>
+</div>
+</body>
+</html>

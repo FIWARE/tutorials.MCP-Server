@@ -184,7 +184,7 @@
 <div class="wrap">
 <header class="top">
   <h1>🌾 Victory Farm &amp; Animal Farm — FMIS</h1>
-  <p>Full chat transcript · 2026-09-06</p>
+  <p>Full chat transcript · 2026-09-06 – 2026-09-07</p>
   <p class="hint">Icons beside a reply link to the underlying data — click one to open the map, growth chart, or record it's drawn from.</p>
 </header>
 
@@ -359,6 +359,89 @@
 <p><strong>Stocking</strong> (permanent pasture ~2–2.5 LSU/ha; a 400&nbsp;kg Jersey ≈ 0.67 LSU): on the realistic middle, the four pastures run <strong>at to modestly above</strong> the guideline — tolerable under rotation with rest. The <strong>sow yard is the real exception</strong> at ~24 LSU/ha on its footprint. Boars have adequate space.</p>
 <p><strong>Anomaly the geometry exposes:</strong> <strong>Beany</strong> (bull, registered to East Pasture, flagged "check hooves") is physically in the <strong>South Pasture</strong> cluster, right alongside the South Pasture bull <strong>Ferdinand</strong> — two mature bulls together, one in the wrong paddock per the records. Check fences and the location tag.</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_map_density.html"><img src="./img/maps.png" alt="Map"></a></div></div>
+
+<p style="text-align:center;color:var(--ink-soft);font-size:0.75rem;font-style:italic;margin:1.6rem 0 0.9rem;">— 2026-09-07 · writes to the broker —</p>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Add the missing <code>breed</code> attribute to the cows — all cows are Jersey.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Applied to <strong>all 43 head</strong> (<code>cow001</code>–<code>cow040</code>, <code>cow101</code>–<code>cow103</code>) — <code>breed: "Jersey"</code> on every one.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Which pasture is Beany on?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p><strong>East Pasture</strong> (<code>AgriParcel:004</code>) — grass, silt loam. His <code>locatedAt</code> is stamped 11:32 today.</p>
+<p>Note: <strong>Beany is a bull</strong> (<code>legalId</code> <code>M-bull001</code>), not a cow — despite the <code>cowNNN</code> entity ID.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_beany_east_pasture.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Confirm whether Beany has breached the fence into the next pasture.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Can't confirm — and nothing suggests it. His collar still reads <code>locatedAt</code> East Pasture, last GPS fix <code>[13.34973, 52.51139]</code>, same timestamp.</p>
+<p>The parcels carry <strong>no boundary geometry</strong>, so there is no fence line to test the point against, and only one location sample in history — no movement trail.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_beany_east_pasture.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Move Beany back to the middle of the herd.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Done. Set Beany's location to <code>[13.35359, 52.51361]</code> — the centroid of the other 9 cows on East Pasture, about 300&nbsp;m north-east of her last fix.</p>
+<p>This overwrites a collar reading, so <code>Device:cow001</code>'s next GPS report will replace it.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_beany_east_pasture.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Generate a 20&nbsp;m circular pig pen around the boars and assign them to it.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Boars <strong>Mammoth</strong> (<code>pig031</code>), <strong>Giant</strong> (<code>pig035</code>) and <strong>Colossus</strong> (<code>pig037</code>) cluster near <code>[13.34713, 52.51973]</code>.</p>
+<p>Created a 32-vertex polygon approximating a <strong>20&nbsp;m-radius</strong> circle on that centroid — all three sit within ~15&nbsp;m — and set each boar's <code>locatedAt</code> to it. Read "20&nbsp;m" as radius; a 20&nbsp;m diameter would not enclose the spread.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Building is wrong — it should be Pen.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Rebuilt as <code>Pen:BoarPen</code> (type <code>Pen</code>, same circular polygon), repointed all three boars' <code>locatedAt</code>, and deleted the <code>Building</code> version.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Have you placed the boars in the pen?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Yes. <code>locatedAt</code> → <code>Pen:BoarPen</code> for all three, and their last collar fixes fall 12–15&nbsp;m from centre, inside the 20&nbsp;m radius — the polygon was drawn around those points.</p>
+<p>Caveats: the collars keep reporting live positions, so <code>locatedAt</code> will not auto-update if a boar wanders out; the broker is not enforcing polygon filters, so containment was checked by hand.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/pig.svg" alt="Pigs"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>What historical weight data can you access?</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Via the temporal API:</p>
+<ul>
+<li><strong>Adult cattle</strong> (<code>cow001</code>–<code>cow040</code>) — monthly readings, Sep 2024 → today, ~25 points each.</li>
+<li><strong>Calves</strong> (<code>cow101</code>–<code>cow103</code>) — weekly since May 2026, ~17 points.</li>
+<li><strong>Pigs</strong> — current value only, no series.</li>
+</ul>
+<p>So cattle weights trend over ~2 years and the calves over ~4 months; pigs cannot be trended.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/bull-graph.png" alt="Weight history"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>How healthy are the cows? Check history for growth and compare with norms.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Sampled ~15 head across age classes against Jersey norms (mature cow 400–500&nbsp;kg, bull 600–820&nbsp;kg, healthy heifer gain ~0.5–0.7&nbsp;kg/day).</p>
+<p><strong>Sound:</strong> both bulls stable, mature cows flat within range, calves <strong>Bumble</strong> (0.79&nbsp;kg/day) and <strong>Blossom</strong> (0.71&nbsp;kg/day) on target; 2025-born heifers ~0.47–0.55&nbsp;kg/day — low-normal for Jersey.</p>
+<p><strong>Flags:</strong></p>
+<ul>
+<li><strong>Tulip</strong> (<code>cow010</code>) — lost ~40&nbsp;kg (11%) May–Aug, now stalled.</li>
+<li><strong>Bug</strong> (<code>cow025</code>) — steady decline 406→360&nbsp;kg since Jan, 8-year-old.</li>
+<li><strong>Spots</strong> (<code>cow040</code>) — impossible +63&nbsp;kg in one month; re-weigh.</li>
+<li><strong>Chalky</strong> (<code>cow020</code>) — tracking ~15% under age target; monitor.</li>
+</ul>
+<p><code>healthCondition</code> is recorded for only 2 of 43 animals — everything else is inferred from weight alone.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/bull-graph.png" alt="Weight history"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Set the health condition of the cattle, add a comment for the likely issue on the two sick cows, amend Spots to 300&nbsp;kg, and recheck Bug.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p><strong>Bug recheck</strong> confirms a real problem: flat at ~405–413&nbsp;kg to Jan 2026, then a steady monotonic decline to <strong>360&nbsp;kg (−13%)</strong>. Sick, not a data blip.</p>
+<p>Set <code>healthCondition</code> on all 43 cattle — <strong>41 healthy, 2 sick</strong>:</p>
+<ul>
+<li><strong>Tulip</strong> (<code>cow010</code>) — <code>sick</code> + comment: ~11% loss May–Aug; likely parasitism or subclinical disease — BCS and faecal egg count.</li>
+<li><strong>Bug</strong> (<code>cow025</code>) — <code>sick</code> + comment: ~13% loss since Jan in an 8-year-old; likely parasitism, dental wear, or Johne's — vet exam.</li>
+</ul>
+<p><strong>Spots</strong> (<code>cow040</code>) — weight amended 349 → <strong>300&nbsp;kg</strong>, left <code>healthy</code>.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_health_condition.html"><img src="./img/cow.svg" alt="Cows"></a><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/bull-graph.png" alt="Weight history"></a></div></div>
+
+<div class="turn user"><div class="bubble"><span class="label">You</span>Chalky needs a comment — healthy but needs observation.</div></div>
+<div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
+<p>Added. <strong>Chalky</strong> (<code>cow020</code>) stays <code>healthy</code> with a note: average daily gain ~0.41&nbsp;kg/day, roughly 15% below the Jersey age target, growth continuous with no stall — review ration and worm burden, re-weigh monthly.</p>
+</div><div class="icon-stack"><a class="topic-icon" href="./farm_growth_chart.html"><img src="./img/cow.svg" alt="Cows"></a></div></div>
 
 </div>
 <footer>
