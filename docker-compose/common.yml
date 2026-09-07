@@ -210,6 +210,9 @@ services:
       - MCP_PORT=${MCP_SERVER_PORT}
       - SCHEMA_DIR=/schemas
       - NGSI_LD_CONTEXT=http://context/user-context.jsonld
+      - WRITABLE=true
+      - WRITE_TENANT=farmer
+      - WRITE_LOCAL_ONLY=true
     volumes:
       - type: bind
         source: ${PWD}/schemas
