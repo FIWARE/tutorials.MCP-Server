@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" href="img/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" href="img/favicon.png">
 <title>Victory Farm &amp; Animal Farm — FMIS Chat Transcript</title>
 <style>
   :root {
@@ -395,12 +397,12 @@
 <div class="turn user"><div class="bubble"><span class="label">You</span>Generate a 20&nbsp;m circular pig pen around the boars and assign them to it.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
 <p>Boars <strong>Mammoth</strong> (<code>pig031</code>), <strong>Giant</strong> (<code>pig035</code>) and <strong>Colossus</strong> (<code>pig037</code>) cluster near <code>[13.34713, 52.51973]</code>.</p>
-<p>Created a 32-vertex polygon approximating a <strong>20&nbsp;m-radius</strong> circle on that centroid — all three sit within ~15&nbsp;m — and set each boar's <code>locatedAt</code> to it. Read "20&nbsp;m" as radius; a 20&nbsp;m diameter would not enclose the spread.</p>
+<p>Created a 32-vertex polygon approximating a <strong>20&nbsp;m-radius</strong> circle on that centroid — all three sit within ~15&nbsp;m — stored it as a new entity <code>urn:ngsi-ld:Building:BoarPen</code> (type <code>Building</code>), and set each boar's <code>locatedAt</code> to it. Read "20&nbsp;m" as radius; a 20&nbsp;m diameter would not enclose the spread.</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Building is wrong — it should be Pen.</div></div>
 <div class="turn bot"><div class="bubble"><span class="label">FMIS</span>
-<p>Rebuilt as <code>Pen:BoarPen</code> (type <code>Pen</code>, same circular polygon), repointed all three boars' <code>locatedAt</code>, and deleted the <code>Building</code> version.</p>
+<p>Deleted <code>urn:ngsi-ld:Building:BoarPen</code> and rebuilt it as <code>urn:ngsi-ld:Pen:BoarPen</code> (type <code>Pen</code>, same circular polygon), then repointed all three boars' <code>locatedAt</code> at it.</p>
 </div><div class="icon-stack"><a class="topic-icon" href="./farm_boar_pen.html"><img src="./img/barn.png" alt="Pen"></a></div></div>
 
 <div class="turn user"><div class="bubble"><span class="label">You</span>Have you placed the boars in the pen?</div></div>
