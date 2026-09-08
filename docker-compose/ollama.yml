@@ -1,0 +1,68 @@
+# Optional: run Ollama inside the tutorial network so the chat-bot can talk to an
+# open-source model without a model server on the host.
+#
+#   docker compose -f docker-compose/common.yml -f docker-compose/orion-ld.yml \
+#                  -f docker-compose/ollama.yml -p fiware up -d
+#
+# The first start pulls ${OLLAMA_MODEL} (a few minutes, a few GB of disk).
+# GPU acceleration is Linux + NVIDIA only; on macOS this runs CPU-only.
+#
+# These services carry org.fiware=ollama, not org.fiware=tutorial, so a full
+# `./services stop` leaves them running. Remove them with `./services ollama stop`.
+services:
+  ollama:
+    labels:
+      org.fiware: 'ollama'
+    image: ollama/ollama:${OLLAMA_VERSION}
+    hostname: ollama
+    container_name: fiware-ollama
+    networks:
+      - default
+    ports:
+      - "11434:11434" # localhost:11434
+    volumes:
+      - ollama:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "ls"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    # Uncomment on a Linux host with an NVIDIA GPU:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  # One-shot: wait for the server, pull the configured model into the shared volume, then exit
+  ollama-init:
+    labels:
+      org.fiware: 'ollama'
+    image: ollama/ollama:${OLLAMA_VERSION}
+    container_name: fiware-ollama-init
+    depends_on:
+      - ollama
+    networks:
+      - default
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - >-
+        until ollama ls >/dev/null 2>&1; do echo "waiting for ollama..."; sleep 2; done;
+        ollama pull ${OLLAMA_MODEL};
+        ollama ls
+    restart: "no"
+
+  # Point the chat-bot at the in-network Ollama rather than the host
+  chat-bot:
+    depends_on:
+      - mcp-server
+      - ollama
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434/v1
+
+volumes:
+  ollama: ~

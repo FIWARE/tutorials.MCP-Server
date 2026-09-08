@@ -21,7 +21,7 @@ fi
 
 if (( $# < 1 )); then
 	echo "Illegal number of parameters"
-	echo "usage: services [create|orion|scorpio|stellio|stop]"
+	echo "usage: services [create|orion|scorpio|stellio|ollama|ollama stop|stop]"
 	exit 1
 fi
 
@@ -192,7 +192,7 @@ addIoTDatabaseIndex () {
 command="$1"
 case "${command}" in
 	"help")
-        echo "usage: services [create|orion|scorpio|stellio|stop]"
+        echo "usage: services [create|orion|scorpio|stellio|ollama|ollama stop|stop]"
         ;;
 	 "orion")
 		set -a; source .env; set +a
@@ -204,9 +204,10 @@ case "${command}" in
 		echo -e "- \033[1mTutorial\033[0m displays a web app to manipulate the context directly"
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
+		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
-		${dockerCmd} -f docker-compose/mintaka.yml -p fiware up -d --remove-orphans --renew-anon-volumes
+		${dockerCmd} -f docker-compose/mintaka.yml -p fiware up -d --renew-anon-volumes
 		pause 10
 		${dockerCmd} -f docker-compose/common.yml -f docker-compose/orion-ld.yml -p fiware up -d --renew-anon-volumes
 		displayServices "orion|fiware"
@@ -215,6 +216,7 @@ case "${command}" in
 		loadData orion:1026
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
+		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
 		;;
 
 	"scorpio")
@@ -226,9 +228,10 @@ case "${command}" in
 		echo -e "- \033[1mTutorial\033[0m displays a web app to manipulate the context directly"
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
+		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/scorpio.yml -p fiware up -d --remove-orphans --renew-anon-volumes
+		${dockerCmd} -f docker-compose/common.yml -f docker-compose/scorpio.yml -p fiware up -d --renew-anon-volumes
 		displayServices "scorpio|fiware"
 		waitForMongo
 		addIoTDatabaseIndex
@@ -236,6 +239,7 @@ case "${command}" in
 		loadData scorpio:9090
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
+		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
 		;;
 	"stellio")
 		set -a; source .env; set +a
@@ -246,9 +250,10 @@ case "${command}" in
 		echo -e "- \033[1mTutorial\033[0m displays a web app to manipulate the context directly"
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
+		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/stellio.yml -p fiware up -d --remove-orphans --renew-anon-volumes
+		${dockerCmd} -f docker-compose/common.yml -f docker-compose/stellio.yml -p fiware up -d --renew-anon-volumes
 		displayServices "stellio|fiware"
 		waitForMongo
 		addIoTDatabaseIndex
@@ -256,6 +261,33 @@ case "${command}" in
 		loadData stellio:8080
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
+		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
+		;;
+	"ollama")
+		set -a; source .env; set +a
+		dockerCmd="docker compose"
+		if [ "$2" != "stop" ] && (( $# == 2 )); then
+			dockerCmd="docker-compose"
+		fi
+		if [ "$2" == "stop" ]; then
+			echo -e "Stopping \033[1;34mOllama\033[0m"
+			${dockerCmd} -f docker-compose/common.yml -f docker-compose/ollama.yml -p fiware rm -sf ollama ollama-init
+			if [ -n "$(docker ps -q -f name=fiware-chat-bot)" ]; then
+				echo -e "Reverting \033[1mChat-bot\033[0m to the host Ollama URL"
+				${dockerCmd} -f docker-compose/common.yml -p fiware up -d --no-deps --force-recreate chat-bot
+			fi
+		else
+			echo -e "Starting \033[1;34mOllama\033[0m in the tutorial network and pulling \033[1m${OLLAMA_MODEL}\033[0m"
+			${dockerCmd} -f docker-compose/common.yml -f docker-compose/ollama.yml -p fiware up -d ollama ollama-init
+			if [ -n "$(docker ps -q -f name=fiware-chat-bot)" ]; then
+				echo -e "Re-pointing \033[1mChat-bot\033[0m at \033[4mhttp://ollama:11434/v1\033[0m"
+				${dockerCmd} -f docker-compose/common.yml -f docker-compose/ollama.yml -p fiware up -d --no-deps --force-recreate chat-bot
+			fi
+			displayServices "ollama|chat-bot"
+			echo -e "\033[1;34mOllama\033[0m is running on localhost:11434 - the model pull runs in the background"
+			echo -e "Follow it with \033[1mdocker logs -f fiware-ollama-init\033[0m"
+			echo -e "Set \033[1mCHAT_BOT_PROVIDER=ollama\033[0m or pick \033[1mollama\033[0m in the chat-bot UI"
+		fi
 		;;
 	"stop")
 		set -a; source .env; set +a
@@ -270,11 +302,13 @@ case "${command}" in
 		echo "Pulling Docker images"
 		docker pull -q quay.io/curl/curl:${CURL_VERSION}
 		docker pull -q quay.io/fiware/tutorials.mcp-server
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/common.yml -f docker-compose/scorpio.yml -f docker-compose/orion-ld.yml -f docker-compose/stellio.yml -f docker-compose/mintaka.yml pull
+		${dockerCmd} -f docker-compose/common.yml -f docker-compose/common.yml -f docker-compose/scorpio.yml -f docker-compose/orion-ld.yml -f docker-compose/stellio.yml -f docker-compose/mintaka.yml pull --ignore-buildable
+		echo "Building the Chat-bot image"
+		${dockerCmd} -f docker-compose/common.yml -p fiware build chat-bot
 		;;
 	*)
 		echo "Command not Found."
-		echo "usage: services [create|orion|scorpio|stellio|stop]"
+		echo "usage: services [create|orion|scorpio|stellio|ollama|ollama stop|stop]"
 		exit 127;
 		;;
 esac
