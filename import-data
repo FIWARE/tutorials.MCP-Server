@@ -34,31 +34,6 @@ sleep 3
 
 
 
-echo -e "\nCreating animals for the farmer ..."
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/cow.csv" http://tutorial:3000/csv/Animal
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/pig.csv" http://tutorial:3000/csv/Animal
-
-echo -e "Creating devices for the animals ..."
-curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -H "offset-duration: MONTH" -F "file=@./data/cow-history.csv" http://tutorial:3000/csv/Animal
-curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -H "offset-duration: WEEK" -F "file=@./data/cow-history-young.csv" http://tutorial:3000/csv/Animal
-curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/cow-readings.csv" http://tutorial:3000/csv/Animal
-curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/pig-readings.csv" http://tutorial:3000/csv/Animal
-curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/device.csv" http://tutorial:3000/csv/Device
-
-echo -e "Creating agri-data for the farmer ..."
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-parcel.csv" http://tutorial:3000/csv/AgriParcel
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-crop.csv" http://tutorial:3000/csv/AgriCrop
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-farm.csv" http://tutorial:3000/csv/AgriFarm
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-pest.csv" http://tutorial:3000/csv/AgriPest
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-soil.csv" http://tutorial:3000/csv/AgriSoil
-
-echo -e "Creating personnel for the farm ..."
-curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/person.csv" http://tutorial:3000/csv/Person
-
-echo -e "Creating weather observations readings ..."
-curl -s -o /dev/null -F "file=@./data/weather.csv" http://tutorial:3000/csv/Weather
-
-
 
 echo -e "\nRegistering Farmer as data source ...\n"
 
@@ -110,6 +85,29 @@ curl -s -iX POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/csourceRegistrations/'
 }'
 
 
+echo -e "\nCreating animals for the farmer ..."
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/cow.csv" http://tutorial:3000/csv/Animal
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/pig.csv" http://tutorial:3000/csv/Animal
+
+echo -e "Creating devices for the animals ..."
+curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -H "offset-duration: MONTH" -F "file=@./data/cow-history.csv" http://tutorial:3000/csv/Animal
+curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -H "offset-duration: WEEK" -F "file=@./data/cow-history-young.csv" http://tutorial:3000/csv/Animal
+curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/cow-readings.csv" http://tutorial:3000/csv/Animal
+curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/pig-readings.csv" http://tutorial:3000/csv/Animal
+curl -s -o /dev/null -H "NGSILD-Tenant: openiot" -F "file=@./data/device.csv" http://tutorial:3000/csv/Device
+
+echo -e "Creating agri-data for the farmer ..."
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-parcel.csv" http://tutorial:3000/csv/AgriParcel
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-crop.csv" http://tutorial:3000/csv/AgriCrop
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-farm.csv" http://tutorial:3000/csv/AgriFarm
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-pest.csv" http://tutorial:3000/csv/AgriPest
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/agri-soil.csv" http://tutorial:3000/csv/AgriSoil
+
+echo -e "Creating personnel for the farm ..."
+curl -s -o /dev/null -H "NGSILD-Tenant: farmer" -F "file=@./data/person.csv" http://tutorial:3000/csv/Person
+
+echo -e "Creating weather observations readings ..."
+curl -s -o /dev/null -F "file=@./data/weather.csv" http://tutorial:3000/csv/Weather
 
 echo -e "\nInitialising devices readings ... \n"
 curl -s -o /dev/null -iX PUT --location ''"${IOT_DEVICES}"'/devices' \
