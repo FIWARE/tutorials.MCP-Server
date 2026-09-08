@@ -76,6 +76,8 @@ curl -s -iX POST 'http://'"${CONTEXT_BROKER}"'/ngsi-ld/v1/csourceRegistrations/'
                 {"type": "AgriFarm"},
                 {"type": "AgriPest"},
                 {"type": "AgriSoil"},
+                {"type": "AnimalDisease"},
+                {"type": "Pen"},
                 {"type": "Person"},
                 {"type": "Device"}
             ]
