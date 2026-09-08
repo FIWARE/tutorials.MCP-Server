@@ -36,6 +36,7 @@
     "Tierarztbehandlung": "agrifood:VeterinarianTreatment",
     "aktuator": "https://w3id.org/saref#actuator",
     "zusätzlicherName": "schema:additionalName",
+    "zusätzlicheEigenschaft": "schema:additionalProperty",
     "adresse": "schema:address",
     "addressCountry": "schema:addressCountry",
     "addressLocality": "schema:addressLocality",

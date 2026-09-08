@@ -36,6 +36,7 @@
     "VeterinarianTreatment": "agrifood:VeterinarianTreatment",
     "actuator": "https://w3id.org/saref#actuator",
     "additionalName": "schema:additionalName",
+    "additionalProperty": "schema:additionalProperty",
     "address": "schema:address",
     "addressCountry": "schema:addressCountry",
     "addressLocality": "schema:addressLocality",
