@@ -223,6 +223,41 @@ services:
         target: /prompts
         read_only: true
 
+  # Chat-bot - a web UI and LLM agent loop that drives the broker via the MCP Server
+  chat-bot:
+    labels:
+      org.fiware: 'tutorial'
+    build:
+      context: ${PWD}/chat-bot
+    image: quay.io/fiware/tutorials.chat-bot
+    hostname: chat-bot
+    container_name: fiware-chat-bot
+    depends_on:
+      - mcp-server
+    networks:
+      - default
+    expose:
+      - "${CHAT_BOT_PORT}"
+    ports:
+      - "${CHAT_BOT_PORT}:${CHAT_BOT_PORT}" # localhost:3005
+    environment:
+      # The chat-bot reads bare names (PORT / MCP_URL / PROVIDER / <PROVIDER>_*);
+      # map the CHAT_BOT_* .env vars onto them and point MCP_URL in-network.
+      - PORT=${CHAT_BOT_PORT}
+      - MCP_URL=http://mcp-server:${MCP_SERVER_PORT}/mcp
+      - PROVIDER=${CHAT_BOT_PROVIDER}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - OPENAI_MODEL=${OPENAI_MODEL}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL}
+      - OLLAMA_MODEL=${OLLAMA_MODEL}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GEMINI_BASE_URL=${GEMINI_BASE_URL}
+      - GEMINI_MODEL=${GEMINI_MODEL}
+
 networks:
   default:
     labels:
