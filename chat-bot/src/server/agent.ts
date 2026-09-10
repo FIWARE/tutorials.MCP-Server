@@ -161,6 +161,7 @@ async function ontologyGuard(
 }
 
 function entityType(args: Record<string, unknown>): string | undefined {
+  if (typeof args.entityType === 'string') return args.entityType;
   if (typeof args.type === 'string') return args.type;
   const entity = args.entity;
   if (entity && typeof entity === 'object') {
