@@ -9,6 +9,13 @@ import type {
 
 const CREATE_TOOL = 'create_entity';
 
+const CONTINUE_NUDGE =
+  'Keep going — do not stop at a description of your next step. In THIS turn, make the tool call ' +
+  'you just described. If a previous call failed or returned nothing, recover: call list_entity_types ' +
+  'for the real type names and list_attributes for the real attribute names, or broaden/relax the ' +
+  'query, then retry. Only give a final answer once you actually have one or have genuinely ' +
+  'exhausted the available tools.';
+
 interface RunOpts {
   provider: LlmProvider;
   model?: string;
@@ -22,13 +29,20 @@ interface RunOpts {
   /** Ports the .claude PreToolUse hook: fetch the data model for an entity type before it is created. */
   lookupOntology?: (type: string) => Promise<{ uri: string; text: string } | null>;
   maxSteps?: number;
+  /** How many times to auto-prompt the model to continue when it stalls without a tool call. */
+  maxNudges?: number;
 }
 
 export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
   const { provider, model, system, tools, callTool } = opts;
   const messages: Msg[] = [...opts.history];
-  const maxSteps = opts.maxSteps ?? 10;
+  const maxSteps = opts.maxSteps ?? 16;
+  const maxNudges = opts.maxNudges ?? 3;
   const surfaced = seedSurfaced(opts.history);
+
+  let nudges = 0;
+  let lastToolErrored = false;
+  let toolCallsMade = 0;
 
   for (let step = 0; step < maxSteps; step++) {
     let text = '';
@@ -50,7 +64,22 @@ export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
     });
     yield { t: 'assistant_done', text };
 
-    if (!toolCalls.length) return;
+    if (!toolCalls.length) {
+      // The model ended its turn without acting. Prod it to continue when it was
+      // mid-investigation, just hit a tool error, or reported a dead end without
+      // really having tried — rather than accepting a premature answer.
+      const wantMore =
+        lastToolErrored ||
+        wantsToContinue(text) ||
+        (toolCallsMade < 4 && looksLikeDeadEnd(text));
+      if (nudges < maxNudges && wantMore) {
+        nudges++;
+        lastToolErrored = false;
+        messages.push({ role: 'user', text: CONTINUE_NUDGE });
+        continue;
+      }
+      return;
+    }
 
     const results: ToolResult[] = [];
     for (const call of toolCalls) {
@@ -68,10 +97,33 @@ export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
       results.push(result);
       yield { t: 'tool_result', result };
     }
+    lastToolErrored = results.some((r) => r.isError);
+    toolCallsMade += toolCalls.length;
     messages.push({ role: 'tool', results });
   }
 
   yield { t: 'error', message: `Stopped after ${maxSteps} tool-loop steps` };
+}
+
+/** Heuristic: did the model announce a next action (but not take it) or trail off mid-thought? */
+function wantsToContinue(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  if (!t) return true;
+  if (t.endsWith('...') || t.endsWith(':')) return true;
+  return (
+    /(^|[.\n]\s*)(let me\b|let's\b|i'?ll\b|i will\b|next,? i\b|now i\b|first,? (let|i)\b)/.test(t) ||
+    /\b(investigate|let me (check|list|look|see|try|find|verify)|list (all|the) entity types|check what attributes|try (a different|another|again)|as a next step)\b/.test(t)
+  );
+}
+
+/** Heuristic: a "nothing found / cannot tell" answer that may just mean the model gave up early. */
+function looksLikeDeadEnd(text: string): boolean {
+  const t = text.trim().toLowerCase();
+  return (
+    /\bno .{0,24}(found|registered|recorded|present|matching|match|exist|available)\b/.test(t) ||
+    /\b(there (are|is) no|none (were|are)|not (found|registered|recorded|present|available))\b/.test(t) ||
+    /\b(couldn'?t|could not|cannot|can'?t|unable to) (find|determine|tell|confirm|verify)\b/.test(t)
+  );
 }
 
 /** Recover which entity types already had their model surfaced earlier in the conversation. */

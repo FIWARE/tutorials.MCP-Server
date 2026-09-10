@@ -68,7 +68,10 @@ export function buildRegistry(): Registry {
 
   const keys = [...providers.keys()];
   const wanted = env('PROVIDER');
-  const defaultId = wanted && providers.has(wanted) ? wanted : keys[0]!;
+  // Ollama is a fallback only: default to it solely when it is the one provider loaded.
+  // An explicit PROVIDER=ollama still wins.
+  const autoDefault = keys.find((k) => k !== 'ollama') ?? keys[0]!;
+  const defaultId = wanted && providers.has(wanted) ? wanted : autoDefault;
 
   return {
     defaultId,
