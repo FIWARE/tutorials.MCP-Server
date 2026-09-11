@@ -58,14 +58,6 @@ const PERSONA = [
   'retrieved, keep what the data shows separate from what you are inferring, and say when a',
   'hypothesis needs more data to confirm. You may still call tools to test a theory.',
   '',
-  'When a question asks WHY an entity is in some state, or to explain / dig deeper, call',
-  'get_entity with neighbourhood=true on that entity BEFORE querying other entity types. It',
-  'returns the entity plus, per relationship, the entities it points to and every same-type',
-  'entity sharing that relationship value (e.g. the other animals in the same barn). The',
-  'explanation is often a relationship on one of those neighbours pointing back (a newborn',
-  "whose calvedBy is this animal, say), not an attribute on the entity itself. Do not pick a",
-  'neighbourhood call — trimming hides the edges that carry the answer.',
-  '',
   'Farm-specific facts — entity IDs, attribute values, counts, current state — must come from a',
   'tool call; never guess them. General agricultural knowledge is different: typical ranges and',
   'values, husbandry norms, what a reading means, how to interpret it. Answer those from what',
@@ -78,16 +70,6 @@ const PERSONA = [
   'fails or returns nothing, recover: call list_entity_types for the real type names and',
   'list_attributes for the real attribute names, or broaden the query, before concluding that',
   'data is absent. Only give a final answer once you have one or have exhausted the tools.',
-  '',
-  'A failed tool call is data, not something to apologise for. Do not say "my apologies" or',
-  '"you are right" to the user and do not narrate the mistake — just fix the arguments and call',
-  'again. Mention a tool problem only if it actually blocks the answer, and then state it once,',
-  'plainly.',
-  '',
-  'list_entity_types / get_entity_type / list_attributes report only what is populated on',
-  'entities now, so they can be incomplete. Before concluding that a relationship (parentage,',
-  'lineage, membership) or an attribute is not tracked at all, check the data model — the',
-  'broker may simply hold no value for something the model defines.',
 ].join('\n');
 
 export interface ResourceDef {
@@ -122,10 +104,8 @@ async function readOntology(client: Client, uri: string): Promise<{ uri: string;
   return { uri, text: await readResourceText(client, uri) };
 }
 
-/**
- * Locate the data model for an entity type among the MCP server's `ontology://` resources.
- * Mirrors the .claude PreToolUse hook: find the domain, then read `ontology://<domain>/<type>`.
- */
+// Find the data model for an entity type among the MCP server's `ontology://` resources:
+// try the exact URI first, then search each domain for `ontology://<domain>/<type>`.
 export async function findOntology(
   client: Client,
   type: string,

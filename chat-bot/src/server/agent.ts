@@ -65,9 +65,8 @@ export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
     yield { t: 'assistant_done', text };
 
     if (!toolCalls.length) {
-      // The model ended its turn without acting. Prod it to continue when it was
-      // mid-investigation, just hit a tool error, or reported a dead end without
-      // really having tried — rather than accepting a premature answer.
+      // No tool call this turn. Prod it to continue if it was mid-investigation, just
+      // hit an error, or gave up early — don't accept a premature answer.
       const wantMore =
         lastToolErrored ||
         wantsToContinue(text) ||
@@ -93,7 +92,7 @@ export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
       }
 
       const r = await callTool(call.name, call.args);
-      const result: ToolResult = { id: call.id, content: r.content, isError: r.isError };
+      const result = completenessNudge(call, { id: call.id, content: r.content, isError: r.isError });
       results.push(result);
       yield { t: 'tool_result', result };
     }
@@ -158,6 +157,36 @@ async function ontologyGuard(
       `Keep attribute names conventional, label any non-standard fields clearly, then call ${CREATE_TOOL} again.`;
 
   return { id: call.id, content, isError: true };
+}
+
+// Guardrail sibling to ontologyGuard: after a successful create, raise what the model
+// tends to skip — derivable attributes, relationships on OTHER entities, and gaps to surface to the user.
+function completenessNudge(call: ToolCall, result: ToolResult): ToolResult {
+  if (call.name !== CREATE_TOOL || result.isError) return result;
+  let attrs: string[] = [];
+  try {
+    attrs = (JSON.parse(result.content) as { attributes?: string[] }).attributes ?? [];
+  } catch {
+    return result;
+  }
+  if (!attrs.length) return result;
+
+  return {
+    ...result,
+    content:
+      `${result.content}\n\n[completeness-check] Attributes set: ${attrs.join(', ')}. Before moving on:\n` +
+      "1. Can the type's other optional attributes be computed from data you already retrieved this " +
+      'conversation (an average of values you just fetched, a count from entities you just listed)? Add ' +
+      'those with update_entity_attribute. Do not invent a value you have no evidence for (an assumed ' +
+      'timestamp, a count assumed zero) — leave those unset.\n' +
+      '2. If this entity is meant to contain, enclose, or otherwise relate to specific other entities you ' +
+      'already have the IDs for, it may hold no relationship back to them — membership is often expressed ' +
+      "the other way (e.g. an Animal's locatedAt pointing at this entity, not this entity listing its " +
+      'animals). If that is what was asked, update those other entities now.\n' +
+      '3. Whatever is still unset once you have done 1 and 2, because you genuinely do not have the data ' +
+      '(e.g. ownedBy, a relationship to a person or building) — say so in your final answer and offer to ' +
+      'add it, naming what you would need (e.g. "Would you like me to set ownedBy? Who owns this animal?").',
+  };
 }
 
 function entityType(args: Record<string, unknown>): string | undefined {
