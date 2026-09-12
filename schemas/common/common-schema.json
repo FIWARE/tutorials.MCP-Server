@@ -33,12 +33,7 @@
       "type": "string",
       "description": "Property. Model:'https://schema.org/Text'. An optional text string used to qualify an item"
     },
-    "timeInstant": {
-      "type": "string",
-      "format": "date-time",
-      "description": "Property. Model:'https://schema.org/Datetime'. Timestamp of the payload . There can be production environments where the attribute type is equal to the `ISO8601` string. If so, it must be considered as a synonym of `DateTime`. This attribute is kept for backwards compatibility with old FIWARE reference implementations"
-    },
-    "dateObserved": {
+    "observedAt": {
       "type": "string",
       "format": "date-time",
       "description": "Property. Date of the observed entity defined by the user"
@@ -53,12 +48,12 @@
         "id": {
           "$ref": "#/definitions/EntityIdentifierType"
         },
-        "dateCreated": {
+        "createdAt": {
           "type": "string",
           "format": "date-time",
           "description": "Property. Entity creation timestamp. This will usually be allocated by the storage platform"
         },
-        "dateModified": {
+        "modifiedAt": {
           "type": "string",
           "format": "date-time",
           "description": "Property. Timestamp of the last modification of the entity. This will usually be allocated by the storage platform"

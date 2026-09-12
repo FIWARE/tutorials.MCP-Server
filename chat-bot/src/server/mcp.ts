@@ -67,8 +67,8 @@ const PERSONA = [
   '',
   'You are an autonomous agent. Keep calling tools until you can answer the question. Never end',
   'a turn by only describing the next step — make that tool call in the same turn. If a tool call',
-  'fails or returns nothing, recover: call list_entity_types for the real type names and',
-  'list_attributes for the real attribute names, or broaden the query, before concluding that',
+  'fails or returns nothing, recover: call discover_context_meta_data for',
+  'the real type and attribute names, or broaden the query, before concluding that',
   'data is absent. Only give a final answer once you have one or have exhausted the tools.',
 ].join('\n');
 
@@ -140,9 +140,9 @@ export async function buildSystemPrompt(client: Client): Promise<string> {
   const serverInstructions = client.getInstructions()?.trim();
   const base = serverInstructions ? `${PERSONA}\n\n${serverInstructions}` : PERSONA;
   try {
-    const { content, isError } = await callTool(client, 'list_entity_types', {});
+    const { content, isError } = await callTool(client, 'discover_context_meta_data', {});
     if (isError || !content) return base;
-    return `${base}\n\nEntity types currently in the broker:\n${content}`;
+    return `${base}\n\nContext metadata for this farm (types, attributes, enums, relationships, properties):\n${content}`;
   } catch {
     return base;
   }

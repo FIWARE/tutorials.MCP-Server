@@ -11,9 +11,9 @@ const CREATE_TOOL = 'create_entity';
 
 const CONTINUE_NUDGE =
   'Keep going — do not stop at a description of your next step. In THIS turn, make the tool call ' +
-  'you just described. If a previous call failed or returned nothing, recover: call list_entity_types ' +
-  'for the real type names and list_attributes for the real attribute names, or broaden/relax the ' +
-  'query, then retry. Only give a final answer once you actually have one or have genuinely ' +
+  'you just described. If a previous call failed or returned nothing, recover: call ' +
+  'discover_context_meta_data for the real type and attribute names, or ' +
+  'broaden/relax the query, then retry. Only give a final answer once you actually have one or have genuinely ' +
   'exhausted the available tools.';
 
 interface RunOpts {
@@ -177,7 +177,7 @@ function completenessNudge(call: ToolCall, result: ToolResult): ToolResult {
       `${result.content}\n\n[completeness-check] Attributes set: ${attrs.join(', ')}. Before moving on:\n` +
       "1. Can the type's other optional attributes be computed from data you already retrieved this " +
       'conversation (an average of values you just fetched, a count from entities you just listed)? Add ' +
-      'those with update_entity_attribute. Do not invent a value you have no evidence for (an assumed ' +
+      'those with upsert_attribute. Do not invent a value you have no evidence for (an assumed ' +
       'timestamp, a count assumed zero) — leave those unset.\n' +
       '2. If this entity is meant to contain, enclose, or otherwise relate to specific other entities you ' +
       'already have the IDs for, it may hold no relationship back to them — membership is often expressed ' +
