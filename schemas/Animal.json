@@ -61,11 +61,11 @@
         "sex": {
           "type": "string",
           "enum": [
-            "female",
-            "male"
+            "Female",
+            "Male"
           ],
           "x-ngsi-type": "VocabProperty",
-          "description": "VocabProperty. Sex of the animal, held as a controlled-vocabulary term (mapped to https://schema.org/Male / https://schema.org/Female). Enum:'male, female'"
+          "description": "VocabProperty. Sex of the animal, held as a controlled-vocabulary term (mapped to https://schema.org/Male / https://schema.org/Female). Enum:'Male, Female'"
         },
         "breed": {
           "type": "string",
