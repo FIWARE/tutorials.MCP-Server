@@ -1,0 +1,227 @@
+routes:
+  # ── MCP endpoint — JWT validation only ──────────────────────────────────────
+  # MCP is a single JSON-RPC endpoint, so `http_method_as_scope` has nothing to
+  # discriminate on. Per-tool authorization is done by the MCP server itself,
+  # which verifies the same token a second time and forwards it to the broker.
+  - id: 1
+    uris: ["/mcp", "/mcp/*"]
+    upstream_id: 1
+    plugins:
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        scope: "openid profile email"
+        bearer_only: true
+
+  # ── OAuth discovery — deliberately unauthenticated ──────────────────────────
+  # RFC 9728 / RFC 8414 metadata. A client with no token reads these to find
+  # Keycloak, so requiring a token here would make the flow unbootstrappable.
+  - id: 2
+    uris:
+      - "/.well-known/oauth-protected-resource"
+      - "/.well-known/oauth-protected-resource/*"
+      - "/.well-known/oauth-authorization-server"
+      - "/.well-known/oauth-authorization-server/*"
+    upstream_id: 1
+
+  # ── Upstream health probe — unauthenticated ─────────────────────────────────
+  - id: 3
+    uri: /health
+    upstream_id: 1
+
+  # ── Broker routes — JWT validation + Keycloak RBAC (UMA) ────────────────────
+  - id: 4
+    uri: /orion/*
+    upstream_id: 2
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/orion(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        scope: "openid profile email"
+        bearer_only: true
+      authz-keycloak:
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/uma2-configuration"
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        permissions: ["Entity Collection"]
+        http_method_as_scope: true
+        policy_enforcement_mode: "ENFORCING"
+        ssl_verify: false
+  - id: 5
+    uri: /scorpio/*
+    upstream_id: 3
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/scorpio(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        scope: "openid profile email"
+        bearer_only: true
+      authz-keycloak:
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/uma2-configuration"
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        permissions: ["Entity Collection"]
+        http_method_as_scope: true
+        policy_enforcement_mode: "ENFORCING"
+        ssl_verify: false
+  - id: 6
+    uri: /stellio/*
+    upstream_id: 4
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/stellio(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        scope: "openid profile email"
+        bearer_only: true
+      authz-keycloak:
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/uma2-configuration"
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        permissions: ["Entity Collection"]
+        http_method_as_scope: true
+        policy_enforcement_mode: "ENFORCING"
+        ssl_verify: false
+  - id: 7
+    uri: /coraine/*
+    upstream_id: 5
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/coraine(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        scope: "openid profile email"
+        bearer_only: true
+      authz-keycloak:
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/uma2-configuration"
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        permissions: ["Entity Collection"]
+        http_method_as_scope: true
+        policy_enforcement_mode: "ENFORCING"
+        ssl_verify: false
+
+  # ── Temporal API — JWT validation only ──────────────────────────────────────
+  # The UMA resource covers /ngsi-ld/v1/entities; Mintaka serves
+  # /temporal/entities, which no policy describes.
+  - id: 8
+    uri: /mintaka/*
+    upstream_id: 6
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/mintaka(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        bearer_only: true
+
+  # ── IoT Agent data routes — JWT validation only (high-frequency writes) ─────
+  - id: 9
+    uri: /data/orion/*
+    upstream_id: 2
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/data/orion(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        bearer_only: true
+  - id: 10
+    uri: /data/scorpio/*
+    upstream_id: 3
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/data/scorpio(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        bearer_only: true
+  - id: 11
+    uri: /data/stellio/*
+    upstream_id: 4
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/data/stellio(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        bearer_only: true
+  - id: 12
+    uri: /data/coraine/*
+    upstream_id: 5
+    plugins:
+      proxy-rewrite:
+        regex_uri: ["^/data/coraine(.*)", "$1"]
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        bearer_only: true
+
+  # ── IoT Agent South Port route — JWT validation for device writes ───────────
+  - id: 13
+    uri: /iot/*
+    upstream_id: 7
+    plugins:
+      openid-connect:
+        client_id: "ngsi-ld-farm"
+        client_secret: "1234"
+        discovery: "http://keycloak:8080/realms/farm-management/.well-known/openid-configuration"
+        realm: "farm-management"
+        bearer_only: true
+
+upstreams:
+  - id: 1
+    type: roundrobin
+    nodes:
+      "mcp-server:3003": 1
+  - id: 2
+    type: roundrobin
+    nodes:
+      "orion:1026": 1
+  - id: 3
+    type: roundrobin
+    nodes:
+      "scorpio:9090": 1
+  - id: 4
+    type: roundrobin
+    nodes:
+      "stellio:8080": 1
+  - id: 5
+    type: roundrobin
+    nodes:
+      "coraine:1026": 1
+  - id: 6
+    type: roundrobin
+    nodes:
+      "mintaka:8080": 1
+  - id: 7
+    type: roundrobin
+    nodes:
+      "iot-agent:7896": 1
+#END

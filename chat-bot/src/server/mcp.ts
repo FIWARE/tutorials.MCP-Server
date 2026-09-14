@@ -2,11 +2,14 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import type { McpToolDef } from '../shared/types.js';
 
-export async function connectMcp(url: string, tries = 10): Promise<Client> {
+// The bearer token is fixed when the transport is built, so a refreshed token means
+// a new connection rather than a mutated header.
+export async function connectMcp(url: string, token?: string, tries = 10): Promise<Client> {
+  const init = token ? { requestInit: { headers: { Authorization: `Bearer ${token}` } } } : undefined;
   for (let i = 1; ; i++) {
     try {
       const client = new Client({ name: 'ngsi-ld-chat-bot', version: '1.0.0' });
-      await client.connect(new StreamableHTTPClientTransport(new URL(url)));
+      await client.connect(new StreamableHTTPClientTransport(new URL(url), init));
       return client;
     } catch (e) {
       if (i >= tries) throw e;

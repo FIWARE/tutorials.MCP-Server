@@ -79,7 +79,9 @@ services:
     depends_on:
       - orion
     environment:
-      - CONTEXT_BROKER=http://orion:${ORION_LD_PORT}/ngsi-ld/v1
-      - TEMPORAL_BROKER=http://mintaka:${MINTAKA_PORT}
+      # Direct to the broker by default; through APISIX under `./services <broker> --secure`,
+      # so the caller's token is checked against Keycloak's UMA policies on every entity read and write.
+      - CONTEXT_BROKER=${BROKER_ENDPOINT}/ngsi-ld/v1
+      - TEMPORAL_BROKER=${TEMPORAL_ENDPOINT}
       - TEMPORAL_TENANT=openiot
 

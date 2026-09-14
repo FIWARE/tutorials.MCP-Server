@@ -17,7 +17,8 @@ jobs:
   test-modules:
     name: Test Script
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Keycloak adds roughly a minute of start-up to every broker run.
+    timeout-minutes: 20
     steps:
     - uses: actions/checkout@master
       with:

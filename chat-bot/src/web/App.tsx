@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Markdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { streamChat } from './api';
+import { getMe, logout, streamChat, NotSignedIn, type Me } from './api';
+import { Login } from './Login';
 import type { AgentEvent, Msg, ToolCall, ToolResult } from '../shared/types';
 
 interface ProviderInfo {
@@ -27,21 +28,29 @@ export function App() {
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [thinking, setThinking] = useState(false);
+  const [me, setMe] = useState<Me | null | undefined>(undefined);
   const scroller = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    fetch('/api/providers')
+    getMe().then(setMe).catch(() => setMe(null));
+  }, []);
+
+  // Everything below the chat belongs to the signed-in user, so it is loaded only
+  // once there is one.
+  useEffect(() => {
+    if (!me) return;
+    fetch('/api/providers', { credentials: 'same-origin' })
       .then((r) => r.json())
       .then((d: { providers: ProviderInfo[]; default: string }) => {
         setProviders(d.providers);
         setProvider(d.default);
       })
       .catch(() => undefined);
-    fetch('/api/prompts')
+    fetch('/api/prompts', { credentials: 'same-origin' })
       .then((r) => r.json())
       .then((d: { prompts: PromptInfo[] }) => setPrompts(d.prompts ?? []))
       .catch(() => undefined);
-  }, []);
+  }, [me]);
 
   const models = useMemo(
     () => providers.find((p) => p.id === provider)?.models ?? [],
@@ -99,10 +108,23 @@ export function App() {
           apply((p) => [...p, { kind: 'assistant', text: `⚠️ ${e.message}` }]);
         }
       });
+    } catch (e) {
+      if (e instanceof NotSignedIn) {
+        setMe(null);
+        return;
+      }
+      apply((p) => [...p, { kind: 'assistant', text: `⚠️ ${String(e)}` }]);
     } finally {
       setBusy(false);
       setThinking(false);
     }
+  }
+
+  if (me === undefined) {
+    return <div className="app" />;
+  }
+  if (me === null) {
+    return <Login />;
   }
 
   return (
@@ -124,6 +146,18 @@ export function App() {
               </option>
             ))}
           </select>
+          {me.authEnabled && me.user && (
+            <span className="whoami" title={me.roles.join(', ') || 'no roles'}>
+              {me.user}
+              <button
+                onClick={() => {
+                  void logout().then(() => setMe(null));
+                }}
+              >
+                Sign out
+              </button>
+            </span>
+          )}
         </div>
       </header>
 

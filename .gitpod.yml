@@ -40,10 +40,24 @@ ports:
     port: 8668
     onOpen: notify
     visibility: public
-  - name: Grafana
-    description: Visualisation Tool
+  - name: MCP Server
+    description: NGSI-LD exposed to LLM agents as MCP tools
     port: 3003
+    onOpen: ignore
+  - name: Keycloak
+    description: Identity and Access Management
+    port: 3005
+    onOpen: notify
+    visibility: public
+  - name: Chat-bot
+    description: Web UI and LLM agent loop over the MCP Server
+    port: 3006
     onOpen: open-preview
+    visibility: public
+  - name: APISIX
+    description: API Gateway securing the MCP Server and the context broker
+    port: 1030
+    onOpen: notify
     visibility: public
   - name: Redis
     description: Data Cache

@@ -1,24 +1,15 @@
 import { fileURLToPath } from 'node:url';
 import express from 'express';
+import session from 'express-session';
 import { config } from './config.js';
-import {
-  buildSystemPrompt,
-  callTool,
-  connectMcp,
-  findOntology,
-  listResourceDefs,
-  listToolDefs,
-  readResourceText,
-} from './mcp.js';
+import { registerAuthRoutes, requireAuth } from './auth.js';
+import { closeSession, getSession, type McpSession } from './mcp-pool.js';
+import { callTool, findOntology, readResourceText } from './mcp.js';
 import { buildRegistry } from './llm/registry.js';
 import { runAgent } from './agent.js';
 import type { McpToolDef, Msg } from '../shared/types.js';
 
-const mcp = await connectMcp(config.mcpUrl);
 const registry = buildRegistry();
-const toolDefs = await listToolDefs(mcp);
-const resourceDefs = await listResourceDefs(mcp);
-const systemPrompt = await buildSystemPrompt(mcp);
 
 // MCP resources are not tools, so bridge the ontology schemas into callable tools.
 const DATA_MODEL_TOOLS: McpToolDef[] = [
@@ -41,36 +32,43 @@ const DATA_MODEL_TOOLS: McpToolDef[] = [
     },
   },
 ];
-const agentTools = [...toolDefs, ...DATA_MODEL_TOOLS];
 
-async function callAgentTool(
-  name: string,
-  args: Record<string, unknown>,
-): Promise<{ content: string; isError: boolean }> {
-  if (name === 'list_data_models') {
-    return {
-      content: resourceDefs
-        .filter((r) => r.uri.startsWith('ontology://'))
-        .map((r) => `${r.uri}${r.name ? ` — ${r.name}` : ''}`)
-        .join('\n'),
-      isError: false,
-    };
-  }
-  if (name === 'read_data_model') {
-    const q = String((args as { type?: string }).type ?? '').trim();
-    if (!q) return { content: 'type is required', isError: true };
-    const hit = q.startsWith('ontology://')
-      ? { uri: q, text: await readResourceText(mcp, q).catch((e) => String(e)) }
-      : await findOntology(mcp, q);
-    return hit && hit.text
-      ? { content: `# ${hit.uri}\n\n${hit.text}`, isError: false }
-      : { content: `No data model found for "${q}". Try list_data_models.`, isError: true };
-  }
-  return callTool(mcp, name, args);
+// The MCP server hides tools a caller's roles do not allow, so the tool list belongs
+// to the signed-in user, not to the process.
+function agentTools(mcp: McpSession): McpToolDef[] {
+  return [...mcp.toolDefs, ...DATA_MODEL_TOOLS];
+}
+
+function toolCaller(mcp: McpSession) {
+  return async (
+    name: string,
+    args: Record<string, unknown>,
+  ): Promise<{ content: string; isError: boolean }> => {
+    if (name === 'list_data_models') {
+      return {
+        content: mcp.resourceDefs
+          .filter((r) => r.uri.startsWith('ontology://'))
+          .map((r) => `${r.uri}${r.name ? ` — ${r.name}` : ''}`)
+          .join('\n'),
+        isError: false,
+      };
+    }
+    if (name === 'read_data_model') {
+      const q = String((args as { type?: string }).type ?? '').trim();
+      if (!q) return { content: 'type is required', isError: true };
+      const hit = q.startsWith('ontology://')
+        ? { uri: q, text: await readResourceText(mcp.client, q).catch((e) => String(e)) }
+        : await findOntology(mcp.client, q);
+      return hit && hit.text
+        ? { content: `# ${hit.uri}\n\n${hit.text}`, isError: false }
+        : { content: `No data model found for "${q}". Try list_data_models.`, isError: true };
+    }
+    return callTool(mcp.client, name, args);
+  };
 }
 
 console.log(
-  `chat-bot: ${agentTools.length} tools (${toolDefs.length} MCP + ${DATA_MODEL_TOOLS.length} data-model), ${resourceDefs.length} resources, providers [${registry
+  `chat-bot: auth ${config.authEnabled ? 'on' : 'off'}, MCP at ${config.mcpUrl}, providers [${registry
     .all()
     .map((p) => p.id)
     .join(', ')}], default ${registry.defaultId}`,
@@ -78,24 +76,35 @@ console.log(
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));
+app.use(
+  session({
+    secret: config.sessionSecret,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { httpOnly: true, sameSite: 'lax' },
+  }),
+);
 
-app.get('/api/providers', async (_req, res) => {
+registerAuthRoutes(app, closeSession);
+
+app.get('/api/providers', requireAuth, async (_req, res) => {
   const providers = await Promise.all(
     registry.all().map(async (p) => ({ id: p.id, models: await p.listModels().catch(() => []) })),
   );
   res.json({ providers, default: registry.defaultId });
 });
 
-app.get('/api/prompts', async (_req, res) => {
+app.get('/api/prompts', requireAuth, async (req, res) => {
   try {
-    const { prompts } = await mcp.listPrompts();
+    const mcp = await getSession(req);
+    const { prompts } = await mcp.client.listPrompts();
     res.json({ prompts });
   } catch {
     res.json({ prompts: [] });
   }
 });
 
-app.post('/api/chat', async (req, res) => {
+app.post('/api/chat', requireAuth, async (req, res) => {
   const { messages, provider: providerId, model } = req.body as {
     messages: Msg[];
     provider?: string;
@@ -104,6 +113,14 @@ app.post('/api/chat', async (req, res) => {
   const provider = registry.get(providerId);
   if (!provider) {
     res.status(400).json({ error: `unknown provider: ${providerId}` });
+    return;
+  }
+
+  let mcp: McpSession;
+  try {
+    mcp = await getSession(req);
+  } catch (e) {
+    res.status(401).json({ error: String(e) });
     return;
   }
 
@@ -116,11 +133,11 @@ app.post('/api/chat', async (req, res) => {
     for await (const ev of runAgent({
       provider,
       model,
-      system: systemPrompt,
-      tools: agentTools,
+      system: mcp.systemPrompt,
+      tools: agentTools(mcp),
       history: messages ?? [],
-      callTool: callAgentTool,
-      lookupOntology: (type) => findOntology(mcp, type),
+      callTool: toolCaller(mcp),
+      lookupOntology: (type) => findOntology(mcp.client, type),
     })) {
       send(ev);
     }

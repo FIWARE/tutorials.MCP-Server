@@ -197,7 +197,10 @@ services:
     hostname: mcp-server
     container_name: fiware-mcp-server
     depends_on:
-      - ld-context
+      ld-context:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     networks:
       - default
     expose:
@@ -213,6 +216,20 @@ services:
       - WRITABLE=true
       - WRITE_TENANT=farmer
       - WRITE_LOCAL_ONLY=true
+      # Broker-derived entity types are discovered at start-up and merged with the
+      # curated schemas mounted at /schemas.
+      - DISCOVERY=merge
+      # The server verifies the bearer token a second time, after APISIX, and forwards
+      # it to the broker so Keycloak's UMA policies apply to the caller, not to the server.
+      - AUTH_ENABLED=${AUTH_ENABLED}
+      # The issuer is the string in the token's `iss` claim, which Keycloak pins to
+      # its frontend hostname; JWKS and the token endpoint are reached in-network.
+      - OIDC_ISSUER=http://localhost:${KEYCLOAK_PORT}/realms/${OIDC_REALM}
+      - OIDC_JWKS_URI=http://keycloak:8080/realms/${OIDC_REALM}/protocol/openid-connect/certs
+      - OIDC_TOKEN_URL=http://keycloak:8080/realms/${OIDC_REALM}/protocol/openid-connect/token
+      - MCP_RESOURCE_URL=http://localhost:${MCP_PROXY_PORT}/mcp
+      - OIDC_CLIENT_ID=${MCP_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${MCP_CLIENT_SECRET}
     volumes:
       - type: bind
         source: ${PWD}/schemas
@@ -239,12 +256,23 @@ services:
     expose:
       - "${CHAT_BOT_PORT}"
     ports:
-      - "${CHAT_BOT_PORT}:${CHAT_BOT_PORT}" # localhost:3005
+      - "${CHAT_BOT_PORT}:${CHAT_BOT_PORT}" # localhost:3006
     environment:
       # The chat-bot reads bare names (PORT / MCP_URL / PROVIDER / <PROVIDER>_*);
       # map the CHAT_BOT_* .env vars onto them and point MCP_URL in-network.
       - PORT=${CHAT_BOT_PORT}
-      - MCP_URL=http://mcp-server:${MCP_SERVER_PORT}/mcp
+      # Straight at the MCP server while the tutorial is unsecured; through the
+      # gateway once the security section swaps this in .env, at which point the
+      # bot must present the signed-in user's token like any other client.
+      - MCP_URL=${MCP_ENDPOINT}
+      - AUTH_ENABLED=${AUTH_ENABLED}
+      - OIDC_ISSUER=http://keycloak:8080/realms/${OIDC_REALM}
+      # The browser is redirected here, so this must be reachable from the host.
+      - OIDC_PUBLIC_ISSUER=http://localhost:${KEYCLOAK_PORT}/realms/${OIDC_REALM}
+      - OIDC_CLIENT_ID=${OIDC_CLIENT_ID}
+      - OIDC_CLIENT_SECRET=${OIDC_CLIENT_SECRET}
+      - OIDC_REDIRECT_URI=http://localhost:${CHAT_BOT_PORT}/login/callback
+      - SESSION_SECRET=${SESSION_SECRET}
       - PROVIDER=${CHAT_BOT_PROVIDER}
       - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - ANTHROPIC_BASE_URL=${ANTHROPIC_BASE_URL}
@@ -257,6 +285,96 @@ services:
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - GEMINI_BASE_URL=${GEMINI_BASE_URL}
       - GEMINI_MODEL=${GEMINI_MODEL}
+
+  # APISIX acts as an API Gateway — it validates JWTs on the way to the MCP Server
+  # and enforces Keycloak role-based access on the way to the Context Broker
+  apisix:
+    image: apache/apisix:3.9.0-debian
+    container_name: fiware-apisix
+    hostname: apisix
+    labels:
+      org.fiware: 'tutorial'
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    networks:
+      - default
+    ports:
+      - "${MCP_PROXY_PORT}:${APISIX_PORT}" # localhost:1030
+    volumes:
+      - ../apisix-config/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+      - ../apisix-config/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
+    healthcheck:
+      # The APISIX image ships neither curl nor wget, and its /bin/sh is dash, which
+      # has no /dev/tcp - so the probe has to ask for bash by name.
+      test: [ "CMD", "bash", "-c", "exec 3<>/dev/tcp/localhost/${APISIX_PORT} && echo -e 'GET /health HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && head -1 <&3 | grep -q 200" ]
+      interval: 5s
+      retries: 12
+      start_period: 10s
+
+  # Keycloak is the Identity and Access Management server
+  keycloak:
+    image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION}
+    container_name: fiware-keycloak
+    hostname: keycloak
+    labels:
+      org.fiware: 'tutorial'
+    depends_on:
+      postgres-keycloak:
+        condition: service_healthy
+    networks:
+      - default
+    ports:
+      - "${KEYCLOAK_PORT}:8080" # localhost:3005
+    environment:
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgres-keycloak/keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=password
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=1234
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=1234
+      - KC_HTTP_PORT=8080
+      # Pin the frontend hostname so the `iss` claim is the same string whether the
+      # token was requested from the host or from inside the network. Without this
+      # Keycloak stamps `iss` from the request host, and a token fetched on
+      # localhost:3005 is rejected by a verifier expecting keycloak:8080.
+      - KC_HOSTNAME=localhost
+      - KC_HOSTNAME_PORT=${KEYCLOAK_PORT}
+      - KC_HOSTNAME_STRICT=false
+      # Backchannel URLs still resolve to the request host, so APISIX and the MCP
+      # server keep fetching JWKS over the Docker network.
+      - KC_HOSTNAME_STRICT_BACKCHANNEL=false
+      - KC_HTTP_ENABLED=true
+      - KC_HEALTH_ENABLED=true
+    command: start-dev --import-realm
+    volumes:
+      - ../realm-config:/opt/keycloak/data/import:ro
+    healthcheck:
+      test: [ "CMD-SHELL", "exec 3<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '\"status\": \"UP\"'" ]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
+
+  # PostgreSQL database for Keycloak
+  postgres-keycloak:
+    image: postgres:${POSTGRES_VERSION}
+    container_name: db-postgres-keycloak
+    hostname: postgres-keycloak
+    labels:
+      org.fiware: 'tutorial'
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=password
+    networks:
+      - default
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "keycloak" ]
+      interval: 10s
+      retries: 6
 
 networks:
   default:

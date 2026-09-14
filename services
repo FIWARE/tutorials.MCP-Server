@@ -15,16 +15,60 @@ CORE_CONTEXT="https://uri.etsi.org/ngsi-ld/v1/ngsi-ld-core-context-v1.8.jsonld"
 DATA_LOADER="http://tutorial:3000"
 IOT_DEVICES="http://iot-sensors:3001"
 
-dockerCmd="docker compose"
-if (( $# == 2 )); then
-    dockerCmd="docker-compose"
-fi
+USAGE="usage: services [create|orion|scorpio|stellio|coraine|ollama|ollama stop|stop] [--secure]"
 
 if (( $# < 1 )); then
 	echo "Illegal number of parameters"
-	echo "usage: services [create|orion|scorpio|stellio|coraine|ollama|ollama stop|stop]"
+	echo "${USAGE}"
 	exit 1
 fi
+
+# --secure routes the MCP server and chat-bot through APISIX and turns on token
+# checks. Any other extra argument (bar `ollama stop`) selects legacy docker-compose.
+secure=false
+dockerCmd="docker compose"
+for arg in "${@:2}"; do
+	case "${arg}" in
+		--secure) secure=true ;;
+		stop) ;;
+		*) dockerCmd="docker-compose" ;;
+	esac
+done
+
+# $1 is the broker; BROKER_ENDPOINT and TEMPORAL_ENDPOINT are what its docker-compose file hands the MCP server.
+setSecurity () {
+	local broker="${1:-orion}" direct temporal
+	case "${broker}" in
+		scorpio) direct="http://scorpio:${SCORPIO_PORT}" ;;
+		stellio) direct="http://stellio:${STELLIO_PORT}" ;;
+		coraine) direct="http://coraine:${CORAINE_PORT}" ;;
+		*) broker=orion; direct="http://orion:${ORION_LD_PORT}" ;;
+	esac
+	if [ "${secure}" = true ]; then
+		export AUTH_ENABLED=true
+		export MCP_ENDPOINT="http://apisix:${APISIX_PORT}/mcp"
+		export BROKER_ENDPOINT="http://apisix:${APISIX_PORT}/${broker}"
+		temporal="http://apisix:${APISIX_PORT}/mintaka"
+	else
+		export AUTH_ENABLED=false
+		export MCP_ENDPOINT="http://mcp-server:${MCP_SERVER_PORT}/mcp"
+		export BROKER_ENDPOINT="${direct}"
+		temporal="http://mintaka:${MINTAKA_PORT}"
+	fi
+	# Scorpio and Stellio serve the temporal interface themselves.
+	case "${broker}" in
+		scorpio|stellio) temporal="${BROKER_ENDPOINT}/ngsi-ld/v1" ;;
+	esac
+	export TEMPORAL_ENDPOINT="${temporal}"
+}
+
+displaySecurity () {
+	if [ "${secure}" = true ]; then
+		echo -e "\033[1;32mSecured\033[0m: the MCP server is reached through APISIX at \033[4mhttp://localhost:${MCP_PROXY_PORT}/mcp\033[0m"
+	else
+		echo -e "\033[1;33mUnsecured\033[0m: the MCP server is reached directly at \033[4mhttp://localhost:${MCP_SERVER_PORT}/mcp\033[0m"
+	fi
+}
 
 pause(){
 	printf " "
@@ -133,6 +177,36 @@ waitForIoTAgent () {
 	done
 }
 
+waitForKeycloak () {
+	echo -e "\n⏳ Waiting for \033[1;34mKeycloak\033[0m to be available\n"
+	while ! [ "$(docker inspect --format='{{.State.Health.Status}}' fiware-keycloak 2>/dev/null)" == "healthy" ]
+	do
+		echo -e "Keycloak health: $(docker inspect --format='{{.State.Health.Status}}' fiware-keycloak 2>/dev/null) (waiting for healthy)"
+		sleep 5
+	done
+	echo -e " \033[1;32mdone\033[0m"
+}
+
+waitForApisix () {
+	echo -e "\n⏳ Waiting for \033[1mAPISIX\033[0m to be available\n"
+	while ! [ "$(docker inspect --format='{{.State.Health.Status}}' fiware-apisix 2>/dev/null)" == "healthy" ]
+	do
+		echo -e "APISIX health: $(docker inspect --format='{{.State.Health.Status}}' fiware-apisix 2>/dev/null) (waiting for healthy)"
+		sleep 5
+	done
+	echo -e " \033[1;32mdone\033[0m"
+}
+
+loadUsers () {
+	docker run --rm \
+		--network fiware_default \
+		-v "$(pwd)/import_users:/import_users" \
+		-e KEYCLOAK_HOST=keycloak \
+		-e KEYCLOAK_PORT=8080 \
+		--entrypoint /bin/sh \
+		python:3-alpine -c "apk add --no-cache curl && /import_users"
+}
+
 loadData () {
 	waitForUserContext
 	export CONTEXT_BROKER="$1" 
@@ -204,10 +278,11 @@ addIoTDatabaseIndex () {
 command="$1"
 case "${command}" in
 	"help")
-        echo "usage: services [create|orion|scorpio|stellio|coraine|ollama|ollama stop|stop]"
+        echo "${USAGE}"
         ;;
 	 "orion")
 		set -a; source .env; set +a
+		setSecurity orion
 		stoppingContainers
 		waitForCoreContext
 		echo -e "Starting containers:  \033[1;34mOrion\033[0m, \033[1;34mMintaka\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and \033[1mMongoDB\033[0m and \033[1mTimescale\033[0m databases."
@@ -217,22 +292,29 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
+		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
 		${dockerCmd} -f docker-compose/mintaka.yml -p fiware up -d --renew-anon-volumes
 		pause 10
 		${dockerCmd} -f docker-compose/common.yml -f docker-compose/orion-ld.yml -p fiware up -d --renew-anon-volumes
 		displayServices "orion|fiware"
+		waitForKeycloak
+		loadUsers
+		waitForApisix
 		waitForMongo
 		waitForOrion
 		loadData orion:1026
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
 		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
+		displaySecurity
 		;;
 
 	"scorpio")
 		set -a; source .env; set +a
+		setSecurity scorpio
 		stoppingContainers
 		waitForCoreContext
 		echo -e "Starting containers:  \033[1;34mScorpio\033[0m, and a \033[1mPostgres\033[0m database, \033[1;34mQuantumLeap\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and \033[1mMongoDB\033[0m database."
@@ -241,10 +323,15 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
+		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
 		${dockerCmd} -f docker-compose/common.yml -f docker-compose/scorpio.yml -p fiware up -d --renew-anon-volumes
 		displayServices "scorpio|fiware"
+		waitForKeycloak
+		loadUsers
+		waitForApisix
 		waitForMongo
 		addIoTDatabaseIndex
 		waitForScorpio
@@ -252,9 +339,11 @@ case "${command}" in
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
 		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
+		displaySecurity
 		;;
 	"stellio")
 		set -a; source .env; set +a
+		setSecurity stellio
 		stoppingContainers
 		waitForCoreContext
 		echo -e "Starting containers:  \033[1;34mStellio\033[0m, \033[1mKafka\033[0m, \033[1mZookeeper\033[0m and a \033[1mPostgres\033[0m database, \033[1;34mQuantumLeap\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and \033[1mMongoDB\033[0m database."
@@ -263,10 +352,15 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
+		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
 		${dockerCmd} -f docker-compose/common.yml -f docker-compose/stellio.yml -p fiware up -d --renew-anon-volumes
 		displayServices "stellio|fiware"
+		waitForKeycloak
+		loadUsers
+		waitForApisix
 		waitForMongo
 		addIoTDatabaseIndex
 		waitForStellio
@@ -274,13 +368,11 @@ case "${command}" in
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
 		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
+		displaySecurity
 		;;
 	"ollama")
 		set -a; source .env; set +a
-		dockerCmd="docker compose"
-		if [ "$2" != "stop" ] && (( $# == 2 )); then
-			dockerCmd="docker-compose"
-		fi
+		setSecurity
 		if [ "$2" == "stop" ]; then
 			echo -e "Stopping \033[1;34mOllama\033[0m"
 			${dockerCmd} -f docker-compose/common.yml -f docker-compose/ollama.yml -p fiware rm -sf ollama ollama-init
@@ -306,6 +398,7 @@ case "${command}" in
 		# --troe timescale plugin (see coraine.yml) writes history to the bundled
 		# db-timescale, so Mintaka (Orion-LD specific) is not started here.
 		set -a; source .env; set +a
+		setSecurity coraine
 		stoppingContainers
 		waitForCoreContext
 		echo -e "Starting containers:  \033[1;34mCoraine\033[0m, \033[1;36mIoT-Agent\033[0m, \033[1mTutorial\033[0m, a linked data \033[1mContext\033[0m and \033[1mMongoDB\033[0m and \033[1mTimescale\033[0m databases."
@@ -314,27 +407,36 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
+		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
 		${dockerCmd} -f docker-compose/common.yml -f docker-compose/coraine.yml -p fiware up -d --renew-anon-volumes
 		displayServices "coraine|fiware"
+		waitForKeycloak
+		loadUsers
+		waitForApisix
 		waitForMongo
 		waitForCoraine
 		loadData coraine:1026
 		echo -e "\033[1;34m${command}\033[0m is now running and exposed on localhost:${EXPOSED_PORT}"
 		echo -e "Now open \033[4mhttp://localhost:3000/device/monitor\033[0m"
 		echo -e "Chat with the farm at \033[4mhttp://localhost:${CHAT_BOT_PORT}\033[0m"
+		displaySecurity
 		;;
 	"stop")
 		set -a; source .env; set +a
+		setSecurity
 		stoppingContainers
 		;;
 	"start")
 		set -a; source .env; set +a
-		./services ${CONTEXT_BROKER:=orion} $2
+		setSecurity
+		./services ${CONTEXT_BROKER:=orion} "${@:2}"
  		;;
  	"create")
 		set -a; source .env; set +a
+		setSecurity
 		echo "Pulling Docker images"
 		docker pull -q quay.io/curl/curl:${CURL_VERSION}
 		docker pull -q quay.io/fiware/tutorials.mcp-server
@@ -344,7 +446,7 @@ case "${command}" in
 		;;
 	*)
 		echo "Command not Found."
-		echo "usage: services [create|orion|scorpio|stellio|coraine|ollama|ollama stop|stop]"
+		echo "${USAGE}"
 		exit 127;
 		;;
 esac

@@ -36,7 +36,12 @@
     "observedAt": {
       "type": "string",
       "format": "date-time",
-      "description": "Property. Date of the observed entity defined by the user"
+      "description": "NGSI-LD system attribute. Timestamp metadata held against an individual attribute, recording when the value it carries was observed. It is returned alongside the attribute it qualifies, not as an attribute in its own right"
+    },
+    "dateObserved": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Property. Date of the observed entity defined by the user. A data property defined by the Smart Data Model and stored like any other attribute - not to be confused with the NGSI-LD `observedAt` metadata above"
     },
     "dateYearLess": {
       "type": "string",

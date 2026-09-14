@@ -6,7 +6,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    proxy: { '/api': 'http://localhost:3005' },
+    // /login and /logout are server routes too, not client-side paths.
+    proxy: {
+      '/api': 'http://localhost:3006',
+      '/login': 'http://localhost:3006',
+      '/logout': 'http://localhost:3006',
+    },
   },
   build: {
     outDir: '../../dist/web',
