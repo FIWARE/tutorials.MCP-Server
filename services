@@ -35,6 +35,11 @@ for arg in "${@:2}"; do
 	esac
 done
 
+# Keycloak, APISIX and their Postgres database are only worth the startup cost when
+# --secure is passed; folded into every command's docker-compose invocation below.
+securityFile=""
+[ "${secure}" = true ] && securityFile="-f docker-compose/security.yml"
+
 # $1 is the broker; BROKER_ENDPOINT and TEMPORAL_ENDPOINT are what its docker-compose file hands the MCP server.
 setSecurity () {
 	local broker="${1:-orion}" direct temporal
@@ -292,17 +297,21 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
-		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
-		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		if [ "${secure}" = true ]; then
+			echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+			echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		fi
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
 		${dockerCmd} -f docker-compose/mintaka.yml -p fiware up -d --renew-anon-volumes
 		pause 10
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/orion-ld.yml -p fiware up -d --renew-anon-volumes
+		${dockerCmd} -f docker-compose/common.yml ${securityFile} -f docker-compose/orion-ld.yml -p fiware up -d --renew-anon-volumes
 		displayServices "orion|fiware"
-		waitForKeycloak
-		loadUsers
-		waitForApisix
+		if [ "${secure}" = true ]; then
+			waitForKeycloak
+			loadUsers
+			waitForApisix
+		fi
 		waitForMongo
 		waitForOrion
 		loadData orion:1026
@@ -323,15 +332,19 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
-		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
-		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		if [ "${secure}" = true ]; then
+			echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+			echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		fi
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/scorpio.yml -p fiware up -d --renew-anon-volumes
+		${dockerCmd} -f docker-compose/common.yml ${securityFile} -f docker-compose/scorpio.yml -p fiware up -d --renew-anon-volumes
 		displayServices "scorpio|fiware"
-		waitForKeycloak
-		loadUsers
-		waitForApisix
+		if [ "${secure}" = true ]; then
+			waitForKeycloak
+			loadUsers
+			waitForApisix
+		fi
 		waitForMongo
 		addIoTDatabaseIndex
 		waitForScorpio
@@ -352,15 +365,19 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
-		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
-		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		if [ "${secure}" = true ]; then
+			echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+			echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		fi
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/stellio.yml -p fiware up -d --renew-anon-volumes
+		${dockerCmd} -f docker-compose/common.yml ${securityFile} -f docker-compose/stellio.yml -p fiware up -d --renew-anon-volumes
 		displayServices "stellio|fiware"
-		waitForKeycloak
-		loadUsers
-		waitForApisix
+		if [ "${secure}" = true ]; then
+			waitForKeycloak
+			loadUsers
+			waitForApisix
+		fi
 		waitForMongo
 		addIoTDatabaseIndex
 		waitForStellio
@@ -407,15 +424,19 @@ case "${command}" in
 		echo -e "- \033[1mIoT Devices\033[0m acts as a series of dummy IoT Sensors over HTTP"
 		echo -e "- \033[1mMCP Server\033[0m exposes the context broker to LLM agents"
 		echo -e "- \033[1mChat-bot\033[0m serves a web UI and LLM agent loop over the MCP Server"
-		echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
-		echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		if [ "${secure}" = true ]; then
+			echo -e "- \033[1;34mKeycloak\033[0m is the Identity and Access Management server"
+			echo -e "- \033[1mAPISix\033[0m is an API Gateway securing the \033[1mMCP Server\033[0m and the context broker"
+		fi
 		echo -e "- Data models \033[1m@context\033[0m (Smart Farm) is supplied externally"
 		echo ""
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/coraine.yml -p fiware up -d --renew-anon-volumes
+		${dockerCmd} -f docker-compose/common.yml ${securityFile} -f docker-compose/coraine.yml -p fiware up -d --renew-anon-volumes
 		displayServices "coraine|fiware"
-		waitForKeycloak
-		loadUsers
-		waitForApisix
+		if [ "${secure}" = true ]; then
+			waitForKeycloak
+			loadUsers
+			waitForApisix
+		fi
 		waitForMongo
 		waitForCoraine
 		loadData coraine:1026
@@ -440,7 +461,7 @@ case "${command}" in
 		echo "Pulling Docker images"
 		docker pull -q quay.io/curl/curl:${CURL_VERSION}
 		docker pull -q quay.io/fiware/tutorials.mcp-server
-		${dockerCmd} -f docker-compose/common.yml -f docker-compose/common.yml -f docker-compose/scorpio.yml -f docker-compose/orion-ld.yml -f docker-compose/stellio.yml -f docker-compose/mintaka.yml -f docker-compose/coraine.yml pull --ignore-buildable
+		${dockerCmd} -f docker-compose/common.yml -f docker-compose/security.yml -f docker-compose/scorpio.yml -f docker-compose/orion-ld.yml -f docker-compose/stellio.yml -f docker-compose/mintaka.yml -f docker-compose/coraine.yml pull --ignore-buildable
 		echo "Building the Chat-bot image"
 		${dockerCmd} -f docker-compose/common.yml -p fiware build chat-bot
 		;;

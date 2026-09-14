@@ -60,11 +60,12 @@ function claims(accessToken: string): { username: string; roles: string[]; exp: 
     preferred_username?: string;
     sub?: string;
     exp?: number;
+    roles?: string[];
     realm_access?: { roles?: string[] };
   };
   return {
     username: decoded.preferred_username ?? decoded.sub ?? 'unknown',
-    roles: decoded.realm_access?.roles ?? [],
+    roles: decoded.roles ?? decoded.realm_access?.roles ?? [],
     exp: decoded.exp ?? 0,
   };
 }
