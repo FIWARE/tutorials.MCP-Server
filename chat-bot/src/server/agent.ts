@@ -31,18 +31,22 @@ interface RunOpts {
   maxSteps?: number;
   /** How many times to auto-prompt the model to continue when it stalls without a tool call. */
   maxNudges?: number;
+  /** How many tool-call rounds in a row may come back all-error/not-found before giving up. */
+  maxConsecutiveFailures?: number;
 }
 
 export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
   const { provider, model, system, tools, callTool } = opts;
   const messages: Msg[] = [...opts.history];
-  const maxSteps = opts.maxSteps ?? 16;
+  const maxSteps = opts.maxSteps ?? 40;
   const maxNudges = opts.maxNudges ?? 3;
+  const maxConsecutiveFailures = opts.maxConsecutiveFailures ?? 3;
   const surfaced = seedSurfaced(opts.history);
 
   let nudges = 0;
   let lastToolErrored = false;
   let toolCallsMade = 0;
+  let consecutiveFailedRounds = 0;
 
   for (let step = 0; step < maxSteps; step++) {
     let text = '';
@@ -97,8 +101,22 @@ export async function* runAgent(opts: RunOpts): AsyncGenerator<AgentEvent> {
       yield { t: 'tool_result', result };
     }
     lastToolErrored = results.some((r) => r.isError);
+    if (results.some((r) => !r.isError)) {
+      consecutiveFailedRounds = 0;
+      nudges = 0;
+    } else {
+      consecutiveFailedRounds++;
+    }
     toolCallsMade += toolCalls.length;
     messages.push({ role: 'tool', results });
+
+    if (consecutiveFailedRounds >= maxConsecutiveFailures) {
+      yield {
+        t: 'error',
+        message: `Stopped after ${consecutiveFailedRounds} consecutive failed tool calls`,
+      };
+      return;
+    }
   }
 
   yield { t: 'error', message: `Stopped after ${maxSteps} tool-loop steps` };

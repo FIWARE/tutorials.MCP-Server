@@ -196,9 +196,9 @@ routes:
         bearer_only: true
 
 upstreams:
-  # Single node, so roundrobin vs chash makes no difference today. If mcp-server ever runs as
-  # multiple replicas here, switch to chash on the Mcp-Session-Id header — its HTTP transport
-  # is stateful per session, so plain roundrobin would route a session to the wrong instance.
+  # Single node, so roundrobin vs chash makes no difference in the tutorial. If mcp-server ever 
+  # runs as multiple replicas here, switch to chash on the Mcp-Session-Id header — its HTTP 
+  # transport is stateful per session, so plain roundrobin would route a session to the wrong instance.
   - id: 1
     type: roundrobin
     nodes:
