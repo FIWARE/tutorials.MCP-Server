@@ -2,6 +2,8 @@ export interface ToolCall {
   id: string;
   name: string;
   args: Record<string, unknown>;
+  /** Provider-specific passthrough (Gemini 3 thought_signature) that must be echoed back with the call. */
+  extra?: unknown;
 }
 
 export interface ToolResult {
@@ -36,6 +38,7 @@ export interface ChatRequest {
 export interface LlmProvider {
   id: string;
   listModels(): Promise<string[]>;
+  defaultModel(): Promise<string>;
   stream(req: ChatRequest): AsyncIterable<Delta>;
 }
 

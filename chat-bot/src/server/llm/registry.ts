@@ -10,28 +10,39 @@ export interface Registry {
 
 const env = (name: string): string | undefined => process.env[name] || undefined;
 
+// Models are discovered from each provider's /models list; `prefer` picks among them.
+// Set <ID>_MODEL to pin one.
+const COMPAT = [
+  { id: 'openai', url: undefined, prefer: [/^gpt-4o$/] },
+  { id: 'gemini', url: 'https://generativelanguage.googleapis.com/v1beta/openai/', prefer: [/gemini-[\d.]+-flash$/] },
+  { id: 'groq', url: 'https://api.groq.com/openai/v1', prefer: [/gpt-oss-120b$/] },
+  { id: 'openrouter', url: 'https://openrouter.ai/api/v1', prefer: [/llama-3\.3-70b-instruct(:free)?$/] },
+  { id: 'nvidia', url: 'https://integrate.api.nvidia.com/v1', prefer: [/llama-3\.3-70b-instruct$/] },
+  { id: 'cohere', url: 'https://api.cohere.ai/compatibility/v1', prefer: [/command-r-plus/] },
+];
+
 export function buildRegistry(): Registry {
   const providers = new Map<string, LlmProvider>();
 
   if (env('ANTHROPIC_API_KEY')) {
     providers.set(
       'anthropic',
-      new AnthropicProvider(
-        process.env.ANTHROPIC_API_KEY!,
-        env('ANTHROPIC_MODEL') ?? 'claude-sonnet-5',
-        env('ANTHROPIC_BASE_URL'),
-      ),
+      new AnthropicProvider(process.env.ANTHROPIC_API_KEY!, env('ANTHROPIC_MODEL'), env('ANTHROPIC_BASE_URL')),
     );
   }
 
-  if (env('OPENAI_API_KEY')) {
+  for (const p of COMPAT) {
+    const U = p.id.toUpperCase();
+    const apiKey = env(`${U}_API_KEY`);
+    if (!apiKey) continue;
     providers.set(
-      'openai',
+      p.id,
       new OpenAiCompatProvider({
-        id: 'openai',
-        apiKey: process.env.OPENAI_API_KEY!,
-        baseURL: env('OPENAI_BASE_URL'),
-        defaultModel: env('OPENAI_MODEL') ?? 'gpt-4o',
+        id: p.id,
+        apiKey,
+        baseURL: env(`${U}_BASE_URL`) ?? p.url,
+        model: env(`${U}_MODEL`),
+        prefer: p.prefer,
       }),
     );
   }
@@ -43,26 +54,14 @@ export function buildRegistry(): Registry {
         id: 'ollama',
         baseURL: process.env.OLLAMA_BASE_URL!,
         apiKey: 'ollama',
-        defaultModel: env('OLLAMA_MODEL') ?? 'qwen2.5:7b',
-      }),
-    );
-  }
-
-  if (env('GEMINI_API_KEY')) {
-    providers.set(
-      'gemini',
-      new OpenAiCompatProvider({
-        id: 'gemini',
-        baseURL: env('GEMINI_BASE_URL') ?? 'https://generativelanguage.googleapis.com/v1beta/openai/',
-        apiKey: process.env.GEMINI_API_KEY!,
-        defaultModel: env('GEMINI_MODEL') ?? 'gemini-2.0-flash',
+        model: env('OLLAMA_MODEL'),
       }),
     );
   }
 
   if (!providers.size) {
     throw new Error(
-      'No LLM provider configured. Set ANTHROPIC_API_KEY (or OPENAI_API_KEY / OLLAMA_BASE_URL / GEMINI_API_KEY).',
+      'No LLM provider configured. Set one of ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY, GROQ_API_KEY, OPENROUTER_API_KEY, NVIDIA_API_KEY, COHERE_API_KEY, OLLAMA_BASE_URL.',
     );
   }
 

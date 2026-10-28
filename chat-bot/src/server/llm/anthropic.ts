@@ -1,23 +1,40 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { pickModel } from './openai-compat.js';
 import type { ChatRequest, Delta, LlmProvider, Msg } from '../../shared/types.js';
 
 export class AnthropicProvider implements LlmProvider {
   readonly id = 'anthropic';
   #client: Anthropic;
-  #model: string;
+  #model?: string;
 
-  constructor(apiKey: string, model: string, baseURL?: string) {
+  constructor(apiKey: string, model?: string, baseURL?: string) {
     this.#client = new Anthropic({ apiKey, baseURL });
     this.#model = model;
   }
 
   async listModels(): Promise<string[]> {
-    return [this.#model];
+    try {
+      // The API lists newest first; keep that order so the newest match wins below.
+      const ids: string[] = [];
+      for await (const m of this.#client.models.list()) ids.push(m.id);
+      if (ids.length) return ids;
+    } catch {
+      // fall through to the pin, if any
+    }
+    return this.#model ? [this.#model] : [];
+  }
+
+  async defaultModel(): Promise<string> {
+    if (!this.#model) {
+      const ids = await this.listModels();
+      this.#model = pickModel(this.id, [...ids].reverse(), [/sonnet/]);
+    }
+    return this.#model;
   }
 
   async *stream(req: ChatRequest): AsyncIterable<Delta> {
     const stream = this.#client.messages.stream({
-      model: req.model ?? this.#model,
+      model: req.model ?? (await this.defaultModel()),
       max_tokens: 4096,
       system: req.system,
       messages: toAnthropic(req.messages),

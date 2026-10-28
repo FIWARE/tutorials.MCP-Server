@@ -1,0 +1,100 @@
+#!/bin/bash
+#
+#  Check which LLM providers in .env are reachable and which model each would use.
+#  usage: check-models [provider ...]
+#
+
+set -eo pipefail
+cd "$(dirname "$0")"
+
+# Keep in step with COMPAT[].prefer in chat-bot/src/server/llm/registry.ts
+prefer() {
+  case "$1" in
+    openai) echo '^gpt-4o$' ;;
+    gemini) echo 'gemini-[0-9.]+-flash$' ;;
+    groq) echo 'gpt-oss-120b$' ;;
+    openrouter) echo 'llama-3\.3-70b-instruct(:free)?$' ;;
+    nvidia) echo 'llama-3\.3-70b-instruct$' ;;
+    cohere) echo 'command-r-plus' ;;
+    anthropic) echo 'sonnet' ;;
+  esac
+}
+key_url() {
+  case "$1" in
+    anthropic) echo 'https://console.anthropic.com/settings/keys' ;;
+    openai) echo 'https://platform.openai.com/api-keys' ;;
+    gemini) echo 'https://aistudio.google.com/apikey' ;;
+    groq) echo 'https://console.groq.com/keys' ;;
+    openrouter) echo 'https://openrouter.ai/keys' ;;
+    nvidia) echo 'https://build.nvidia.com' ;;
+    cohere) echo 'https://dashboard.cohere.com/api-keys' ;;
+  esac
+}
+default_url() {
+  case "$1" in
+    openai) echo 'https://api.openai.com/v1' ;;
+    gemini) echo 'https://generativelanguage.googleapis.com/v1beta/openai' ;;
+  esac
+}
+
+# Environment wins over .env; values are never echoed.
+val() {
+  local v="${!1}"
+  [[ -n "$v" ]] && { echo "$v"; return; }
+  grep -E "^$1=" .env 2>/dev/null | tail -1 | cut -d= -f2- | sed -e 's/^["'"'"']//' -e 's/["'"'"']$//' || true
+}
+
+fetch() { # url [curl args...]
+  curl -sS -m 15 -w '\n%{http_code}' "$@" 2>&1 || true
+}
+
+check() {
+  local id="$1" pat U key base pin url body code ids pick
+  U=$(echo "$id" | tr '[:lower:]' '[:upper:]')
+  key=$(val "${U}_API_KEY"); pin=$(val "${U}_MODEL"); base=$(val "${U}_BASE_URL")
+  if [[ "$id" == ollama ]]; then
+    base=$(val OLLAMA_BASE_URL | sed "s/host.docker.internal/localhost/"); key=ollama
+    [[ -n "$base" ]] || { printf '%-11s skipped (OLLAMA_BASE_URL not set)\n' "$id"; return; }
+  else
+    [[ -n "$key" ]] || { printf '%-11s skipped (no %s_API_KEY - obtain key from %s)\n' "$id" "$U" "$(key_url "$id")"; return; }
+  fi
+
+  if [[ "$id" == anthropic ]]; then
+    url="${base:-https://api.anthropic.com}/v1/models?limit=1000"
+    body=$(fetch "$url" -H "x-api-key: $key" -H 'anthropic-version: 2023-06-01')
+  else
+    url="${base:-$(default_url "$id")}"; url="${url%/}/models"
+    body=$(fetch "$url" -H "Authorization: Bearer $key")
+  fi
+  code=${body##*$'\n'}; body=${body%$'\n'*}
+
+  if [[ "$code" != 200 ]]; then
+    printf '%-11s FAIL   HTTP %s %s\n' "$id" "$code" "$(echo "$body" | head -c 120)"; return
+  fi
+  pat=$(prefer "$id")
+  ids=$(echo "$body" | jq -r '.data[].id' | sort)
+
+  if [[ -n "$pin" ]]; then
+    if grep -qxF "$pin" <<<"$ids"; then
+      printf '%-11s OK     %s models; pinned %s (available)\n' "$id" "$(wc -l <<<"$ids" | tr -d ' ')" "$pin"
+    else
+      printf '%-11s FAIL   %s models; pinned %s NOT in list\n' "$id" "$(wc -l <<<"$ids" | tr -d ' ')" "$pin"
+    fi
+    return
+  fi
+
+  if [[ -n "$pat" ]]; then
+    pick=$(grep -E "$pat" <<<"$ids" | tail -1 || true)
+  else
+    pick=$(head -1 <<<"$ids")
+  fi
+  if [[ -n "$pick" ]]; then
+    printf '%-11s OK     %s models; would use %s\n' "$id" "$(wc -l <<<"$ids" | tr -d ' ')" "$pick"
+  else
+    printf '%-11s FAIL   no model matches /%s/. Available:\n' "$id" "$pat"
+    sed 's/^/             /' <<<"$ids"
+    printf '             Set %s_MODEL to one of these, or update prefer in registry.ts.\n' "$U"
+  fi
+}
+
+for id in ${@:-anthropic openai gemini groq openrouter nvidia cohere ollama}; do check "$id"; done

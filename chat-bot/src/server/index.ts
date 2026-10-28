@@ -74,6 +74,13 @@ console.log(
     .join(', ')}], default ${registry.defaultId}`,
 );
 
+for (const p of registry.all()) {
+  p.defaultModel().then(
+    (m) => console.log(`chat-bot: ${p.id} -> ${m}`),
+    (e) => console.error(`chat-bot: ${p.id} has no usable default model:`, e instanceof Error ? e.message : e),
+  );
+}
+
 const app = express();
 app.use(express.json({ limit: '1mb' }));
 app.use(
@@ -89,7 +96,11 @@ registerAuthRoutes(app, closeSession);
 
 app.get('/api/providers', requireAuth, async (_req, res) => {
   const providers = await Promise.all(
-    registry.all().map(async (p) => ({ id: p.id, models: await p.listModels().catch(() => []) })),
+    registry.all().map(async (p) => ({
+      id: p.id,
+      models: await p.listModels().catch(() => []),
+      default: await p.defaultModel().catch(() => undefined),
+    })),
   );
   res.json({ providers, default: registry.defaultId });
 });
@@ -120,6 +131,7 @@ app.post('/api/chat', requireAuth, async (req, res) => {
   try {
     mcp = await getSession(req);
   } catch (e) {
+    console.error('chat: MCP session failed:', e);
     res.status(401).json({ error: String(e) });
     return;
   }
@@ -129,6 +141,7 @@ app.post('/api/chat', requireAuth, async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   const send = (e: unknown) => res.write(`data: ${JSON.stringify(e)}\n\n`);
 
+  console.log(`chat: provider=${provider.id} model=${model ?? 'default'} messages=${messages?.length ?? 0}`);
   try {
     for await (const ev of runAgent({
       provider,
@@ -139,9 +152,14 @@ app.post('/api/chat', requireAuth, async (req, res) => {
       callTool: toolCaller(mcp),
       lookupOntology: (type) => findOntology(mcp.client, type),
     })) {
+      if (ev.t === 'error') console.error('chat: agent error:', ev.message);
+      else if (ev.t === 'tool_result' && ev.result.isError) {
+        console.error(`chat: tool error ${ev.result.id}:`, ev.result.content.slice(0, 500));
+      }
       send(ev);
     }
   } catch (e) {
+    console.error(`chat: ${provider.id} failed:`, e);
     send({ t: 'error', message: String(e) });
   }
   send({ t: 'end' });

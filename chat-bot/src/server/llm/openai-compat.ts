@@ -4,35 +4,59 @@ import type { ChatRequest, Delta, LlmProvider, Msg } from '../../shared/types.js
 interface Opts {
   id: string;
   apiKey: string;
-  defaultModel: string;
+  /** Explicit pin; skips discovery. */
+  model?: string;
+  /** Patterns tried against the provider's model list; the last (newest-sorting) match wins. */
+  prefer?: RegExp[];
   baseURL?: string;
+}
+
+/** With `prefer`, a miss is an error; without it, the first listed model is used. */
+export function pickModel(id: string, ids: string[], prefer?: RegExp[]): string {
+  if (!prefer?.length) {
+    if (!ids[0]) throw new Error(`${id}: no models available`);
+    return ids[0];
+  }
+  for (const re of prefer) {
+    const hit = [...ids].reverse().find((m) => re.test(m));
+    if (hit) return hit;
+  }
+  throw new Error(`${id}: no model matches ${prefer.join(', ')}; set ${id.toUpperCase()}_MODEL`);
 }
 
 /** Serves any OpenAI-compatible endpoint: OpenAI itself, Ollama, Gemini's /v1beta/openai/. */
 export class OpenAiCompatProvider implements LlmProvider {
   readonly id: string;
   #client: OpenAI;
-  #model: string;
+  #model?: string;
+  #prefer?: RegExp[];
 
   constructor(opts: Opts) {
     this.id = opts.id;
     this.#client = new OpenAI({ apiKey: opts.apiKey, baseURL: opts.baseURL });
-    this.#model = opts.defaultModel;
+    this.#model = opts.model;
+    this.#prefer = opts.prefer;
   }
 
   async listModels(): Promise<string[]> {
     try {
       const res = await this.#client.models.list();
       const ids = res.data.map((m) => m.id).sort();
-      return ids.length ? ids : [this.#model];
+      if (ids.length) return ids;
     } catch {
-      return [this.#model];
+      // fall through to the pin, if any
     }
+    return this.#model ? [this.#model] : [];
+  }
+
+  async defaultModel(): Promise<string> {
+    this.#model ??= pickModel(this.id, await this.listModels(), this.#prefer);
+    return this.#model;
   }
 
   async *stream(req: ChatRequest): AsyncIterable<Delta> {
     const stream = await this.#client.chat.completions.create({
-      model: req.model ?? this.#model,
+      model: req.model ?? (await this.defaultModel()),
       stream: true,
       messages: toOpenAi(req.system, req.messages),
       tools: req.tools.map((t) => ({
@@ -45,7 +69,7 @@ export class OpenAiCompatProvider implements LlmProvider {
       })),
     });
 
-    const pending = new Map<number, { id: string; name: string; args: string }>();
+    const pending = new Map<number, { id: string; name: string; args: string; extra?: unknown }>();
     let stop: 'tool_use' | 'end' = 'end';
 
     for await (const chunk of stream) {
@@ -59,6 +83,8 @@ export class OpenAiCompatProvider implements LlmProvider {
         if (tc.id) slot.id = tc.id;
         if (tc.function?.name) slot.name = tc.function.name;
         if (tc.function?.arguments) slot.args += tc.function.arguments;
+        const extra = (tc as { extra_content?: unknown }).extra_content;
+        if (extra) slot.extra = extra;
         pending.set(tc.index, slot);
       }
 
@@ -66,7 +92,7 @@ export class OpenAiCompatProvider implements LlmProvider {
     }
 
     for (const slot of pending.values()) {
-      yield { type: 'tool_call', call: { id: slot.id, name: slot.name, args: safeParse(slot.args) } };
+      yield { type: 'tool_call', call: { id: slot.id, name: slot.name, args: safeParse(slot.args), extra: slot.extra } };
     }
     yield { type: 'done', stopReason: stop };
   }
@@ -98,6 +124,7 @@ function toOpenAi(
               id: c.id,
               type: 'function' as const,
               function: { name: c.name, arguments: JSON.stringify(c.args) },
+              ...(c.extra ? { extra_content: c.extra } : {}),
             }))
           : undefined,
       });
