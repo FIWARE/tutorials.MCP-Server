@@ -137,16 +137,17 @@ export async function findOntology(
   return null;
 }
 
-export async function buildSystemPrompt(client: Client): Promise<string> {
+// The farm metadata is deliberately not inlined: it runs to tens of thousands of tokens that
+// would be resent on every agent step. The model fetches it with a tool call instead.
+const DISCOVERY_HINT =
+  'Before answering a question about the farm, call discover_context_meta_data once to learn ' +
+  'which types, attributes, enums and relationships exist. Reuse that result for the rest of the ' +
+  'conversation rather than calling it again.';
+
+export function buildSystemPrompt(client: Client): string {
   // The MCP server ships tool-usage guidance in its `initialize` instructions; fold it
   // in so server-side changes reach the model without editing this prompt.
   const serverInstructions = client.getInstructions()?.trim();
   const base = serverInstructions ? `${PERSONA}\n\n${serverInstructions}` : PERSONA;
-  try {
-    const { content, isError } = await callTool(client, 'discover_context_meta_data', {});
-    if (isError || !content) return base;
-    return `${base}\n\nContext metadata for this farm (types, attributes, enums, relationships, properties):\n${content}`;
-  } catch {
-    return base;
-  }
+  return `${base}\n\n${DISCOVERY_HINT}`;
 }

@@ -23,11 +23,8 @@ const sessions = new Map<string, McpSession>();
 
 async function open(token?: string): Promise<McpSession> {
   const client = await connectMcp(config.mcpUrl, token);
-  const [toolDefs, resourceDefs, systemPrompt] = await Promise.all([
-    listToolDefs(client),
-    listResourceDefs(client),
-    buildSystemPrompt(client),
-  ]);
+  const [toolDefs, resourceDefs] = await Promise.all([listToolDefs(client), listResourceDefs(client)]);
+  const systemPrompt = buildSystemPrompt(client);
   return { client, toolDefs, resourceDefs, systemPrompt, token, touched: Date.now() };
 }
 

@@ -71,6 +71,11 @@ export function buildRegistry(): Registry {
   // An explicit PROVIDER=ollama still wins.
   const autoDefault = keys.find((k) => k !== 'ollama') ?? keys[0]!;
   const defaultId = wanted && providers.has(wanted) ? wanted : autoDefault;
+  if (wanted && !providers.has(wanted)) {
+    console.warn(
+      `chat-bot: PROVIDER=${wanted} is not enabled (no API key or unknown provider); falling back to ${defaultId}`,
+    );
+  }
 
   return {
     defaultId,

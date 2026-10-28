@@ -71,12 +71,12 @@ console.log(
   `chat-bot: auth ${config.authEnabled ? 'on' : 'off'}, MCP at ${config.mcpUrl}, providers [${registry
     .all()
     .map((p) => p.id)
-    .join(', ')}], default ${registry.defaultId}`,
+    .join(', ')}], selected default ${registry.defaultId}${process.env.PROVIDER ? ` (PROVIDER=${process.env.PROVIDER})` : ''}`,
 );
 
 for (const p of registry.all()) {
   p.defaultModel().then(
-    (m) => console.log(`chat-bot: ${p.id} -> ${m}`),
+    (m) => console.log(`chat-bot: ${p.id}${p.id === registry.defaultId ? ' (selected default)' : ''} -> ${m}`),
     (e) => console.error(`chat-bot: ${p.id} has no usable default model:`, e instanceof Error ? e.message : e),
   );
 }
@@ -141,20 +141,26 @@ app.post('/api/chat', requireAuth, async (req, res) => {
   res.setHeader('Connection', 'keep-alive');
   const send = (e: unknown) => res.write(`data: ${JSON.stringify(e)}\n\n`);
 
-  console.log(`chat: provider=${provider.id} model=${model ?? 'default'} messages=${messages?.length ?? 0}`);
+  const tools = agentTools(mcp);
+  console.log(
+    `chat: provider=${provider.id} model=${model ?? 'default'} messages=${messages?.length ?? 0} ` +
+      `system=${mcp.systemPrompt.length} chars, tools=${tools.length} (${JSON.stringify(tools).length} chars)`,
+  );
+  const calls = new Map<string, string>();
   try {
     for await (const ev of runAgent({
       provider,
       model,
       system: mcp.systemPrompt,
-      tools: agentTools(mcp),
+      tools,
       history: messages ?? [],
       callTool: toolCaller(mcp),
       lookupOntology: (type) => findOntology(mcp.client, type),
     })) {
       if (ev.t === 'error') console.error('chat: agent error:', ev.message);
+      else if (ev.t === 'tool_call') calls.set(ev.call.id, `${ev.call.name} ${JSON.stringify(ev.call.args)}`);
       else if (ev.t === 'tool_result' && ev.result.isError) {
-        console.error(`chat: tool error ${ev.result.id}:`, ev.result.content.slice(0, 500));
+        console.error(`chat: tool error ${calls.get(ev.result.id) ?? ev.result.id}:`, ev.result.content.slice(0, 500));
       }
       send(ev);
     }

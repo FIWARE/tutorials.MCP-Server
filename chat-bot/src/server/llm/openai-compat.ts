@@ -79,29 +79,39 @@ export class OpenAiCompatProvider implements LlmProvider {
       if (choice.delta?.content) yield { type: 'text', text: choice.delta.content };
 
       for (const tc of choice.delta?.tool_calls ?? []) {
-        const slot = pending.get(tc.index) ?? { id: '', name: '', args: '' };
+        // Gemini omits `index` on streamed tool calls; without it every call would merge into one slot.
+        const key =
+          tc.index ??
+          (tc.id || tc.function?.name
+            ? ([...pending].find(([, v]) => tc.id && v.id === tc.id)?.[0] ?? pending.size)
+            : Math.max(pending.size - 1, 0));
+        const slot = pending.get(key) ?? { id: '', name: '', args: '' };
         if (tc.id) slot.id = tc.id;
         if (tc.function?.name) slot.name = tc.function.name;
         if (tc.function?.arguments) slot.args += tc.function.arguments;
         const extra = (tc as { extra_content?: unknown }).extra_content;
         if (extra) slot.extra = extra;
-        pending.set(tc.index, slot);
+        pending.set(key, slot);
       }
 
       if (choice.finish_reason === 'tool_calls') stop = 'tool_use';
     }
 
     for (const slot of pending.values()) {
-      yield { type: 'tool_call', call: { id: slot.id, name: slot.name, args: safeParse(slot.args), extra: slot.extra } };
+      yield {
+        type: 'tool_call',
+        call: { id: slot.id, name: slot.name, args: safeParse(this.id, slot.name, slot.args), extra: slot.extra },
+      };
     }
     yield { type: 'done', stopReason: stop };
   }
 }
 
-function safeParse(s: string): Record<string, unknown> {
+function safeParse(provider: string, tool: string, s: string): Record<string, unknown> {
   try {
     return s ? (JSON.parse(s) as Record<string, unknown>) : {};
   } catch {
+    console.error(`${provider}: unparseable arguments for ${tool}: ${s.slice(0, 300)}`);
     return {};
   }
 }
