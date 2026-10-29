@@ -5,7 +5,7 @@
   "arguments": {
     "species": "Optional filter, e.g. dairy cattle, pig"
   },
-  "tools": ["query_{{type}}", "get_{{type}}_history"],
+  "tools": ["query_entities", "get_entity_history"],
   "pick": ["name", "species", "weight"],
   "trendCheck": ["weight"],
   "rules": [

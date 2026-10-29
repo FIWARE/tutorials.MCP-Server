@@ -5,9 +5,9 @@
   "arguments": {
     "farmId": "Optional AgriFarm URN to scope the report; omit for all farms"
   },
-  "tools": ["query_{{type}}"],
+  "tools": ["query_entities"],
   "pick": {
-    "AgriParcel": ["name", "cropType", "cropStatus"],
+    "AgriParcel": ["name", "category", "hasAgriCrop", "cropStatus"],
     "Animal": ["name", "species", "healthCondition", "reproductiveCondition", "locatedAt"],
     "Building": ["name", "category", "containedInPlace"],
     "WeatherObserved": ["temperature", "windSpeed", "precipitation", "atmosphericPressure"]

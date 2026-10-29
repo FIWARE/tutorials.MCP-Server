@@ -1,0 +1,21 @@
+{
+  "name": "describe-type",
+  "types": [],
+  "description": "Describe one entity type: its attributes, relationships and allowed enum values",
+  "arguments": {
+    "type": "Entity type name, e.g. Animal, AgriParcel, Building"
+  },
+  "tools": ["discover_context_meta_data"],
+  "args": {
+    "name": "{{type}}",
+    "pick": "enums,relationships,properties"
+  },
+  "rules": [
+    "never call discover_context_meta_data without name",
+    "omit live_data; it is verbose and can lag",
+    "enums are schema values, not proof of stored values; confirm stored values with query_entities if asked",
+    "an empty result may mean a wrong type name; retry with the exact type name from an unscoped compact listing only as a last resort",
+    "read the ontology:// resource only if enums, relationships and properties do not answer the question"
+  ],
+  "template": "Describe the type {{type}}. Call discover_context_meta_data with name={{type}} and pick={{args.pick}}. Report: properties (with units), relationships (and what they link to), and enums with their allowed values. Apply rules: {{rules}}."
+}

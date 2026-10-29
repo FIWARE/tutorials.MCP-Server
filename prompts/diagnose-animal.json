@@ -3,10 +3,19 @@
   "types": ["Animal"],
   "description": "Investigate a single Animal entity for anomalies",
   "arguments": {
-    "id": "Entity URN, e.g. urn:ngsi-ld:Animal:cow001"
+    "key": "Entity URN (e.g. urn:ngsi-ld:Animal:cow001), or legalId, or name"
   },
-  "tools": ["get_{{type}}", "get_{{type}}_history"],
-  "pick": [
+  "resolve": [
+    "the entity URN is the only primary key; legalId and name are secondary and must be resolved to an id first",
+    "if key starts with urn:ngsi-ld:Animal: use it as the id",
+    "otherwise query_entities Animal filter=legalId==\"{{key}}\"|name==\"{{key}}\" pick=id,name,legalId,species,locatedAt",
+    "count the entities returned, not pagination.total",
+    "no match: say so, do not guess a similar key",
+    "more than one match (names need not be unique): list id, name, legalId, species, locatedAt and ask which one"
+  ],
+  "tools": ["query_entities", "get_entity", "get_entity_history"],
+  "neighbourhood": true,
+  "inspect": [
     "name",
     "comment",
     "locatedAt",
@@ -23,7 +32,8 @@
     "reproductiveCondition": ["noStatus"]
   },
   "exceptions": [
-    "reproductiveCondition of noStatus is not a flag when phenologicalCondition is grazingBaby or lactatingBaby"
+    "reproductiveCondition of noStatus is not a flag when phenologicalCondition is grazingBaby or lactatingBaby",
+    "healthCondition or welfareCondition not stored: report 'no data', not healthy or adequate"
   ],
   "contextChecks": ["locatedAt", "weight"],
   "phrasing": {
@@ -31,7 +41,7 @@
     "welfareCondition": "a welfare issue",
     "reproductiveCondition": "non-'active' reproductive status",
     "locatedAt": "barn placement while the rest of the herd is on pasture",
-    "weight": "weight deviating from the species growth curve"
+    "weight": "weight deviating from the animal's own history (a sustained fall, or no gain while still young)"
   },
-  "template": "Investigate {{id}} (type {{type}}). Call {{tools}} picking {{pick}}. Cross-reference relationships: {{relationships}}. Flag anomalies: {{phrasing}}, applying exceptions: {{exceptions}}. Report findings and the most likely explanation."
+  "template": "Investigate the animal with key {{key}} (type Animal). The key is case-sensitive; use it exactly as given. First resolve it to an id: {{resolve}}. Then call get_entity with neighbourhood=true, limit=5 and no pick, then get_entity_history for {{trendCheck}}. Inspect {{inspect}}. Cross-reference relationships: {{relationships}} and the neighbourhood siblings. Flag anomalies: {{phrasing}}, applying exceptions: {{exceptions}}. Report findings and the most likely explanation."
 }

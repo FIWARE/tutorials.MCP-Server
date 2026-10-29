@@ -60,9 +60,10 @@ setSecurity () {
 		export BROKER_ENDPOINT="${direct}"
 		temporal="http://mintaka:${MINTAKA_PORT}"
 	fi
-	# Scorpio and Stellio serve the temporal interface themselves.
+	# Scorpio, Stellio and Coraine serve the temporal interface themselves; coraine.yml appends /ngsi-ld/v1.
 	case "${broker}" in
 		scorpio|stellio) temporal="${BROKER_ENDPOINT}/ngsi-ld/v1" ;;
+		coraine) temporal="${BROKER_ENDPOINT}" ;;
 	esac
 	export TEMPORAL_ENDPOINT="${temporal}"
 }
